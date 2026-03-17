@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+*.local
+data/
+.claude/
+plans/
+server/data/
+server/plans/

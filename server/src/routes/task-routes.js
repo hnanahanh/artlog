@@ -157,9 +157,9 @@ router.delete('/:id/feedback/:fbId', (req, res) => {
 // Update feedback content and/or date
 router.put('/:id/feedback/:fbId', (req, res) => {
   try {
-    const { content, createdAt } = req.body;
-    if (!content && !createdAt) return res.status(400).json({ error: 'content or createdAt required' });
-    const result = updateFeedback(req.params.id, req.params.fbId, { content, createdAt });
+    const { content, createdAt, startDate, endDate } = req.body;
+    if (!content && !createdAt && !startDate && !endDate) return res.status(400).json({ error: 'content, createdAt, startDate or endDate required' });
+    const result = updateFeedback(req.params.id, req.params.fbId, { content, createdAt, startDate, endDate });
     if (!result) return res.status(404).json({ error: 'Not found' });
     res.json(result);
   } catch (err) {

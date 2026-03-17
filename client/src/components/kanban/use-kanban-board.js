@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { message } from 'antd';
 import { fetchTasks, updateTaskStatus, updateTask, deleteTask, deleteFeedback, updateFeedback } from '../../api/task-api-client.js';
+import { groupByStatus } from '../../processors/task-processor.js';
 
 // Custom hook encapsulating all data fetching and event handlers for KanbanBoard
 export function useKanbanBoard({ refreshKey, onRefresh }) {
@@ -11,11 +12,7 @@ export function useKanbanBoard({ refreshKey, onRefresh }) {
   const loadTasks = useCallback(() => {
     fetchTasks().then(result => {
       const tasks = result.tasks || result;
-      const grouped = { todo: [], in_progress: [], review: [], done: [] };
-      tasks.forEach(task => {
-        if (grouped[task.status]) grouped[task.status].push(task);
-      });
-      setColumns(grouped);
+      setColumns(groupByStatus(tasks));
     }).catch(console.error);
   }, []);
 

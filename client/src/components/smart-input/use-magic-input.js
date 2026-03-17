@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { message } from 'antd';
 import { parseRawInput, createTasksBatch, detectFeedback, addFeedback } from '../../api/task-api-client.js';
+import { separateFeedbacks, buildSaveResultMessage } from '../../processors/magic-input-processor.js';
 
 // Custom hook encapsulating all state and handlers for MagicInputModal
 export function useMagicInput({ onClose, onTasksCreated }) {
@@ -64,12 +65,7 @@ export function useMagicInput({ onClose, onTasksCreated }) {
     if (parsedTasks.length === 0) return;
     setLoading(true);
     try {
-      const feedbackIndexes = new Set(feedbackItems.map(fb => fb.index));
-      const newTasks = parsedTasks.filter((_, i) => !feedbackIndexes.has(i));
-      const feedbacksToAppend = feedbackItems.map(fb => ({
-        taskId: fb.detection.targetTask.id,
-        content: fb.detection.feedbackContent,
-      }));
+      const { newTasks, feedbacksToAppend } = separateFeedbacks(parsedTasks, feedbackItems);
 
       if (newTasks.length > 0) await createTasksBatch(newTasks);
 
@@ -77,10 +73,7 @@ export function useMagicInput({ onClose, onTasksCreated }) {
         await addFeedback(fb.taskId, fb.content);
       }
 
-      message.success(
-        `${newTasks.length} task(s) created` +
-        (feedbacksToAppend.length > 0 ? `, ${feedbacksToAppend.length} feedback(s) appended` : '')
-      );
+      message.success(buildSaveResultMessage(newTasks.length, feedbacksToAppend.length));
 
       handleClose();
       onTasksCreated?.();

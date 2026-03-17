@@ -20,10 +20,13 @@ export function addFeedback(taskId, content) {
   const task = tasks.find(t => t.id === taskId);
   if (!task) return null;
 
+  const createdNow = nowISO();
   const feedback = {
     id: `fb_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`,
     content,
-    createdAt: nowISO(),
+    createdAt: createdNow,
+    startDate: task.dueDate,
+    endDate: createdNow.slice(0, 10),
   };
   task.feedbacks.push(feedback);
   task.updatedAt = nowISO();
@@ -64,6 +67,8 @@ export function updateFeedback(taskId, feedbackId, data) {
   if (!fb) return null;
   if (data.content) fb.content = data.content;
   if (data.createdAt) fb.createdAt = data.createdAt;
+  if (data.startDate) fb.startDate = data.startDate;
+  if (data.endDate) fb.endDate = data.endDate;
   task.updatedAt = nowISO();
   writeTasks(tasks);
   return { task, feedback: fb };
