@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { Table, Tag, Input, Select, Button, Popconfirm, DatePicker, Flex, Typography } from 'antd';
+import { Table, Tag, Input, Select, Button, Popconfirm, Flex, Typography } from 'antd';
+import NeoRangePicker from '../shared/neo-range-picker.jsx';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { useI18n } from '../../i18n/i18n-config.jsx';
@@ -273,10 +274,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
           const editing = isEditing(record._parentId);
           if (editing) {
             return (
-              <DatePicker.RangePicker size="small" style={{ width: '100%' }}
-                popupStyle={neoDropdownStyle}
-                disabledDate={() => false}
-                onClick={e => e.stopPropagation()}
+              <NeoRangePicker style={{ width: '100%' }}
                 value={[dayjs(fbStart), dayjs(fbEnd)]}
                 onChange={dates => dates?.[0] && dates?.[1] && setFbEdits(prev => ({
                   ...prev, [fb.id]: { ...prev[fb.id], startDate: dates[0].format('YYYY-MM-DD'), endDate: dates[1].format('YYYY-MM-DD') },
@@ -292,10 +290,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
         // Task row
         if (isEditing(record.id)) {
           return (
-            <DatePicker.RangePicker size="small" style={{ width: '100%' }}
-              popupStyle={neoDropdownStyle}
-              disabledDate={() => false}
-              onClick={e => e.stopPropagation()}
+            <NeoRangePicker style={{ width: '100%' }}
               value={[dayjs(form.startDate), dayjs(form.dueDate)]}
               onChange={dates => {
                 if (dates?.[0] && dates?.[1]) {

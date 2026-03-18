@@ -25,7 +25,7 @@ function escapeHtml(str) {
 }
 
 const SHARED_FONT = {
-  fontFamily: 'monospace', fontSize: 14, lineHeight: '1.6',
+  fontFamily: "Google Sans Code", fontSize: 14, lineHeight: '1.6',
   padding: '8px 12px', whiteSpace: 'pre-wrap', wordWrap: 'break-word',
 };
 
@@ -59,14 +59,11 @@ export default function QuickMagicInput({ onTasksCreated }) {
 
   return (
     <div style={{
-      border: '3px solid var(--border-color)', borderRadius: 2,
-      boxShadow: '4px 4px 0px var(--shadow-color)', padding: 20,
-      background: 'var(--bg-card)', height: '100%',
+      padding: '12px 16px',
       display: 'flex', flexDirection: 'column',
-      transition: 'background-color 0.3s, border-color 0.3s',
     }}>
       {/* Header */}
-      <Text strong style={{ fontSize: 16, display: 'block', marginBottom: 12, color: 'var(--text-primary)' }}>
+      <Text strong style={{ fontSize: 16, display: 'block', marginBottom: 12, color: 'var(--text-primary)', fontFamily: "Google Sans Code" }}>
         {t('magic.title')}
       </Text>
 

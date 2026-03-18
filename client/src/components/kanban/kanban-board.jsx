@@ -15,35 +15,6 @@ const COLUMN_COLORS = {
   done:        { header: 'var(--col-done-header)', body: 'var(--col-done-body)' },
 };
 
-/* Daily Progress Bar — neo-brutalism style */
-function ProgressBar({ columns, t }) {
-  const { total, done, percent } = useMemo(() => {
-    const total = STATUSES.reduce((sum, s) => sum + columns[s].length, 0);
-    const done = columns.done?.length || 0;
-    const percent = total > 0 ? Math.round((done / total) * 100) : 0;
-    return { total, done, percent };
-  }, [columns]);
-
-  return (
-    <div style={{
-      marginBottom: 12, border: '2px solid var(--border-color)', borderRadius: 2,
-      overflow: 'hidden', height: 28, background: 'var(--bg-secondary)',
-      boxShadow: '3px 3px 0px var(--shadow-color)', position: 'relative',
-    }}>
-      <div style={{
-        width: `${percent}%`, height: '100%',
-        background: 'var(--accent-color)', transition: 'width 0.4s ease',
-      }} />
-      <Text style={{
-        position: 'absolute', top: '50%', left: '50%',
-        transform: 'translate(-50%,-50%)', fontWeight: 900, fontSize: 12,
-        color: 'var(--text-primary)', whiteSpace: 'nowrap',
-      }}>
-        {t('kanban.progress')}: {done}/{total} ({percent}%)
-      </Text>
-    </div>
-  );
-}
 
 export default function KanbanBoard({ refreshKey, onRefresh }) {
   const { t } = useI18n();
@@ -52,7 +23,7 @@ export default function KanbanBoard({ refreshKey, onRefresh }) {
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <ProgressBar columns={columns} t={t} />
+
       <Row gutter={[12, 12]}>
         {STATUSES.map(status => (
           <Col xs={24} sm={12} md={8} key={status}>

@@ -30,7 +30,7 @@ export const archiveTasks = () => api.post('/tasks/archive').then(r => r.data);
 
 // KPI
 export const fetchKPI = (from, to) => api.get('/kpi/export', { params: { from, to } }).then(r => r.data);
-export const getKPICsvUrl = (from, to) => `/api/kpi/export-csv?from=${from}&to=${to}`;
+export const getKPICsvUrl = (from, to) => `/api/kpi/export-excel?from=${from}&to=${to}`;
 
 // Settings & Rules
 export const fetchSettings = () => api.get('/settings').then(r => r.data);

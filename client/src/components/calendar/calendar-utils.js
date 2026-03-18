@@ -51,17 +51,26 @@ export function getTaskBarStyle(task, todayStr) {
  * Returns array of rows, each row = array of positioned tasks.
  */
 export function packTasksIntoRows(positionedTasks) {
-  // Sort by startCol, then by span descending (wider bars first)
-  const sorted = [...positionedTasks].sort((a, b) =>
-    a.startCol - b.startCol || (b.endCol - b.startCol) - (a.endCol - a.startCol)
-  );
+  // Parents first, then feedback bars (so parents are placed before their children)
+  const sorted = [...positionedTasks].sort((a, b) => {
+    if (a._isFeedbackBar !== b._isFeedbackBar) return a._isFeedbackBar ? 1 : -1;
+    return a.startCol - b.startCol || (b.endCol - b.startCol) - (a.endCol - a.startCol);
+  });
 
   const rows = [];
   for (const task of sorted) {
+    // Feedback bar: find parent's row and force into it (adjacent, not overlapping)
+    if (task._parentId) {
+      const parentRowIdx = rows.findIndex(row => row.some(t => t.id === task._parentId));
+      if (parentRowIdx !== -1) {
+        rows[parentRowIdx].push(task);
+        continue;
+      }
+    }
+    // Normal packing: exclusive boundary allows adjacent tasks to share a row
     let placed = false;
     for (const row of rows) {
-      // Check if task overlaps with any existing task in this row
-      const overlaps = row.some(t => task.startCol <= t.endCol && task.endCol >= t.startCol);
+      const overlaps = row.some(t => task.startCol < t.endCol && task.endCol > t.startCol);
       if (!overlaps) {
         row.push(task);
         placed = true;

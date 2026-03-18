@@ -1,54 +1,83 @@
 import { Layout } from 'antd';
-import { useLocation } from 'react-router-dom';
 import AppHeader from './app-header.jsx';
-import QuickMagicInput from '../smart-input/quick-magic-input.jsx';
+import { useI18n } from '../../i18n/i18n-config';
 
 const { Content } = Layout;
 
-export default function AppLayout({ children, onTasksCreated }) {
-  const { pathname } = useLocation();
-  const showSidebar = pathname === '/';
+const SIDEBAR_STYLE = {
+  width: 68, minWidth: 48,
+  background: 'var(--sidebar-bg)',
+  borderRight: '3px solid var(--border-color)',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  overflow: 'hidden',
+};
+
+const SIDEBAR_TEXT = {
+  writingMode: 'vertical-rl',
+  transform: 'rotate(180deg)',
+  color: '#ffffff',
+  fontWeight: 800,
+  fontSize: 42,
+  letterSpacing: 4,
+  whiteSpace: 'nowrap',
+  userSelect: 'none',
+  fontFamily: 'Google Sans Code',
+};
+
+export default function AppLayout({ children }) {
+  const { lang } = useI18n();
+  const sidebarTitle = lang === 'vi' ? 'Nhật ký Hoạ Nô' : 'ArtistLog';
 
   return (
     <Layout style={{
-      minHeight: '100vh',
+      height: '100vh', overflow: 'hidden',
       backgroundColor: 'var(--bg-primary)',
       padding: '24px',
       transition: 'background-color 0.3s',
     }}>
+      {/* Outer wrapper: flex-row — sidebar left (full height), then header+content column */}
       <div style={{
+        display: 'flex', flexDirection: 'row',
         border: '3px solid var(--border-color)',
-        borderRadius: '8px',
-        backgroundColor: 'var(--bg-primary)',
-        backgroundImage: `linear-gradient(var(--grid-line-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px)`,
-        backgroundSize: '20px 20px',
-        padding: '20px',
-        minHeight: 'calc(100vh - 48px)',
-        display: 'flex',
-        flexDirection: 'column',
-        transition: 'background-color 0.3s, border-color 0.3s',
+        borderRadius: 4,
+        boxShadow: '4px 4px 0px var(--shadow-color)',
+        overflow: 'hidden',
+        height: '100%',
+        transition: 'border-color 0.3s',
       }}>
-        <AppHeader />
+        {/* Purple sidebar — full height, left */}
+        <div style={SIDEBAR_STYLE}>
+          <span style={SIDEBAR_TEXT}>{sidebarTitle}</span>
+        </div>
 
-        <div style={{
-          marginTop: '20px',
-          display: 'flex',
-          gap: '20px',
-          flex: 1,
-          position: 'relative',
-          zIndex: 2,
-        }}>
-          {showSidebar && (
-            <div style={{ flex: 1, minWidth: 240, maxWidth: 320 }}>
-              <div style={{ position: 'sticky', top: 20 }}>
-                <QuickMagicInput onTasksCreated={onTasksCreated} />
-              </div>
-            </div>
-          )}
+        {/* Right column: header on top, content below, footer at bottom */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <AppHeader />
 
-          <Content style={{ flex: 2, minWidth: 0 }}>
+          <Content className="app-content" style={{
+            flex: 1, display: 'flex', flexDirection: 'column',
+            padding: 16, gap: 16, overflowY: 'auto',
+            backgroundColor: 'var(--bg-primary)',
+            backgroundImage: `linear-gradient(var(--grid-line-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px)`,
+            backgroundSize: '20px 20px',
+          }}>
             {children}
           </Content>
+
+          {/* Fixed marquee footer */}
+          <style>{`
+            @keyframes marquee-horizontal { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+            .marquee-footer { height: 60px; overflow: hidden; border-top: 4px solid #000; background: var(--bg-header); display: flex; align-items: center; flex-shrink: 0; }
+            .marquee-track { display: flex; flex-direction: row; width: max-content; animation: marquee-horizontal 60s linear infinite; }
+            .marquee-item { height: 60px; display: flex; align-items: center; font-weight: 900; font-size: 18px; text-transform: uppercase; color: var(--text-primary); letter-spacing: 3px; white-space: nowrap; font-family: 'Google Sans Code', monospace; padding: 0 32px; }
+          `}</style>
+          <div className="marquee-footer">
+            <div className="marquee-track">
+              {Array.from({ length: 20 }, (_, i) => (
+                <span key={i} className="marquee-item">VẼ • VẼ NỮA • VẼ MÃI • ANHHN2 •</span>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </Layout>

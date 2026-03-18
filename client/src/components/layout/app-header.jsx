@@ -1,17 +1,35 @@
-import { Layout, Menu, Button, Space, Typography, Tooltip } from 'antd';
+import { useState } from 'react';
+import { Tooltip } from 'antd';
 import { SettingOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/i18n-config';
 import { useTheme } from '../../theme/theme-context';
+import SettingsModal from '../settings/settings-modal.jsx';
 
-const { Title } = Typography;
+const HEADER_HEIGHT = 48;
 
-/* Shared style for 3 square action buttons */
+const BTN_BASE = {
+  height: HEADER_HEIGHT,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  borderRight: '3px solid var(--border-color)',
+  flex: '0 0 auto',
+  cursor: 'pointer', userSelect: 'none',
+  color: 'var(--text-primary)',
+  transition: 'background-color 0.15s',
+  fontFamily: "'Google Sans Code', monospace",
+  boxSizing: 'border-box',
+};
+
+const NAV_BTN = {
+  ...BTN_BASE,
+  padding: '0 24px',
+  fontWeight: 700, fontSize: 16,
+  whiteSpace: 'nowrap',
+};
+
 const ACTION_BTN = {
-  width: 42, height: 42, minWidth: 42, padding: 0,
-  border: '2px solid var(--border-color)',
-  boxShadow: '3px 3px 0px var(--shadow-color)',
-  fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center',
+  ...BTN_BASE,
+  width: HEADER_HEIGHT, minWidth: HEADER_HEIGHT,
 };
 
 export default function AppHeader() {
@@ -19,64 +37,66 @@ export default function AppHeader() {
   const location = useLocation();
   const { t, lang, toggleLang } = useI18n();
   const { isDark, toggleTheme } = useTheme();
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const menuItems = [
+  const navItems = [
     { key: '/', label: t('nav.home') },
     { key: '/kpi', label: t('nav.kpi') },
   ];
 
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      flexWrap: 'wrap', padding: '12px 24px',
-      background: 'var(--bg-header)', border: '3px solid var(--border-color)',
-      borderRadius: '2px', boxShadow: '4px 4px 0px var(--shadow-color)',
-      minHeight: '70px', position: 'relative', zIndex: 100, gap: '12px',
-    }}>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Title level={3} style={{ margin: 0, fontWeight: '600', fontSize: '24px', whiteSpace: 'nowrap', color: 'var(--text-primary)' }}>
-          🎨 {t('app.title')}
-        </Title>
+    <>
+      <div style={{
+        display: 'flex', justifyContent: 'flex-start', gap: 0,
+        background: 'var(--bg-header)',
+        minHeight: HEADER_HEIGHT,
+        borderBottom: '3px solid var(--border-color)',
+      }}>
+        {/* Nav items — flex:1 on last nav item pushes actions right */}
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.key;
+          return (
+            <div
+              key={item.key}
+              onClick={() => navigate(item.key)}
+              style={{
+                ...NAV_BTN,
+                flex: '1 1 0',
+                justifyContent: 'center',
+                background: isActive ? 'var(--accent-color)' : 'transparent',
+                color: isActive ? '#ffffff' : 'var(--text-primary)',
+              }}
+              onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--bg-secondary)'; }}
+              onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
+            >
+              {item.label}
+            </div>
+          );
+        })}
+
+        {/* Action buttons */}
+        <Tooltip title={lang === 'vi' ? 'English' : 'Tiếng Việt'}>
+          <div onClick={toggleLang} style={ACTION_BTN}>
+            <span style={{ fontWeight: 800, fontSize: 14 }}>{lang.toUpperCase()}</span>
+          </div>
+        </Tooltip>
+
+        <Tooltip title={t('nav.settings')}>
+          <div onClick={() => setSettingsOpen(true)} style={ACTION_BTN}>
+            <SettingOutlined style={{ fontSize: 18 }} />
+          </div>
+        </Tooltip>
+
+        <Tooltip title={isDark ? t('nav.light_mode') : t('nav.dark_mode')}>
+          <div onClick={toggleTheme} style={{ ...ACTION_BTN, borderRight: 'none' }}>
+            {isDark
+              ? <SunOutlined style={{ fontSize: 18 }} />
+              : <MoonOutlined style={{ fontSize: 18 }} />}
+          </div>
+        </Tooltip>
       </div>
 
-      <style>{`
-        .ant-menu-item {
-          transition: transform 0.2s ease !important;
-          font-size: 20px !important; font-weight: 600 !important;
-        }
-        .ant-menu-item:hover { transform: translateY(-4px); color: var(--text-primary) !important; }
-        .ant-menu-item-selected { color: #a855f7 !important; background-color: transparent !important; }
-        .ant-menu-horizontal { border-bottom: none !important; line-height: 46px !important; }
-        .ant-menu-item::after, .ant-menu-item-selected::after { display: none !important; }
-        @media (max-width: 768px) {
-          .ant-menu { flex: 1 1 100%; order: 3; justify-content: center; }
-          .header-actions { order: 2; }
-        }
-      `}</style>
-
-      <Menu
-        mode="horizontal"
-        selectedKeys={[location.pathname]}
-        items={menuItems}
-        onClick={({ key }) => navigate(key)}
-        style={{ flex: 1, border: 'none', backgroundColor: 'transparent', minWidth: '200px' }}
-      />
-
-      {/* Global Actions: 3 square buttons */}
-      <Space size={8} className="header-actions">
-        <Tooltip title={lang === 'vi' ? 'English' : 'Tiếng Việt'}>
-          <Button onClick={toggleLang} style={ACTION_BTN}>
-            {lang.toUpperCase()}
-          </Button>
-        </Tooltip>
-        <Tooltip title={t('nav.settings')}>
-          <Button onClick={() => navigate('/settings')} style={ACTION_BTN} icon={<SettingOutlined style={{ fontSize: 20 }} />} />
-        </Tooltip>
-        <Tooltip title={isDark ? t('nav.light_mode') : t('nav.dark_mode')}>
-          <Button onClick={toggleTheme} style={ACTION_BTN}
-            icon={isDark ? <SunOutlined style={{ fontSize: 20 }} /> : <MoonOutlined style={{ fontSize: 20 }} />} />
-        </Tooltip>
-      </Space>
-    </div>
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+    </>
   );
 }

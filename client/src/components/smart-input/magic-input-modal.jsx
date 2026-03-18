@@ -14,7 +14,7 @@ export default function MagicInputModal({ open, onClose, onTasksCreated }) {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: '#a855f7', // Màu vàng đặc trưng
+    backgroundColor: '#FDE047', // Màu vàng đặc trưng
     padding: '8px 16px',
     border: '3px solid #000',
     borderRadius: '8px',
@@ -48,7 +48,7 @@ export default function MagicInputModal({ open, onClose, onTasksCreated }) {
         onChange={e => { setRawText(e.target.value); setParsed(false); }}
         placeholder={t('magic.placeholder')}
         style={{ 
-          fontFamily: 'monospace', 
+          fontFamily: "'Google Sans Code', monospace", 
           marginBottom: 16,
           border: '3px solid #000',
           borderRadius: '8px',

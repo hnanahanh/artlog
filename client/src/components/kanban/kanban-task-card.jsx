@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Card, Typography, Flex, Button, Popconfirm, Input, Select, DatePicker, Space, Tag } from 'antd';
+import { Card, Typography, Flex, Button, Popconfirm, Input, Select, Space, Tag } from 'antd';
+import NeoRangePicker from '../shared/neo-range-picker.jsx';
 import { Draggable } from '@hello-pangea/dnd';
 import {
   ClockCircleOutlined, EditOutlined, DeleteOutlined,
@@ -76,7 +77,7 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
                       const m = e.target.value.match(/^(\d+(?:\.\d+)?)\s*(d|h)?$/i);
                       if (m) setForm(f => ({ ...f, estTime: parseFloat(m[1]), ...(m[2] ? { estUnit: m[2].toLowerCase() } : {}) }));
                     }} />
-                  <DatePicker.RangePicker size="small" style={{ width: 200 }}
+                  <NeoRangePicker style={{ width: 200 }}
                     value={[dayjs(form.startDate), dayjs(form.dueDate)]}
                     onChange={dates => {
                       if (dates?.[0] && dates?.[1]) {
@@ -93,7 +94,7 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
                           onChange={e => setFbEdits(prev => ({
                             ...prev, [fb.id]: { ...prev[fb.id], content: e.target.value },
                           }))} />
-                        <DatePicker.RangePicker size="small" style={{ width: 200 }}
+                        <NeoRangePicker style={{ width: 200 }}
                           value={[dayjs(fbEdits[fb.id]?.startDate ?? fb.startDate ?? task.dueDate), dayjs(fbEdits[fb.id]?.endDate ?? fb.endDate ?? fb.createdAt)]}
                           onChange={dates => dates?.[0] && dates?.[1] && setFbEdits(prev => ({
                             ...prev, [fb.id]: { ...prev[fb.id], startDate: dates[0].format('YYYY-MM-DD'), endDate: dates[1].format('YYYY-MM-DD') },
@@ -142,6 +143,11 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
                   <Text type={overdue ? 'danger' : 'secondary'} style={{ fontSize: 11, fontWeight: 600 }}>
                     <ClockCircleOutlined /> {task.dueDate?.slice(5)}
                   </Text>
+                  {latestFb && (
+                    <Text style={{ color: '#722ed1', fontSize: 11, fontWeight: 600 }}>
+                      {latestFb.startDate?.slice(5)} → {(latestFb.endDate ?? latestFb.createdAt)?.slice(5, 10)}
+                    </Text>
+                  )}
                   {task.project && (
                     <Tag style={{ fontSize: 10, lineHeight: '16px', padding: '0 4px', margin: 0, border: '1px solid var(--border-color)' }}>
                       {task.project}

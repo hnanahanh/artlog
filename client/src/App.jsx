@@ -6,7 +6,6 @@ import { ThemeProvider } from './theme/theme-context.jsx';
 import AppLayout from './components/layout/app-layout.jsx';
 import DashboardPage from './pages/dashboard-page.jsx';
 import KpiPage from './pages/kpi-page.jsx';
-import SettingsPage from './pages/settings-page.jsx';
 
 export default function App() {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -59,11 +58,10 @@ export default function App() {
         <ThemeProvider>
         <I18nProvider defaultLang="vi">
           <BrowserRouter>
-            <AppLayout onTasksCreated={handleTasksCreated}>
+            <AppLayout>
               <Routes>
-                <Route path="/" element={<DashboardPage refreshKey={refreshKey} />} />
+                <Route path="/" element={<DashboardPage refreshKey={refreshKey} onTasksCreated={handleTasksCreated} />} />
                 <Route path="/kpi" element={<KpiPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </AppLayout>
           </BrowserRouter>

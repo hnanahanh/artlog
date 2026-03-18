@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Typography, Flex, Tabs, Button, message } from 'antd';
+import { Typography, Flex, Button, message } from 'antd';
+import NeoTabs from '../components/shared/neo-tabs.jsx';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { fetchTodayTasks, fetchTasks, updateTask, deleteTask, deleteFeedback, updateFeedback, fetchCalendarTasks } from '../api/task-api-client.js';
@@ -8,12 +9,14 @@ import { useI18n } from '../i18n/i18n-config.jsx';
 import KanbanBoard from '../components/kanban/kanban-board.jsx';
 import TaskTableView from '../components/table/task-table-view.jsx';
 import CalendarMonthGrid from '../components/calendar/calendar-month-grid.jsx';
+import QuickMagicInput from '../components/smart-input/quick-magic-input.jsx';
+import AppHeader from '../components/layout/app-header.jsx';
 
 const { Text, Title } = Typography;
 
-// Neo-brutalism tab CSS — using CSS variables for dark mode
+/* Neo-brutalism tab CSS — no outer border/shadow (container handles it) */
 const NEO_TABS_CSS = `
-.neo-tabs { border: 3px solid var(--border-color); border-radius: 2px; overflow: hidden; box-shadow: 4px 4px 0px var(--shadow-color); background: var(--bg-card); transition: background-color 0.3s, border-color 0.3s; }
+
 .neo-tabs .ant-tabs-nav { margin-bottom: 0 !important; background: var(--bg-header); padding: 0 !important; border-bottom: 2px solid var(--border-color); }
 .neo-tabs .ant-tabs-nav::before { border: none !important; }
 .neo-tabs .ant-tabs-ink-bar { display: none !important; }
@@ -22,6 +25,7 @@ const NEO_TABS_CSS = `
   border-right: 2px solid var(--border-color) !important;
   border-radius: 0 !important;
   font-weight: 700 !important;
+  font-family: 'Google Sans Code', monospace !important;
   padding: 8px 20px !important;
   margin: 0 !important;
   background: transparent !important;
@@ -38,6 +42,10 @@ const NEO_TABS_CSS = `
 .reminder-content::-webkit-scrollbar { width: 8px; }
 .reminder-content::-webkit-scrollbar-track { background: var(--bg-secondary); border-left: 2px solid var(--border-color); }
 .reminder-content::-webkit-scrollbar-thumb { background: var(--border-color); border: 2px solid var(--border-color); border-radius: 0; }
+@media (max-width: 768px) {
+  .dashboard-row { flex-direction: column !important; }
+  .dashboard-row > * { flex: none !important; width: 100% !important; max-width: 100% !important; min-width: 0 !important; }
+}
 `;
 
 // --- Reminder Row ---
@@ -46,8 +54,8 @@ function ReminderRow({ task, type }) {
   const gameProject = [task.game, task.project].filter(Boolean).join(' / ');
 
   const rowStyle = isOverdue
-    ? { padding: '8px 12px', borderBottom: '2px solid var(--bg-header)', background: 'var(--danger-bg)', margin: '0 -12px' }
-    : { padding: '8px 0', borderBottom: '2px solid var(--bg-header)' };
+    ? { padding: '8px 12px', borderBottom: '2px solid var(--border-color)', background: 'var(--danger-bg)', margin: '0 -12px' }
+    : { padding: '8px 0', borderBottom: '2px solid var(--border-color)' };
 
   return (
     <Flex align="center" gap={8} style={rowStyle}>
@@ -70,10 +78,15 @@ function ReminderRow({ task, type }) {
         </Text>
       )}
       <Text style={{
-        fontSize: 15, whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 700, width: 110, textAlign: 'right',
+        fontSize: 15, whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 700, textAlign: 'right',
         color: isOverdue ? 'var(--danger-text)' : 'var(--text-primary)',
       }}>
         {task.startDate?.slice(5)} → {task.dueDate?.slice(5)}
+        {task.feedbacks?.length > 0 && (() => {
+          const fb = task.feedbacks.at(-1);
+          const fbEnd = fb.endDate ?? fb.createdAt;
+          return <span style={{ color: '#722ed1' }}> → {fb.startDate?.slice(5)} → {fbEnd?.slice(5, 10)}</span>;
+        })()}
       </Text>
     </Flex>
   );
@@ -136,7 +149,7 @@ function CalendarTab({ refreshKey }) {
 }
 
 // --- Main Dashboard ---
-export default function DashboardPage({ refreshKey }) {
+export default function DashboardPage({ refreshKey, onTasksCreated }) {
   const { t } = useI18n();
   const [data, setData] = useState({ today: [], overdue: [], upcoming: [] });
   const [localRefresh, setLocalRefresh] = useState(0);
@@ -151,57 +164,89 @@ export default function DashboardPage({ refreshKey }) {
   const hasUpcoming = upcomingList.length > 0;
 
   const tabItems = [
-    { key: 'kanban', label: 'Kanban', children: <KanbanBoard refreshKey={refreshKey} onRefresh={handleRefresh} /> },
-    { key: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} /> },
-    { key: 'table', label: t('nav.table') || 'Bảng', children: <TableTab refreshKey={refreshKey} /> },
+    { value: 'kanban', label: 'Kanban', children: <KanbanBoard refreshKey={refreshKey} onRefresh={handleRefresh} /> },
+    { value: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} /> },
+    { value: 'table', label: t('nav.table') || 'Bảng', children: <TableTab refreshKey={refreshKey} /> },
   ];
 
+  const NEO_BOX = {
+    border: '3px solid var(--border-color)', borderRadius: 2,
+    boxShadow: '4px 4px 0px var(--shadow-color)', background: 'var(--bg-card)',
+    overflow: 'hidden', transition: 'background-color 0.3s, border-color 0.3s, box-shadow 0.15s, transform 0.15s',
+  };
+
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       <style>{NEO_TABS_CSS}</style>
 
-      {/* Reminder Panel */}
-      <div style={{
-        border: '3px solid var(--border-color)', borderRadius: 2, overflow: 'hidden',
-        marginBottom: 16, boxShadow: '4px 4px 0px var(--shadow-color)',
-        transition: 'border-color 0.3s',
-      }}>
-        <div style={{
-          background: 'var(--bg-header)', padding: '8px 12px',
-          fontWeight: 900, fontSize: 14, borderBottom: '2px solid var(--border-color)',
-          color: 'var(--text-primary)',
-        }}>
-          {t('reminder.title')}
+      <div className="dashboard-row" style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+        {/* Container 1: Magic Input */}
+        <div className="neo-box" style={{ ...NEO_BOX, flex: '0 0 300px', maxWidth: 320, minWidth: 240 }}>
+          <div style={{ position: 'sticky', top: 0, display: 'flex', flexDirection: 'column' }}>
+            <QuickMagicInput onTasksCreated={onTasksCreated} />
+            {/* Pixel paint bucket decoration */}
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
+              <svg width="140" height="140" viewBox="0 0 24 24" shapeRendering="crispEdges">
+                <rect x="4" y="8" width="10" height="10" fill="var(--border-color)" />
+                <rect x="5" y="9" width="8" height="8" fill="#a1a1a1" />
+                <rect x="5" y="9" width="3" height="8" fill="#bdbdbd" />
+                <rect x="3" y="7" width="12" height="2" fill="var(--border-color)" />
+                <rect x="4" y="8" width="10" height="1" fill="#757575" />
+                <rect x="4" y="4" width="1" height="4" fill="var(--border-color)" />
+                <rect x="13" y="4" width="1" height="4" fill="var(--border-color)" />
+                <rect x="5" y="3" width="8" height="1" fill="var(--border-color)" />
+                <rect x="10" y="9" width="4" height="2" fill="#ff5e5e" />
+                <rect x="14" y="9" width="2" height="3" fill="#ff5e5e" />
+                <rect x="14" y="12" width="2" height="2" fill="#ffbb00" />
+                <rect x="15" y="14" width="2" height="2" fill="#44ff44" />
+                <rect x="16" y="16" width="2" height="2" fill="#4488ff" />
+                <rect x="17" y="18" width="2" height="2" fill="#9d44ff" />
+                <rect x="6" y="10" width="1" height="2" fill="#eeeeee" />
+                <rect x="10" y="13" width="1" height="3" fill="rgba(0,0,0,0.1)" />
+                <rect x="5" y="18" width="8" height="1" fill="rgba(0,0,0,0.2)" />
+              </svg>
+            </div>
+          </div>
         </div>
-        <div className="reminder-content" style={{ background: 'var(--bg-secondary)', padding: '8px 12px', maxHeight: 200, overflowY: 'auto' }}>
-          {!hasUrgent && <Text type="secondary" style={{ fontSize: 12 }}>—</Text>}
-          {urgentList.map(task => (
-            <ReminderRow key={task.id} task={task} type={task._type} />
-          ))}
-          {hasUpcoming && (
-            <>
-              <div style={{
-                background: 'var(--bg-header)', padding: '6px 10px',
-                fontWeight: 900, fontSize: 13, color: 'var(--text-primary)',
-                margin: '8px -12px', borderTop: '2px solid var(--border-color)', borderBottom: '2px solid var(--border-color)',
-              }}>
-                {t('reminder.upcoming')}
-              </div>
-              {upcomingList.map(task => (
-                <ReminderRow key={task.id} task={task} type="upcoming" />
+
+        {/* Right column: Reminder + Tabs */}
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Container 2: Reminder */}
+          <div className="neo-box" style={NEO_BOX}>
+            <div style={{
+              padding: '8px 12px',
+              fontWeight: 900, fontSize: 21, borderBottom: '2px solid var(--border-color)',
+              color: 'var(--text-primary)', fontFamily: "'Google Sans Code', monospace",
+            }}>
+              {t('reminder.title')}
+            </div>
+            <div className="reminder-content" style={{ background: 'var(--bg-secondary)', padding: '8px 12px', maxHeight: 200, overflowY: 'auto' }}>
+              {!hasUrgent && <Text type="secondary" style={{ fontSize: 12 }}>—</Text>}
+              {urgentList.map(task => (
+                <ReminderRow key={task.id} task={task} type={task._type} />
               ))}
-            </>
-          )}
+              {hasUpcoming && (
+                <>
+                  <div style={{
+                    background: 'var(--bg-header)', padding: '6px 10px',
+                    fontWeight: 900, fontSize: 13, color: 'var(--text-primary)',
+                    margin: '8px -12px', borderTop: '2px solid var(--border-color)', borderBottom: '2px solid var(--border-color)',
+                  }}>
+                    {t('reminder.upcoming')}
+                  </div>
+                  {upcomingList.map(task => (
+                    <ReminderRow key={task.id} task={task} type="upcoming" />
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Container 3: Tabs — NeoTabs has its own Card container */}
+          <NeoTabs defaultValue="kanban" items={tabItems} />
         </div>
       </div>
 
-      {/* Task Views Tabs */}
-      <Tabs
-        className="neo-tabs"
-        defaultActiveKey="kanban"
-        items={tabItems}
-        destroyInactiveTabPane={false}
-      />
     </div>
   );
 }

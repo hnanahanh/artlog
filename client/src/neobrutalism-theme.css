@@ -14,6 +14,7 @@
   --danger-bg: #ffccc7;
   --danger-text: #cf1322;
   --grid-line-color: rgba(0, 0, 0, 0.05);
+  --sidebar-bg: #7c3aed;
   --feedback-color: #722ed1;
   --highlight-duration: #52c41a;
   --col-todo-header: #fff566;
@@ -39,6 +40,7 @@
   --danger-bg: #5a2020;
   --danger-text: #ff8a8a;
   --grid-line-color: rgba(255, 255, 255, 0.05);
+  --sidebar-bg: #5b21b6;
   --feedback-color: #b07aff;
   --highlight-duration: #73d13d;
   --col-todo-header: #8a8a20;
@@ -56,6 +58,19 @@
   border: 2px solid var(--border-color) !important;
   box-shadow: 4px 4px 0px var(--shadow-color) !important;
   transition: box-shadow 0.15s, transform 0.15s;
+}
+.ant-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--shadow-color) !important;
+}
+
+/* Neo-box: reusable hover effect for shadow boxes */
+.neo-box {
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.neo-box:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--shadow-color) !important;
 }
 
 /* Buttons: bold border */
@@ -127,6 +142,48 @@
 [data-theme="dark"] .ant-tabs-tab-btn {
   color: var(--text-primary) !important;
 }
+
+/* DatePicker panel — neo-brutalism popup */
+.ant-picker-panel-container {
+  border: 3px solid var(--border-color) !important;
+  border-radius: 2px !important;
+  box-shadow: 6px 6px 0px var(--shadow-color) !important;
+  background: var(--bg-card) !important;
+}
+.ant-picker-panel {
+  border: none !important;
+  background: transparent !important;
+}
+.ant-picker-header {
+  border-bottom: 2px solid var(--border-color) !important;
+  font-weight: 900 !important;
+  background: var(--bg-header) !important;
+}
+.ant-picker-header button { font-weight: 700 !important; color: var(--text-primary) !important; }
+.ant-picker-content th { font-weight: 900 !important; color: var(--text-secondary) !important; border-bottom: 2px solid var(--border-color) !important; }
+.ant-picker-cell-inner {
+  border-radius: 2px !important;
+  font-weight: 600 !important;
+}
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
+  background: var(--accent-color) !important;
+  color: #fff !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 2px !important;
+}
+.ant-picker-cell:hover .ant-picker-cell-inner { background: var(--bg-secondary) !important; border: 2px solid var(--border-color) !important; }
+.ant-picker-cell-in-view.ant-picker-cell-in-range .ant-picker-cell-inner { background: rgba(var(--accent-rgb, 255,107,53), 0.15) !important; }
+.ant-picker-footer { border-top: 2px solid var(--border-color) !important; background: var(--bg-header) !important; }
+[data-theme="dark"] .ant-picker-panel-container { background: var(--bg-card) !important; }
+[data-theme="dark"] .ant-picker-header { background: var(--bg-header) !important; color: var(--text-primary) !important; }
+[data-theme="dark"] .ant-picker-content td, [data-theme="dark"] .ant-picker-content th { color: var(--text-primary) !important; }
+
+/* App content scrollbar — matches reminder-content style */
+.app-content::-webkit-scrollbar { width: 8px; }
+.app-content::-webkit-scrollbar-track { background: var(--bg-secondary); border-left: 2px solid var(--border-color); }
+.app-content::-webkit-scrollbar-thumb { background: var(--border-color); border: 2px solid var(--border-color); border-radius: 0; }
 
 /* Background */
 body {

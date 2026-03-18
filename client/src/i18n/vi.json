@@ -36,12 +36,15 @@
   "kpi.from": "Từ",
   "kpi.to": "Đến",
   "kpi.export": "Xuất",
-  "kpi.download_csv": "Tải CSV",
+  "kpi.download_csv": "Tải Excel",
   "kpi.total": "Tổng task",
   "kpi.completed": "Hoàn thành",
   "kpi.rate": "Tỷ lệ hoàn thành",
   "kpi.est_days": "Ngày ước tính",
   "kpi.by_game": "Theo Game",
+  "kpi.by_project": "Theo Dự án",
+  "kpi.overdue": "Quá hạn",
+  "kpi.overdue_rate": "Tỷ lệ quá hạn",
   "kpi.completed_tasks": "Task hoàn thành",
   "common.save": "Lưu",
   "common.cancel": "Hủy",
@@ -54,5 +57,6 @@
   "nav.dark_mode": "Chế độ tối",
   "nav.light_mode": "Chế độ sáng",
   "magic.hint_shortcut": "Nhấn Ctrl+Enter để phân tích",
-  "kanban.progress": "Tiến độ"
+  "kanban.progress": "Tiến độ",
+  "kpi.game_weight": "KPI %"
 }

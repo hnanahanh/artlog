@@ -36,12 +36,15 @@
   "kpi.from": "From",
   "kpi.to": "To",
   "kpi.export": "Export",
-  "kpi.download_csv": "Download CSV",
+  "kpi.download_csv": "Download Excel",
   "kpi.total": "Total Tasks",
   "kpi.completed": "Completed",
   "kpi.rate": "Completion Rate",
   "kpi.est_days": "Est. Days",
   "kpi.by_game": "By Game",
+  "kpi.by_project": "By Project",
+  "kpi.overdue": "Overdue",
+  "kpi.overdue_rate": "Overdue Rate",
   "kpi.completed_tasks": "Completed Tasks",
   "common.save": "Save",
   "common.cancel": "Cancel",
@@ -54,5 +57,6 @@
   "nav.dark_mode": "Dark Mode",
   "nav.light_mode": "Light Mode",
   "magic.hint_shortcut": "Press Ctrl+Enter to Analyze",
-  "kanban.progress": "Progress"
+  "kanban.progress": "Progress",
+  "kpi.game_weight": "KPI %"
 }

@@ -54,6 +54,7 @@ export default function CalendarMonthGrid({ year, month, tasks }) {
                 dueDate: barStart < barEnd ? barEnd : barStart,
                 status: task.status,
                 _isFeedbackBar: true,
+                _parentId: task.id,  // force same row as parent
               };
               const fbPos = getTaskWeekPosition(fbTask, weekStart, weekEnd);
               if (fbPos) positioned.push({ ...fbTask, ...fbPos });

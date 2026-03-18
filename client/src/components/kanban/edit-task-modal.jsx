@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Modal, Input, Select, DatePicker, Button, Flex, Space, Popconfirm, Typography, Divider } from 'antd';
+import NeoRangePicker from '../shared/neo-range-picker.jsx';
 import { DeleteOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { STATUSES } from '../../utils/status-constants.js';
@@ -81,7 +82,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
         {/* Date range */}
         <div>
           <Text type="secondary" style={{ fontSize: 11 }}>Dates</Text>
-          <DatePicker.RangePicker size="small" style={{ width: '100%' }}
+          <NeoRangePicker style={{ width: '100%' }}
             value={form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null}
             onChange={dates => {
               if (dates?.[0] && dates?.[1]) {
