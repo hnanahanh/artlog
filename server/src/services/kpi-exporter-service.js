@@ -165,21 +165,58 @@ export function kpiToExcel(kpiData) {
   setRange(ws1, { r: 0, c: 0 }, { r: r - 1, c: 1 });
   XLSX.utils.book_append_sheet(wb, ws1, 'Summary');
 
-  // ── Sheet 2: Completed Tasks ───────────────────────────────────────
+    // ── Sheet 2: Completed Tasks — mirrors KPI dashboard table ────────
   const ws2 = {
-    '!cols': [{ wch: 36 }, { wch: 18 }, { wch: 20 }, { wch: 10 }, { wch: 10 }],
+    '!cols': [{ wch: 18 }, { wch: 8 }, { wch: 20 }, { wch: 40 }, { wch: 8 }],
   };
-  const headers2 = ['Tên Task', 'Game', 'Project', 'Est.', 'Đơn vị'];
-  headers2.forEach((h, c) => setCell(ws2, c, 0, h, cellStyle(true, HEADER_FILL, 'center')));
-  (summary.completedDetails || []).forEach((t, i) => {
-    const row = i + 1;
-    setCell(ws2, 0, row, t.name, cellStyle(false));
-    setCell(ws2, 1, row, t.game, cellStyle(false));
-    setCell(ws2, 2, row, t.project, cellStyle(false));
-    setCell(ws2, 3, row, t.estTime, cellStyle(false, null, 'center'));
-    setCell(ws2, 4, row, t.estUnit, cellStyle(false, null, 'center'));
+
+  // Sort by game to group rows
+  const sortedDetails = [...(summary.completedDetails || [])].sort((a, b) =>
+    (a.game || '').localeCompare(b.game || ''),
+  );
+
+  // Largest remainder KPI% per game (same logic as dashboard)
+  const games2 = [...new Set(sortedDetails.map(r => r.game).filter(Boolean))];
+  const exact2 = 100 / (games2.length || 1);
+  const floors2 = games2.map(() => Math.floor(exact2));
+  const leftover2 = 100 - floors2.reduce((s, v) => s + v, 0);
+  games2.map((_, i) => ({ i, r: exact2 - floors2[i] }))
+    .sort((a, b) => b.r - a.r).slice(0, leftover2).forEach(({ i }) => floors2[i]++);
+  const kpiMap2 = Object.fromEntries(games2.map((g, i) => [g, floors2[i]]));
+
+  // Compute row spans for game column
+  const gameSpans = sortedDetails.map((row, i) => {
+    if (i > 0 && row.game === sortedDetails[i - 1].game) return 0;
+    let span = 1;
+    while (i + span < sortedDetails.length && sortedDetails[i + span].game === row.game) span++;
+    return span;
   });
-  setRange(ws2, { r: 0, c: 0 }, { r: (summary.completedDetails?.length || 0), c: 4 });
+
+  // Columns: Game | KPI% | Project | Tên Task | Est.
+  const GAME_FILL = { fgColor: { rgb: 'F3E6FF' }, patternType: 'solid' };
+  const headers2 = ['Game', 'KPI %', 'Project', 'Tên Task', 'Est.'];
+  headers2.forEach((h, c) => setCell(ws2, c, 0, h, cellStyle(true, HEADER_FILL, 'center')));
+
+  const merges2 = [];
+  sortedDetails.forEach((t, i) => {
+    const row = i + 1;
+    const span = gameSpans[i];
+    if (span > 0) {
+      setCell(ws2, 0, row, t.game || '', cellStyle(true, GAME_FILL, 'center'));
+      setCell(ws2, 1, row, `${kpiMap2[t.game] ?? 0}%`, cellStyle(true, GAME_FILL, 'center'));
+      if (span > 1) {
+        merges2.push({ s: { r: row, c: 0 }, e: { r: row + span - 1, c: 0 } });
+        merges2.push({ s: { r: row, c: 1 }, e: { r: row + span - 1, c: 1 } });
+      }
+    }
+    setCell(ws2, 2, row, t.project || '', cellStyle(false));
+    setCell(ws2, 3, row, t.name, cellStyle(false));
+    const estStr = t.estTime ? (t.estUnit === 'h' ? `${t.estTime}h` : `${t.estTime}d`) : '—';
+    setCell(ws2, 4, row, estStr, cellStyle(false, null, 'center'));
+  });
+
+  ws2['!merges'] = merges2;
+  setRange(ws2, { r: 0, c: 0 }, { r: sortedDetails.length, c: 4 });
   XLSX.utils.book_append_sheet(wb, ws2, 'Completed Tasks');
 
   // ── Sheet 3: Objectives (KPI template) ────────────────────────────
