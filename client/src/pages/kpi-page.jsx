@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Typography, Empty, Flex } from 'antd';
 import NeoRangePicker from '../components/shared/neo-range-picker.jsx';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import YearCombobox from '../components/shared/year-combobox.jsx';
 import { BarChartOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { fetchKPI } from '../api/task-api-client.js';
@@ -43,16 +43,7 @@ export default function KpiPage() {
           <Title level={4} style={{ margin: 0, color: 'var(--text-primary)', fontFamily: "'Google Sans Code', monospace" }}>
             <BarChartOutlined /> {t('kpi.title')}
           </Title>
-          <Select value={year.year().toString()} onValueChange={val => handleYearChange(dayjs().year(parseInt(val)))}>
-            <SelectTrigger className="w-[100px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {Array.from({ length: 6 }, (_, i) => dayjs().year() - 3 + i).map(y => (
-                <SelectItem key={y} value={y.toString()}>{y}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <YearCombobox value={year.year()} onChange={val => handleYearChange(dayjs().year(val))} />
           <NeoRangePicker value={range} onChange={setRange} />
         </Flex>
 
