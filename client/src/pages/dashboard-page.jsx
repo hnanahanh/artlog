@@ -127,20 +127,11 @@ function CalendarTab({ refreshKey }) {
   const year = current.year();
   const month = current.month() + 1;
 
-  const loadTasks = useCallback(() => {
+  useEffect(() => {
     const from = current.startOf('month').startOf('week').format('YYYY-MM-DD');
     const to = current.endOf('month').endOf('week').format('YYYY-MM-DD');
     fetchCalendarTasks(from, to).then(r => setTasks(r.tasks || r)).catch(console.error);
-  }, [current]);
-
-  useEffect(() => { loadTasks(); }, [year, month, refreshKey, loadTasks]);
-
-  const handleEdit = async (id, formData) => {
-    try { await updateTask(id, formData); loadTasks(); } catch { message.error('Update failed'); }
-  };
-  const handleDelete = async (id) => {
-    try { await deleteTask(id); loadTasks(); } catch { message.error('Delete failed'); }
-  };
+  }, [year, month, refreshKey]);
 
   return (
     <div>
@@ -152,7 +143,7 @@ function CalendarTab({ refreshKey }) {
         <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
         <Button size="small" onClick={() => setCurrent(dayjs())}>{t('calendar.today') || 'Hôm nay'}</Button>
       </Flex>
-      <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} />
+      <CalendarMonthGrid year={year} month={month} tasks={tasks} />
     </div>
   );
 }
@@ -172,35 +163,10 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
   const hasUrgent = urgentList.length > 0;
   const hasUpcoming = upcomingList.length > 0;
 
-  // Reminder tab content
-  const ReminderTab = () => (
-    <div className="reminder-content" style={{ background: 'var(--bg-secondary)', padding: '8px 12px', maxHeight: 360, overflowY: 'auto' }}>
-      {!hasUrgent && <Text type="secondary" style={{ fontSize: 12 }}>—</Text>}
-      {urgentList.map(task => (
-        <ReminderRow key={task.id} task={task} type={task._type} />
-      ))}
-      {hasUpcoming && (
-        <>
-          <div style={{
-            background: 'var(--bg-header)', padding: '6px 10px',
-            fontWeight: 900, fontSize: 13, color: 'var(--text-primary)',
-            margin: '8px -12px', borderTop: '2px solid var(--border-color)', borderBottom: '2px solid var(--border-color)',
-          }}>
-            {t('reminder.upcoming')}
-          </div>
-          {upcomingList.map(task => (
-            <ReminderRow key={task.id} task={task} type="upcoming" />
-          ))}
-        </>
-      )}
-    </div>
-  );
-
   const tabItems = [
     { value: 'kanban', label: 'Kanban', children: <KanbanBoard refreshKey={refreshKey} onRefresh={handleRefresh} /> },
     { value: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} /> },
     { value: 'table', label: t('nav.table') || 'Bảng', children: <TableTab refreshKey={refreshKey} /> },
-    { value: 'reminder', label: t('reminder.title') || 'Nhắc nhở', children: <ReminderTab /> },
   ];
 
   const NEO_BOX = {
@@ -214,10 +180,11 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
       <style>{NEO_TABS_CSS}</style>
 
       <div className="dashboard-row" style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-        {/* Left column: Magic Input + decoration */}
+        {/* Container 1: Magic Input */}
         <div className="neo-box" style={{ ...NEO_BOX, flex: '0 0 300px', maxWidth: 320, minWidth: 240 }}>
           <div style={{ position: 'sticky', top: 0, display: 'flex', flexDirection: 'column' }}>
             <QuickMagicInput onTasksCreated={onTasksCreated} />
+            {/* Pixel paint bucket decoration */}
             <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
               <svg width="140" height="140" viewBox="0 0 24 24" shapeRendering="crispEdges">
                 <rect x="4" y="8" width="10" height="10" fill="var(--border-color)" />
@@ -242,8 +209,40 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
           </div>
         </div>
 
-        {/* Right column: Tabs (Kanban / Lịch / Bảng / Nhắc nhở) */}
-        <div style={{ flex: 1, minWidth: 0 }}>
+        {/* Right column: Reminder + Tabs */}
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Container 2: Reminder */}
+          <div className="neo-box" style={NEO_BOX}>
+            <div style={{
+              padding: '8px 12px',
+              fontWeight: 900, fontSize: 21, borderBottom: '2px solid var(--border-color)',
+              color: 'var(--text-primary)', fontFamily: "'Google Sans Code', monospace",
+            }}>
+              {t('reminder.title')}
+            </div>
+            <div className="reminder-content" style={{ background: 'var(--bg-secondary)', padding: '8px 12px', maxHeight: 200, overflowY: 'auto' }}>
+              {!hasUrgent && <Text type="secondary" style={{ fontSize: 12 }}>—</Text>}
+              {urgentList.map(task => (
+                <ReminderRow key={task.id} task={task} type={task._type} />
+              ))}
+              {hasUpcoming && (
+                <>
+                  <div style={{
+                    background: 'var(--bg-header)', padding: '6px 10px',
+                    fontWeight: 900, fontSize: 13, color: 'var(--text-primary)',
+                    margin: '8px -12px', borderTop: '2px solid var(--border-color)', borderBottom: '2px solid var(--border-color)',
+                  }}>
+                    {t('reminder.upcoming')}
+                  </div>
+                  {upcomingList.map(task => (
+                    <ReminderRow key={task.id} task={task} type="upcoming" />
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Container 3: Tabs — NeoTabs has its own Card container */}
           <NeoTabs defaultValue="kanban" items={tabItems} />
         </div>
       </div>

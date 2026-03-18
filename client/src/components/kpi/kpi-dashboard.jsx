@@ -11,7 +11,11 @@ const CHART_COLORS = ['#c47dff', '#faad14', '#1677ff', '#52c41a', '#ff4d4f', '#1
 /* Stat card styled like kanban column header */
 function StatCard({ label, value, headerBg, bodyBg }) {
   return (
-    <div style={{ overflow: 'hidden' }}>
+    <div className="neo-box" style={{
+      border: '3px solid var(--border-color)', borderRadius: 2, overflow: 'hidden',
+      boxShadow: '4px 4px 0px var(--shadow-color)',
+      transition: 'box-shadow 0.15s, transform 0.15s',
+    }}>
       <div style={{
         background: headerBg, padding: '6px 12px',
         fontWeight: 900, fontSize: 12, color: 'var(--text-primary)',
@@ -64,7 +68,11 @@ function DonutChart({ data, title, size = 160 }) {
   });
 
   return (
-    <div style={{ background: 'var(--bg-card)', padding: 12, overflow: 'hidden' }}>
+    <div className="neo-box" style={{
+      border: '3px solid var(--border-color)', borderRadius: 2,
+      boxShadow: '4px 4px 0px var(--shadow-color)', background: 'var(--bg-card)',
+      padding: 12, overflow: 'hidden',
+    }}>
       <Text strong style={{
         fontSize: 13, color: 'var(--text-primary)', display: 'block',
         marginBottom: 8, fontWeight: 900,
@@ -162,35 +170,20 @@ export default function KpiDashboard({ data, from, to }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {/* Row 1+2: Stats + Charts gom chung 1 khung */}
-      <div style={{
-        border: '3px solid var(--border-color)', borderRadius: 2,
-        boxShadow: '4px 4px 0px var(--shadow-color)', background: 'var(--bg-card)',
-        overflow: 'hidden',
-      }}>
-        {/* 3 stat cards — chia cột bằng border */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {[
-            { label: t('kpi.total'), value: s.totalTasks, headerBg: 'var(--col-todo-header)', bodyBg: 'var(--col-todo-body)' },
-            { label: t('kpi.overdue_rate'), value: `${s.overdueCount || 0} (${s.overdueRate || 0}%)`, headerBg: 'var(--danger-bg)', bodyBg: 'var(--danger-bg)' },
-            { label: t('kpi.est_days'), value: s.totalEstDays, headerBg: 'var(--col-progress-header)', bodyBg: 'var(--col-progress-body)' },
-          ].map((card, i, arr) => (
-            <div key={card.label} style={{ borderRight: i < arr.length - 1 ? '2px solid var(--border-color)' : 'none' }}>
-              <StatCard label={card.label} value={card.value} headerBg={card.headerBg} bodyBg={card.bodyBg} />
-            </div>
-          ))}
-        </div>
+      {/* Row 1: 3 stat cards — kanban column style */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+        <StatCard label={t('kpi.total')} value={s.totalTasks}
+          headerBg="var(--col-todo-header)" bodyBg="var(--col-todo-body)" />
+        <StatCard label={t('kpi.overdue_rate')} value={`${s.overdueCount || 0} (${s.overdueRate || 0}%)`}
+          headerBg="var(--danger-bg)" bodyBg="var(--danger-bg)" />
+        <StatCard label={t('kpi.est_days')} value={s.totalEstDays}
+          headerBg="var(--col-progress-header)" bodyBg="var(--col-progress-body)" />
+      </div>
 
-        {/* Divider */}
-        <div style={{ borderTop: '2px solid var(--border-color)' }} />
-
-        {/* 2 donut charts */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
-          <div style={{ borderRight: '2px solid var(--border-color)' }}>
-            <DonutChart data={gameChartData} title={t('kpi.by_game')} />
-          </div>
-          <DonutChart data={projectChartData} title={t('kpi.by_project')} />
-        </div>
+      {/* Row 2: 2 donut charts */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <DonutChart data={gameChartData} title={t('kpi.by_game')} />
+        <DonutChart data={projectChartData} title={t('kpi.by_project')} />
       </div>
 
       {/* Row 3: Completed tasks — unified border, no inner table border */}
@@ -206,9 +199,8 @@ export default function KpiDashboard({ data, from, to }) {
         }}>
           <span>{t('kpi.completed_tasks')} ({tableData.length})</span>
           <a href={getKPICsvUrl(from, to)} download>
-            <Button icon={<DownloadOutlined />} style={{
-              background: '#722ed1', color: '#fff',
-              border: '2px solid var(--border-color)', borderRadius: 2, fontWeight: 700,
+            <Button size="small" icon={<DownloadOutlined />} style={{
+              border: '2px solid var(--border-color)', borderRadius: 2, fontWeight: 700, fontSize: 12,
             }}>
               {t('kpi.download_csv')}
             </Button>
