@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Typography, Flex, Button, message } from 'antd';
 import NeoTabs from '../components/shared/neo-tabs.jsx';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, PlusOutlined } from '@ant-design/icons';
+import { Drawer } from 'antd';
 import dayjs from 'dayjs';
 import { fetchTodayTasks, fetchTasks, updateTask, deleteTask, deleteFeedback, updateFeedback, fetchCalendarTasks } from '../api/task-api-client.js';
 import { categorizeByDueDate } from '../processors/task-processor.js';
@@ -120,10 +121,10 @@ function TableTab({ refreshKey }) {
 }
 
 // --- Calendar Tab ---
-function CalendarTab({ refreshKey }) {
-  const { t } = useI18n();
+function CalendarTab({ refreshKey, onTasksCreated }) {  const { t } = useI18n();
   const [current, setCurrent] = useState(dayjs());
   const [tasks, setTasks] = useState([]);
+  const [addOpen, setAddOpen] = useState(false);
   const year = current.year();
   const month = current.month() + 1;
 
@@ -136,10 +137,21 @@ function CalendarTab({ refreshKey }) {
   useEffect(() => { loadTasks(); }, [year, month, refreshKey, loadTasks]);
 
   const handleEdit = async (id, formData) => {
-    try { await updateTask(id, formData); loadTasks(); } catch { message.error('Update failed'); }
+    try {
+      // Optimistic update — task bar reflects changes immediately
+      setTasks(prev => prev.map(t => t.id === id ? { ...t, ...formData } : t));
+      await updateTask(id, formData);
+      loadTasks();
+    } catch { message.error('Update failed'); }
   };
   const handleDelete = async (id) => {
     try { await deleteTask(id); loadTasks(); } catch { message.error('Delete failed'); }
+  };
+  const handleDeleteFeedback = async (taskId, fbId) => {
+    try { await deleteFeedback(taskId, fbId); loadTasks(); } catch { message.error('Delete feedback failed'); }
+  };
+  const handleUpdateFeedback = async (taskId, fbId, data) => {
+    try { await updateFeedback(taskId, fbId, data); loadTasks(); } catch { message.error('Update feedback failed'); }
   };
 
   return (
@@ -151,8 +163,35 @@ function CalendarTab({ refreshKey }) {
         </Title>
         <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
         <Button size="small" onClick={() => setCurrent(dayjs())}>{t('calendar.today') || 'Hôm nay'}</Button>
+        <div style={{ flex: 1 }} />
+        <Button
+          type="primary" icon={<PlusOutlined />} size="small"
+          onClick={() => setAddOpen(true)}
+        >
+          Add Task
+        </Button>
       </Flex>
-      <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} />
+
+      <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} onAddTask={() => setAddOpen(true)} />
+
+      {/* Right drawer: Quick Magic Input */}
+      <Drawer
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        placement="right"
+        width={340}
+        title={<span style={{ fontWeight: 900, fontFamily: "'Google Sans Code', monospace" }}>Add Task</span>}
+        styles={{
+          header: { border: 'none', borderBottom: '2px solid var(--border-color)', background: 'var(--bg-header)' },
+          body: { padding: 0, background: 'var(--bg-card)' },
+          wrapper: { boxShadow: '-6px 0 0 var(--shadow-color)' },
+        }}
+        destroyOnClose={false}
+      >
+        <QuickMagicInput
+          onTasksCreated={() => { loadTasks(); onTasksCreated?.(); setAddOpen(false); }}
+        />
+      </Drawer>
     </div>
   );
 }
@@ -212,42 +251,7 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
       <style>{NEO_TABS_CSS}</style>
-
-      <div className="dashboard-row" style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-        {/* Left column: Magic Input + decoration */}
-        <div className="neo-box" style={{ ...NEO_BOX, flex: '0 0 300px', maxWidth: 320, minWidth: 240 }}>
-          <div style={{ position: 'sticky', top: 0, display: 'flex', flexDirection: 'column' }}>
-            <QuickMagicInput onTasksCreated={onTasksCreated} />
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '20px 0' }}>
-              <svg width="140" height="140" viewBox="0 0 24 24" shapeRendering="crispEdges">
-                <rect x="4" y="8" width="10" height="10" fill="var(--border-color)" />
-                <rect x="5" y="9" width="8" height="8" fill="#a1a1a1" />
-                <rect x="5" y="9" width="3" height="8" fill="#bdbdbd" />
-                <rect x="3" y="7" width="12" height="2" fill="var(--border-color)" />
-                <rect x="4" y="8" width="10" height="1" fill="#757575" />
-                <rect x="4" y="4" width="1" height="4" fill="var(--border-color)" />
-                <rect x="13" y="4" width="1" height="4" fill="var(--border-color)" />
-                <rect x="5" y="3" width="8" height="1" fill="var(--border-color)" />
-                <rect x="10" y="9" width="4" height="2" fill="#ff5e5e" />
-                <rect x="14" y="9" width="2" height="3" fill="#ff5e5e" />
-                <rect x="14" y="12" width="2" height="2" fill="#ffbb00" />
-                <rect x="15" y="14" width="2" height="2" fill="#44ff44" />
-                <rect x="16" y="16" width="2" height="2" fill="#4488ff" />
-                <rect x="17" y="18" width="2" height="2" fill="#9d44ff" />
-                <rect x="6" y="10" width="1" height="2" fill="#eeeeee" />
-                <rect x="10" y="13" width="1" height="3" fill="rgba(0,0,0,0.1)" />
-                <rect x="5" y="18" width="8" height="1" fill="rgba(0,0,0,0.2)" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Right column: Tabs (Kanban / Lịch / Bảng / Nhắc nhở) */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <NeoTabs defaultValue="kanban" items={tabItems} />
-        </div>
-      </div>
-
+      <CalendarTab refreshKey={refreshKey} onTasksCreated={onTasksCreated} />
     </div>
   );
 }

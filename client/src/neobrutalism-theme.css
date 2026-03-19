@@ -60,8 +60,17 @@
   transition: box-shadow 0.15s, transform 0.15s;
 }
 .ant-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--shadow-color) !important;
+  transform: translate(4px, 4px);
+  box-shadow: none !important;
+}
+
+/* Calendar task bars: smaller shadow so stacked bars don't overlap */
+.calendar-task-bar .ant-card {
+  box-shadow: 2px 2px 0px var(--shadow-color) !important;
+}
+.calendar-task-bar .ant-card:hover {
+  transform: translate(2px, 2px);
+  box-shadow: none !important;
 }
 
 /* Neo-box: reusable hover effect for shadow boxes */
@@ -69,8 +78,8 @@
   transition: box-shadow 0.15s, transform 0.15s;
 }
 .neo-box:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--shadow-color) !important;
+  transform: translate(4px, 4px);
+  box-shadow: none !important;
 }
 
 /* Buttons: bold border */
@@ -87,16 +96,59 @@
   box-shadow: 3px 3px 0px var(--shadow-color);
 }
 
-/* Inputs: bold border */
-.ant-input,
-.ant-input-affix-wrapper,
-.ant-select-selector,
-.ant-picker {
+/* Inputs: bold border — use :root prefix to beat antd v5 CSS-in-JS injection order */
+:root .ant-input,
+:root .ant-input-affix-wrapper,
+:root .ant-select-selector,
+:root .ant-picker {
   border: 2px solid var(--border-color) !important;
+  border-radius: 2px !important;
+  font-family: 'Google Sans Code', monospace !important;
 }
-.ant-input:focus,
-.ant-input-affix-wrapper-focused,
-.ant-select-focused .ant-select-selector {
+/* Select: neo shadow + hover press-down effect */
+:root .ant-select {
+  transition: transform 0.1s;
+}
+:root .ant-select-selector {
+  box-shadow: 2px 2px 0 var(--shadow-color) !important;
+  background: var(--bg-card) !important;
+  font-weight: 600 !important;
+  transition: box-shadow 0.1s !important;
+}
+:root .ant-select:hover {
+  transform: translate(2px, 2px);
+}
+:root .ant-select:hover .ant-select-selector {
+  box-shadow: none !important;
+}
+:root .ant-select-focused .ant-select-selector {
+  box-shadow: 3px 3px 0px rgba(255, 107, 53, 0.3) !important;
+  transform: none;
+}
+/* Select dropdown popup */
+:root .ant-select-dropdown {
+  border: 2px solid var(--border-color) !important;
+  border-radius: 2px !important;
+  box-shadow: 4px 4px 0 var(--shadow-color) !important;
+  background: var(--bg-card) !important;
+  font-family: 'Google Sans Code', monospace !important;
+  padding: 2px !important;
+}
+:root .ant-select-item {
+  border-radius: 2px !important;
+  font-weight: 600 !important;
+  font-family: 'Google Sans Code', monospace !important;
+}
+:root .ant-select-item-option-selected {
+  background: var(--accent-color, #ff6b35) !important;
+  color: #fff !important;
+}
+:root .ant-select-item-option-active:not(.ant-select-item-option-selected) {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+:root .ant-input:focus,
+:root .ant-input-affix-wrapper-focused {
   box-shadow: 3px 3px 0px rgba(255, 107, 53, 0.3) !important;
 }
 

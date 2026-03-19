@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
-// Day name headers (Mon→Sun)
-export const DAY_NAMES = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+// Day name headers (Mon→Fri only, weekends hidden)
+export const DAY_NAMES = ['T2', 'T3', 'T4', 'T5', 'T6'];
 
 /**
  * Get all weeks for a month view. Each week = array of 7 dayjs (Mon→Sun).
@@ -88,7 +88,10 @@ export function packTasksIntoRows(positionedTasks) {
  */
 export function getTaskWeekPosition(task, weekStart, weekEnd) {
   const taskStart = task.startDate || task.dueDate;
-  const taskEnd = task.dueDate;
+  // Extend end to cover latest feedback's endDate if it falls after task dueDate
+  const latestFb = task.feedbacks?.at(-1);
+  const fbEnd = latestFb?.endDate ?? latestFb?.startDate;
+  const taskEnd = fbEnd && fbEnd > task.dueDate ? fbEnd : task.dueDate;
   const ws = weekStart.format('YYYY-MM-DD');
   const we = weekEnd.format('YYYY-MM-DD');
 
@@ -96,6 +99,8 @@ export function getTaskWeekPosition(task, weekStart, weekEnd) {
   if (taskStart > we || taskEnd < ws) return null;
 
   const startCol = Math.max(0, dayjs(taskStart).diff(weekStart, 'day'));
-  const endCol = Math.min(6, dayjs(taskEnd).diff(weekStart, 'day'));
+  const endCol = Math.min(4, dayjs(taskEnd).diff(weekStart, 'day'));
+  // Task falls entirely on weekend (Sat/Sun) or before Mon
+  if (startCol > 4 || endCol < 0) return null;
   return { startCol, endCol, span: endCol - startCol + 1 };
 }

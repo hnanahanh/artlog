@@ -5,9 +5,23 @@ import 'react-day-picker/dist/style.css';
 
 /* Neo-brutalism styles for react-day-picker */
 const NEO_CSS = `
-.neo-rdp .rdp-root { --rdp-accent-color: var(--accent-color, #ff6b35); --rdp-accent-background-color: rgba(255,107,53,0.15); }
+.neo-rdp .rdp-root { --rdp-accent-color: var(--accent-color, #ff6b35); --rdp-accent-background-color: rgba(255,107,53,0.15); position: relative; }
 .neo-rdp { background: var(--bg-card); font-family: 'Google Sans Code', monospace; }
-.neo-rdp .rdp-month_caption { font-weight: 900; font-size: 14px; color: var(--text-primary); padding: 8px 12px; background: var(--bg-header); border-bottom: 2px solid var(--border-color); }
+
+/* 2 months side by side */
+.neo-rdp .rdp-months { display: flex; flex-direction: row; gap: 0; }
+.neo-rdp .rdp-month { flex: 1; }
+.neo-rdp .rdp-month + .rdp-month { border-left: 2px solid var(--border-color); }
+
+/* Nav: left arrow far-left, right arrow far-right, spanning both months */
+.neo-rdp .rdp-nav { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; pointer-events: none; z-index: 2; }
+.neo-rdp .rdp-button_previous, .neo-rdp .rdp-button_next { pointer-events: all; border: 2px solid var(--border-color) !important; border-radius: 2px !important; background: var(--bg-card) !important; width: 28px; height: 28px; font-weight: 900; color: var(--text-primary) !important; }
+.neo-rdp .rdp-button_previous:hover, .neo-rdp .rdp-button_next:hover { background: var(--bg-secondary) !important; box-shadow: 2px 2px 0 var(--shadow-color) !important; }
+
+/* Caption centered, leave room for arrows */
+.neo-rdp .rdp-month_caption { font-weight: 900; font-size: 14px; color: var(--text-primary); padding: 8px 36px; background: var(--bg-header); border-bottom: 2px solid var(--border-color); text-align: center; }
+.neo-rdp .rdp-caption_label { display: block; text-align: center; }
+
 .neo-rdp .rdp-weekdays { border-bottom: 2px solid var(--border-color); }
 .neo-rdp .rdp-weekday { font-weight: 900; font-size: 11px; color: var(--text-secondary); padding: 6px 0; }
 .neo-rdp .rdp-day { font-weight: 600; font-size: 12px; color: var(--text-primary); border-radius: 2px !important; }
@@ -18,9 +32,6 @@ const NEO_CSS = `
 .neo-rdp .rdp-range_middle .rdp-day_button { background: rgba(255,107,53,0.15) !important; border-radius: 0 !important; }
 .neo-rdp .rdp-today .rdp-day_button { border: 2px solid var(--border-color) !important; font-weight: 900; }
 .neo-rdp .rdp-outside .rdp-day_button { opacity: 0.35; }
-.neo-rdp .rdp-nav { gap: 4px; }
-.neo-rdp .rdp-button_previous, .neo-rdp .rdp-button_next { border: 2px solid var(--border-color) !important; border-radius: 2px !important; background: var(--bg-card) !important; width: 28px; height: 28px; font-weight: 900; color: var(--text-primary) !important; }
-.neo-rdp .rdp-button_previous:hover, .neo-rdp .rdp-button_next:hover { background: var(--bg-secondary) !important; box-shadow: 2px 2px 0 var(--shadow-color) !important; }
 `;
 
 /**
@@ -100,6 +111,7 @@ export default function NeoRangePicker({ value, onChange, style, placeholder = '
             selected={range}
             onSelect={handleSelect}
             numberOfMonths={numberOfMonths}
+            pagedNavigation
             defaultMonth={range?.from}
           />
         </div>
