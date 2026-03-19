@@ -62,13 +62,30 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
         const weekStart = weekDays[0];
         const weekEnd = weekDays[6];
 
-        // Lọc và sắp xếp Task + Feedback bars cho từng tuần
+        // Lọc Task bars + Feedback bars riêng (adjacent, cùng row với parent)
         const positioned = [];
         for (const task of tasks) {
           const pos = getTaskWeekPosition(task, weekStart, weekEnd);
           if (pos) positioned.push({ ...task, ...pos });
 
-          // Feedbacks are shown inline in the task bar — no separate rows
+          // Latest feedback as a separate adjacent bar in the same row
+          const latestFb = task.feedbacks?.at(-1);
+          if (latestFb) {
+            const fbStart = latestFb.startDate ?? latestFb.createdAt?.slice(0, 10) ?? task.dueDate;
+            const fbEnd = latestFb.endDate ?? fbStart;
+            const fbProxy = {
+              // Carry full task data so EditTaskModal works when clicking the feedback bar
+              ...task,
+              id: `fb-${latestFb.id}`,
+              name: latestFb.content,
+              startDate: fbStart,
+              dueDate: fbEnd,
+              _isFeedbackBar: true,
+              _parentId: task.id,
+            };
+            const fbPos = getTaskWeekPosition(fbProxy, weekStart, weekEnd);
+            if (fbPos) positioned.push({ ...fbProxy, ...fbPos });
+          }
         }
         const taskRows = packTasksIntoRows(positioned);
 
@@ -129,6 +146,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                 <span style={{
                   fontSize: 13,
                   fontWeight: 800,
+                  fontFamily: "Google Sans Code",
                   color: !isCurrentMonth ? '#bfbfbf' : '#222',
                 }}>
                   {day.date()}
@@ -138,8 +156,10 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
               {/* Task hiển thị trong ô này */}
               <div style={{ flex: 1, padding: '2px' }}>
                 {taskRows.map((row, rowIdx) => {
-                  const taskInCell = row.find(t => t.startCol <= dayIdx && (t.startCol + t.span) > dayIdx);
-                  if (taskInCell && taskInCell.startCol === dayIdx) {
+                  // Find the bar that STARTS at this column (exact match prevents task bar
+                  // from shadowing an adjacent feedback bar sharing the same boundary column)
+                  const taskInCell = row.find(t => t.startCol === dayIdx);
+                  if (taskInCell) {
                     return (
                       <div key={taskInCell.id} style={{
                         width: `calc(${taskInCell.span}00% + ${(taskInCell.span - 1)}px)`,
@@ -151,6 +171,9 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                       </div>
                     );
                   }
+                  // Placeholder preserves row height for cells where a bar spans through
+                  const spansThrough = row.some(t => t.startCol < dayIdx && (t.startCol + t.span) > dayIdx);
+                  if (!spansThrough) return null;
                   return <div key={`empty-${rowIdx}`} style={{ height: '26px', marginBottom: '4px' }} />;
                 })}
               </div>

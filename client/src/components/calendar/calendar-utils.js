@@ -88,10 +88,7 @@ export function packTasksIntoRows(positionedTasks) {
  */
 export function getTaskWeekPosition(task, weekStart, weekEnd) {
   const taskStart = task.startDate || task.dueDate;
-  // Extend end to cover latest feedback's endDate if it falls after task dueDate
-  const latestFb = task.feedbacks?.at(-1);
-  const fbEnd = latestFb?.endDate ?? latestFb?.startDate;
-  const taskEnd = fbEnd && fbEnd > task.dueDate ? fbEnd : task.dueDate;
+  const taskEnd = task.dueDate;
   const ws = weekStart.format('YYYY-MM-DD');
   const we = weekEnd.format('YYYY-MM-DD');
 

@@ -38,8 +38,11 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.startDate, form.dueDate]);
 
+  // Use real task id (feedback bar proxies carry _parentId)
+  const realTaskId = task._parentId ?? task.id;
+
   const handleSave = () => {
-    onEdit?.(task.id, form);
+    onEdit?.(realTaskId, form);
     onClose?.();
   };
 
@@ -51,7 +54,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
     if (edit.content?.trim() && edit.content !== original.content) data.content = edit.content.trim();
     if (edit.startDate && edit.startDate !== original.startDate) data.startDate = edit.startDate;
     if (edit.endDate && edit.endDate !== original.endDate) data.endDate = edit.endDate;
-    if (Object.keys(data).length) onUpdateFeedback?.(task.id, fbId, data);
+    if (Object.keys(data).length) onUpdateFeedback?.(realTaskId, fbId, data);
   };
 
   if (!task) return null;
@@ -150,7 +153,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
                 const firstFb = task.feedbacks?.[0];
                 if (firstFb) {
                   setFbEdits(prev => ({ ...prev, [firstFb.id]: { ...prev[firstFb.id], startDate: end } }));
-                  onUpdateFeedback?.(task.id, firstFb.id, { startDate: end });
+                  onUpdateFeedback?.(realTaskId, firstFb.id, { startDate: end });
                 }
               }
             }}
@@ -194,11 +197,11 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
                       const data = {};
                       if (newStart !== fb.startDate) data.startDate = newStart;
                       if (newEnd !== (fb.endDate ?? fb.createdAt?.slice(0, 10))) data.endDate = newEnd;
-                      if (Object.keys(data).length) onUpdateFeedback?.(task.id, fb.id, data);
+                      if (Object.keys(data).length) onUpdateFeedback?.(realTaskId, fb.id, data);
                     }
                   }}
                 />
-                <Popconfirm title="Delete?" onConfirm={() => onDeleteFeedback?.(task.id, fb.id)} okText="OK" cancelText="Cancel">
+                <Popconfirm title="Delete?" onConfirm={() => onDeleteFeedback?.(realTaskId, fb.id)} okText="OK" cancelText="Cancel">
                   <Button danger icon={<DeleteOutlined />} style={{ flexShrink: 0 }} />
                 </Popconfirm>
               </Flex>

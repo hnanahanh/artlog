@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { DayPicker } from 'react-day-picker';
 import dayjs from 'dayjs';
 import 'react-day-picker/dist/style.css';
@@ -35,86 +36,142 @@ const NEO_CSS = `
 `;
 
 /**
- * NeoRangePicker — drop-in replacement for antd DatePicker.RangePicker
+ * NeoRangePicker — Notion-like date range picker with neo-brutalism style.
+ * Uses backdrop overlay for outside-click (no document event listeners).
  * value: [dayjs, dayjs] | null
  * onChange: ([dayjs, dayjs]) => void
  */
 export default function NeoRangePicker({ value, onChange, style, placeholder = 'Select range', numberOfMonths = 2 }) {
   const [open, setOpen] = useState(false);
   const [range, setRange] = useState(null);
-  const containerRef = useRef(null);
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef(null);
 
-  // Sync value prop → internal range
+  // Ref for always-fresh onChange (avoids stale closure)
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  // Sync value prop → internal range ONLY when picker is closed
+  const openRef = useRef(open);
+  openRef.current = open;
+
   useEffect(() => {
+    if (openRef.current) return;
     if (value?.[0] && value?.[1]) {
       setRange({ from: value[0].toDate(), to: value[1].toDate() });
     } else {
       setRange(null);
     }
-  }, [value?.[0]?.toString(), value?.[1]?.toString()]);
+  }, [value?.[0]?.valueOf(), value?.[1]?.valueOf()]);
 
-  // Close on outside click
+  // Sync when picker closes (pick up parent changes that happened while open)
   useEffect(() => {
-    if (!open) return;
-    const handler = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) setOpen(false);
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    if (!open && value?.[0] && value?.[1]) {
+      setRange({ from: value[0].toDate(), to: value[1].toDate() });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  const handleSelect = (r) => {
-    setRange(r);
-    if (r?.from && r?.to) {
-      onChange?.([dayjs(r.from), dayjs(r.to)]);
+  const openPicker = useCallback(() => {
+    if (triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setPopupPos({ top: rect.bottom + 4, left: rect.left });
+    }
+    setOpen(prev => !prev);
+  }, []);
+
+  // Backdrop click = outside click → confirm partial selection + close
+  const handleBackdropClick = useCallback(() => {
+    // Read fresh range via setState callback to avoid stale closure
+    setRange(currentRange => {
+      if (currentRange?.from) {
+        const from = currentRange.from;
+        const to = currentRange.to ?? from;
+        onChangeRef.current?.([dayjs(from), dayjs(to)]);
+      }
+      return currentRange;
+    });
+    setOpen(false);
+  }, []);
+
+  // DayPicker onSelect (react-day-picker v9 range mode):
+  // 1st click → {from: date, to: undefined} → stay open, highlight on button
+  // 2nd click → {from: d1, to: d2} → confirm + close
+  const handleSelect = useCallback((newRange) => {
+    if (!newRange) {
+      setRange(null);
+      return;
+    }
+    setRange(newRange);
+    if (newRange.from && newRange.to) {
+      onChangeRef.current?.([dayjs(newRange.from), dayjs(newRange.to)]);
       setOpen(false);
     }
-  };
+  }, []);
 
-  const display = range?.from && range?.to
-    ? `${dayjs(range.from).format('MM-DD')} → ${dayjs(range.to).format('MM-DD')}`
+  // Visual states for trigger button
+  const picking = open && range?.from && !range?.to;
+  const display = range?.from
+    ? range.to
+      ? `${dayjs(range.from).format('MM-DD')} → ${dayjs(range.to).format('MM-DD')}`
+      : `${dayjs(range.from).format('MM-DD')} → …`
     : placeholder;
 
   return (
-    <div ref={containerRef} style={{ position: 'relative', display: 'inline-block', ...style }}>
+    <div style={{ position: 'relative', display: 'inline-block', ...style }}>
       <style>{NEO_CSS}</style>
 
       {/* Trigger button */}
       <button
-        onClick={() => setOpen(o => !o)}
+        ref={triggerRef}
+        onClick={openPicker}
+        type="button"
         style={{
           width: '100%', padding: '3px 8px', fontSize: 13, fontWeight: 600,
           fontFamily: "'Google Sans Code', monospace",
-          border: '2px solid var(--border-color)',
-          borderRadius: 2, background: 'var(--bg-card)',
-          color: range ? 'var(--text-primary)' : 'var(--text-secondary)',
+          border: `2px solid ${picking ? '#f0a500' : 'var(--border-color)'}`,
+          borderRadius: 2,
+          background: picking ? '#fff9e6' : 'var(--bg-card)',
+          color: range?.from ? 'var(--text-primary)' : 'var(--text-secondary)',
           cursor: 'pointer', whiteSpace: 'nowrap',
           boxShadow: open ? '0 0 0' : '2px 2px 0 var(--shadow-color)',
           transform: open ? 'translate(2px,2px)' : 'none',
           transition: 'all 0.1s',
         }}
       >
-        📅 {display}
+        {display}
       </button>
 
-      {/* Calendar popup */}
-      {open && (
-        <div style={{
-          position: 'absolute', zIndex: 1050, top: 'calc(100% + 4px)', left: 0,
-          border: '3px solid var(--border-color)', borderRadius: 2,
-          boxShadow: '6px 6px 0 var(--shadow-color)',
-          background: 'var(--bg-card)', overflow: 'hidden',
-        }}>
-          <DayPicker
-            className="neo-rdp"
-            mode="range"
-            selected={range}
-            onSelect={handleSelect}
-            numberOfMonths={numberOfMonths}
-            pagedNavigation
-            defaultMonth={range?.from}
+      {/* Portal: backdrop + popup rendered to body (escapes Modal overflow + z-index) */}
+      {open && createPortal(
+        <>
+          {/* Transparent backdrop — catches all outside clicks without event propagation issues */}
+          <div
+            onClick={handleBackdropClick}
+            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
           />
-        </div>
+          {/* Calendar popup */}
+          <div
+            style={{
+              position: 'fixed', zIndex: 9999,
+              top: popupPos.top, left: popupPos.left,
+              border: '3px solid var(--border-color)', borderRadius: 2,
+              boxShadow: '6px 6px 0 var(--shadow-color)',
+              background: 'var(--bg-card)', overflow: 'hidden',
+            }}
+          >
+            <DayPicker
+              className="neo-rdp"
+              mode="range"
+              selected={range}
+              onSelect={handleSelect}
+              numberOfMonths={numberOfMonths}
+              pagedNavigation
+              defaultMonth={range?.from}
+            />
+          </div>
+        </>,
+        document.body
       )}
     </div>
   );

@@ -13,9 +13,8 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
 
   const isFb = task._isFeedbackBar;
   const style = getTaskBarStyle(task, todayStr);
-  const accentColor = isFb ? style.color : style.border;
+  const accentColor = isFb ? '#722ed1' : style.border;
   const bgColor = isFb ? '#f9f0ff' : style.bg;
-  const latestFb = task.feedbacks?.at(-1);
 
   return (
     <div
@@ -33,7 +32,7 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
     >
       <Card
         size="small"
-        onClick={() => { if (!isFb) setEditing(true); }}
+        onClick={() => setEditing(true)}
         style={{
           border: '2px solid var(--border-color)',
           borderRadius: 4,
@@ -68,48 +67,21 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
             )}
           </Flex>
 
-          {/* Feedback section — separated by 1px black stroke, purple bg, own delete */}
-          {latestFb && (
-            <>
-              <div style={{ width: 1, background: '#000', flexShrink: 0 }} />
-              <Flex align="center" gap={2} style={{
-                background: '#f9f0ff',
-                padding: '3px 4px',
-                maxWidth: '40%',
-                overflow: 'hidden',
-              }}>
-                <Text style={{
-                  fontSize: 11, fontWeight: 600,
-                  color: '#722ed1',
-                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  flex: 1, minWidth: 0,
-                }}>
-                  {latestFb.content}
-                </Text>
-                {hovered && (
-                  <Popconfirm
-                    title="Xóa feedback?"
-                    onConfirm={e => { e?.stopPropagation(); onDeleteFeedback?.(task.id, latestFb.id); }}
-                    okText="OK" cancelText="Hủy"
-                    onClick={e => e.stopPropagation()}
-                  >
-                    <Button
-                      type="text" size="small" danger icon={<DeleteOutlined style={{ fontSize: 10 }} />}
-                      style={{ width: 16, height: 16, padding: 0, flexShrink: 0, minWidth: 16, fontSize: 10 }}
-                      onClick={e => e.stopPropagation()}
-                    />
-                  </Popconfirm>
-                )}
-              </Flex>
-            </>
-          )}
-
           {/* Fixed-width delete slot */}
           <div style={{ width: 22, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {hovered && !isFb && (
+            {hovered && (
               <Popconfirm
-                title="Xóa task?"
-                onConfirm={e => { e?.stopPropagation(); onDelete?.(task.id); }}
+                title={isFb ? 'Xóa feedback?' : 'Xóa task?'}
+                onConfirm={e => {
+                  e?.stopPropagation();
+                  if (isFb) {
+                    // task.id = 'fb-{realFbId}', task._parentId = real task id
+                    const realFbId = task.id.replace(/^fb-/, '');
+                    onDeleteFeedback?.(task._parentId, realFbId);
+                  } else {
+                    onDelete?.(task.id);
+                  }
+                }}
                 okText="OK" cancelText="Hủy"
                 onClick={e => e.stopPropagation()}
               >

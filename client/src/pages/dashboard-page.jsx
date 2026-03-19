@@ -164,12 +164,23 @@ function CalendarTab({ refreshKey, onTasksCreated }) {  const { t } = useI18n();
         <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
         <Button size="small" onClick={() => setCurrent(dayjs())}>{t('calendar.today') || 'Hôm nay'}</Button>
         <div style={{ flex: 1 }} />
-        <Button
-          type="primary" icon={<PlusOutlined />} size="small"
+        <button
           onClick={() => setAddOpen(true)}
+          style={{
+            padding: '20px 40px', fontSize: 18, fontWeight: 900,
+            fontFamily: "'Google Sans Code', monospace",
+            color: '#222', background: '#7cff40',
+            border: '2px solid #222', borderRadius: 2,
+            boxShadow: '3px 3px 0 #222',
+            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+            transition: 'transform 0.08s, box-shadow 0.08s',
+          }}
+          onMouseDown={e => { e.currentTarget.style.transform = 'translate(3px,3px)'; e.currentTarget.style.boxShadow = 'none'; }}
+          onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
         >
-          Add Task
-        </Button>
+          <PlusOutlined style={{ fontSize: 14 }} /> ADD TASK
+        </button>
       </Flex>
 
       <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} onAddTask={() => setAddOpen(true)} />
