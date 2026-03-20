@@ -130,6 +130,7 @@ function detectRange(day, rangesState, activeIdx) {
 export default function NeoRangePicker({
   value, onChange, ranges, onRangeChange,
   style, placeholder = 'Select date', numberOfMonths = 2,
+  active = false, label,
 }) {
   const isMultiRange = !!ranges?.length;
   const [open, setOpen] = useState(false);
@@ -459,19 +460,19 @@ export default function NeoRangePicker({
       <button
         ref={triggerRef} onClick={openPicker} type="button"
         style={{
-          width: '100%', padding: '3px 8px', fontSize: 13, fontWeight: 600,
+          width: '100%', padding: '3px 8px', fontSize: 13, fontWeight: active ? 900 : 600,
           fontFamily: "'Google Sans Code', monospace",
-          border: `2px solid ${open ? 'var(--accent-color, #ff6b35)' : 'var(--border-color)'}`,
+          border: '2px solid var(--border-color)',
           borderRadius: 2,
-          background: open ? 'rgba(255,107,53,0.06)' : 'var(--bg-card)',
-          color: (isMultiRange ? ranges?.[0]?.value?.[0] : startDate) ? 'var(--text-primary)' : 'var(--text-secondary)',
+          background: active ? '#222' : 'var(--bg-card)',
+          color: active ? '#fff' : ((isMultiRange ? ranges?.[0]?.value?.[0] : startDate) ? 'var(--text-primary)' : 'var(--text-secondary)'),
           cursor: 'pointer', whiteSpace: 'nowrap',
           boxShadow: open ? '0 0 0' : '2px 2px 0 var(--shadow-color)',
           transform: open ? 'translate(2px,2px)' : 'none',
           transition: 'all 0.1s',
         }}
       >
-        {display}
+        {active ? display : (label || display)}
       </button>
 
       {open && (

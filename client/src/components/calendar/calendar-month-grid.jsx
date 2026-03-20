@@ -187,7 +187,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                         marginBottom: '2px',
                         padding: '0 1px'
                       }}>
-                        <CalendarTaskBar task={taskInCell} span={taskInCell.span} todayStr={todayStr} onEdit={onEdit} onDelete={onDelete} onDeleteFeedback={onDeleteFeedback} onUpdateFeedback={onUpdateFeedback} gameOptions={gameOptions} projectOptions={projectOptions} />
+                        <CalendarTaskBar task={taskInCell} span={taskInCell.span} todayStr={todayStr} onEdit={onEdit} onDelete={onDelete} onDeleteFeedback={onDeleteFeedback} onUpdateFeedback={onUpdateFeedback} gameOptions={gameOptions} projectOptions={projectOptions} weekStart={weekStart} />
                       </div>
                     );
                   }

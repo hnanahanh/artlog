@@ -11,16 +11,6 @@ import AppHeader from '../components/layout/app-header.jsx';
 
 const { Title } = Typography;
 
-/* Toggle button style */
-const modeBtn = (active) => ({
-  padding: '3px 10px', fontSize: 12, fontWeight: 700, cursor: 'pointer',
-  fontFamily: "'Google Sans Code', monospace",
-  border: '2px solid var(--border-color)', borderRadius: 2,
-  background: active ? 'var(--border-color)' : 'var(--bg-card)',
-  color: active ? 'var(--bg-card)' : 'var(--text-primary)',
-  transition: 'all 0.1s',
-});
-
 export default function KpiPage() {
   const { t } = useI18n();
   const [mode, setMode] = useState('year'); // 'year' | 'range'
@@ -56,25 +46,25 @@ export default function KpiPage() {
   return (
     <div>
       <div style={{ padding: 20 }}>
-        <Flex align="center" gap={12} style={{ marginBottom: 20 }}>
-          <Title level={4} style={{ margin: 0, color: 'var(--text-primary)', fontFamily: "'Google Sans Code', monospace" }}>
+        <Flex align="center" justify="space-between" gap={12} style={{ marginBottom: 20 }}>
+          <Title level={4} style={{ margin: 0, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-primary)', fontFamily: "'Google Sans Code', monospace" }}>
             <BarChartOutlined /> {t('kpi.title')}
           </Title>
 
-          {/* Mode toggle */}
-          <div style={{ display: 'flex', border: '2px solid var(--border-color)', borderRadius: 2, overflow: 'hidden' }}>
-            <button style={{ ...modeBtn(mode === 'year'), borderRight: '1px solid var(--border-color)', borderRadius: 0, border: 'none', borderRight: '2px solid var(--border-color)', background: mode === 'year' ? 'var(--border-color)' : 'var(--bg-card)', color: mode === 'year' ? 'var(--bg-card)' : 'var(--text-primary)' }} onClick={() => handleModeSwitch('year')}>
-              Cả năm
-            </button>
-            <button style={{ ...modeBtn(mode === 'range'), borderRadius: 0, border: 'none', background: mode === 'range' ? 'var(--border-color)' : 'var(--bg-card)', color: mode === 'range' ? 'var(--bg-card)' : 'var(--text-primary)' }} onClick={() => handleModeSwitch('range')}>
-              Theo ngày
-            </button>
-          </div>
-
-          {mode === 'year'
-            ? <YearCombobox value={year.year()} onChange={val => handleYearChange(dayjs().year(val))} />
-            : <NeoRangePicker value={range} onChange={setRange} />
-          }
+          <Flex gap={8} style={{ flexShrink: 0 }}>
+            <YearCombobox
+              value={year.year()}
+              onChange={val => { handleModeSwitch('year'); handleYearChange(dayjs().year(val)); }}
+              active={mode === 'year'}
+              label="Theo năm"
+            />
+            <NeoRangePicker
+              value={range}
+              onChange={val => { handleModeSwitch('range'); setRange(val); }}
+              active={mode === 'range'}
+              label="Theo ngày"
+            />
+          </Flex>
         </Flex>
 
         {data ? (
