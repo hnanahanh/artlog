@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, Typography, Flex, Button, Popconfirm, Input, Select, Space, Tag } from 'antd';
 import NeoRangePicker from '../shared/neo-range-picker.jsx';
 import { Draggable } from '@hello-pangea/dnd';
@@ -18,6 +18,7 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
   const [fbEdits, setFbEdits] = useState({});
   const overdue = isOverdue(task);
   const latestFb = task.feedbacks?.at(-1);
+  const hasFeedbacks = task.feedbacks?.length > 0;
 
   const startEdit = (e) => {
     e?.stopPropagation();
@@ -40,6 +41,45 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
       }
     });
     setEditing(false);
+  };
+
+  // Build multi-range for merged picker (task + feedbacks)
+  const dateRanges = useMemo(() => {
+    if (!hasFeedbacks || !form.startDate) return null;
+    const ranges = [{
+      key: 'task', label: 'Task',
+      value: form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null,
+    }];
+    task.feedbacks.forEach((fb, i) => {
+      const s = fbEdits[fb.id]?.startDate ?? fb.startDate ?? task.dueDate;
+      const e = fbEdits[fb.id]?.endDate ?? fb.endDate ?? fb.createdAt;
+      ranges.push({ key: `fb-${fb.id}`, label: `FB ${i + 1}`, value: [dayjs(s), dayjs(e)] });
+    });
+    return ranges;
+  }, [hasFeedbacks, form.startDate, form.dueDate, task.feedbacks, task.dueDate, fbEdits]);
+
+  // Multi-range change with chain cascade
+  const handleRangeChange = (key, dates) => {
+    if (!dates?.[0] || !dates?.[1]) return;
+    const start = dates[0].format('YYYY-MM-DD');
+    const end = dates[1].format('YYYY-MM-DD');
+
+    if (key === 'task') {
+      setForm(f => ({ ...f, startDate: start, dueDate: end }));
+      const firstFb = task.feedbacks?.[0];
+      if (firstFb) setFbEdits(prev => ({ ...prev, [firstFb.id]: { ...prev[firstFb.id], startDate: end } }));
+    } else {
+      const fbId = key.replace('fb-', '');
+      setFbEdits(prev => ({ ...prev, [fbId]: { ...prev[fbId], startDate: start, endDate: end } }));
+      const fbIdx = task.feedbacks?.findIndex(f => f.id === fbId);
+      if (fbIdx === 0) setForm(f => ({ ...f, dueDate: start }));
+      else if (fbIdx > 0) {
+        const prevFb = task.feedbacks[fbIdx - 1];
+        if (prevFb) setFbEdits(prev => ({ ...prev, [prevFb.id]: { ...prev[prevFb.id], endDate: start } }));
+      }
+      const nextFb = task.feedbacks?.[fbIdx + 1];
+      if (nextFb) setFbEdits(prev => ({ ...prev, [nextFb.id]: { ...prev[nextFb.id], startDate: end } }));
+    }
   };
 
   return (
@@ -77,15 +117,23 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
                       const m = e.target.value.match(/^(\d+(?:\.\d+)?)\s*(d|h)?$/i);
                       if (m) setForm(f => ({ ...f, estTime: parseFloat(m[1]), ...(m[2] ? { estUnit: m[2].toLowerCase() } : {}) }));
                     }} />
-                  <NeoRangePicker style={{ width: 200 }}
-                    value={[dayjs(form.startDate), dayjs(form.dueDate)]}
-                    onChange={dates => {
-                      if (dates?.[0] && dates?.[1]) {
-                        setForm(f => ({ ...f, startDate: dates[0].format('YYYY-MM-DD'), dueDate: dates[1].format('YYYY-MM-DD') }));
-                      }
-                    }} />
+                  {/* Merged date picker: task + feedbacks on one calendar */}
+                  {dateRanges ? (
+                    <NeoRangePicker style={{ width: 200 }}
+                      ranges={dateRanges}
+                      onRangeChange={handleRangeChange} />
+                  ) : (
+                    <NeoRangePicker style={{ width: 200 }}
+                      value={[dayjs(form.startDate), dayjs(form.dueDate)]}
+                      onChange={dates => {
+                        if (dates?.[0] && dates?.[1]) {
+                          setForm(f => ({ ...f, startDate: dates[0].format('YYYY-MM-DD'), dueDate: dates[1].format('YYYY-MM-DD') }));
+                        }
+                      }} />
+                  )}
                 </Flex>
-                {task.feedbacks?.length > 0 && (
+                {/* Feedback content inputs (dates merged into calendar above) */}
+                {hasFeedbacks && (
                   <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: 4, marginTop: 2 }}>
                     {task.feedbacks.map(fb => (
                       <Flex key={fb.id} gap={4} align="center" style={{ marginBottom: 3 }}>
@@ -93,11 +141,6 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
                           value={fbEdits[fb.id]?.content ?? fb.content}
                           onChange={e => setFbEdits(prev => ({
                             ...prev, [fb.id]: { ...prev[fb.id], content: e.target.value },
-                          }))} />
-                        <NeoRangePicker style={{ width: 200 }}
-                          value={[dayjs(fbEdits[fb.id]?.startDate ?? fb.startDate ?? task.dueDate), dayjs(fbEdits[fb.id]?.endDate ?? fb.endDate ?? fb.createdAt)]}
-                          onChange={dates => dates?.[0] && dates?.[1] && setFbEdits(prev => ({
-                            ...prev, [fb.id]: { ...prev[fb.id], startDate: dates[0].format('YYYY-MM-DD'), endDate: dates[1].format('YYYY-MM-DD') },
                           }))} />
                         <Popconfirm title={t?.('common.delete') || 'Delete?'}
                           onConfirm={() => onDeleteFeedback?.(task.id, fb.id)}

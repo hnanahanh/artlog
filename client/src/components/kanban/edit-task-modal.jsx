@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Modal, Button, Flex, Space, Popconfirm, Typography, Divider } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { useState, useEffect, useMemo } from 'react';
+import { Modal, Button, Flex, Space, Popconfirm, Typography } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import NeoRangePicker from '../shared/neo-range-picker.jsx';
 import NeoSelect from '../shared/neo-select.jsx';
 import NeoInput from '../shared/neo-input.jsx';
-import { STATUSES } from '../../utils/status-constants.js';
 
 const { Text } = Typography;
 
@@ -14,12 +13,13 @@ const neoLabel = { fontSize: 11, fontWeight: 700, color: 'var(--text-secondary, 
 export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFeedback, onUpdateFeedback, t, gameOptions = [], projectOptions = [] }) {
   const [form, setForm] = useState({});
   const [fbEdits, setFbEdits] = useState({});
+  const [hoveredFbId, setHoveredFbId] = useState(null);
 
   useEffect(() => {
     if (task) {
       setForm({
         name: task.name, estTime: task.estTime, estUnit: task.estUnit,
-        startDate: task.startDate, dueDate: task.dueDate, status: task.status,
+        startDate: task.startDate, dueDate: task.dueDate,
         game: task.game || '', project: task.project || '',
       });
       const edits = {};
@@ -38,8 +38,8 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.startDate, form.dueDate]);
 
-  // Use real task id (feedback bar proxies carry _parentId)
   const realTaskId = task._parentId ?? task.id;
+  const hasFeedbacks = task.feedbacks?.length > 0;
 
   const handleSave = () => {
     onEdit?.(realTaskId, form);
@@ -57,9 +57,84 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
     if (Object.keys(data).length) onUpdateFeedback?.(realTaskId, fbId, data);
   };
 
+  // Build ranges array for multi-range picker (task + feedbacks)
+  const dateRanges = useMemo(() => {
+    if (!hasFeedbacks || !form.startDate) return null;
+    const ranges = [{
+      key: 'task',
+      label: 'Task',
+      value: form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null,
+    }];
+    task.feedbacks.forEach((fb, i) => {
+      const s = fbEdits[fb.id]?.startDate ?? fb.startDate ?? fb.createdAt;
+      const e = fbEdits[fb.id]?.endDate ?? fb.endDate ?? fb.createdAt;
+      ranges.push({
+        key: `fb-${fb.id}`,
+        label: `FB ${i + 1}`,
+        value: [dayjs(s), dayjs(e)],
+      });
+    });
+    return ranges;
+  }, [hasFeedbacks, form.startDate, form.dueDate, task.feedbacks, fbEdits]);
+
+  // Handle multi-range change with chain cascade
+  const handleRangeChange = (key, dates) => {
+    if (!dates?.[0] || !dates?.[1]) return;
+    const start = dates[0].format('YYYY-MM-DD');
+    const end = dates[1].format('YYYY-MM-DD');
+
+    if (key === 'task') {
+      setForm(f => ({ ...f, startDate: start, dueDate: end }));
+      // Chain: task.dueDate → FB1.startDate
+      const firstFb = task.feedbacks?.[0];
+      if (firstFb) {
+        setFbEdits(prev => ({ ...prev, [firstFb.id]: { ...prev[firstFb.id], startDate: end } }));
+        onUpdateFeedback?.(realTaskId, firstFb.id, { startDate: end });
+      }
+    } else {
+      // Feedback range changed
+      const fbId = key.replace('fb-', '');
+      setFbEdits(prev => ({
+        ...prev,
+        [fbId]: { ...prev[fbId], startDate: start, endDate: end },
+      }));
+
+      const fbIdx = task.feedbacks?.findIndex(f => f.id === fbId);
+      if (fbIdx === -1) return;
+
+      // Chain backward: if first feedback, sync task.dueDate = fb.startDate
+      if (fbIdx === 0) {
+        setForm(f => ({ ...f, dueDate: start }));
+      } else {
+        // Chain backward: prev feedback endDate = this feedback startDate
+        const prevFb = task.feedbacks[fbIdx - 1];
+        if (prevFb) {
+          setFbEdits(prev => ({ ...prev, [prevFb.id]: { ...prev[prevFb.id], endDate: start } }));
+          onUpdateFeedback?.(realTaskId, prevFb.id, { endDate: start });
+        }
+      }
+
+      // Chain forward: next feedback startDate = this feedback endDate
+      const nextFb = task.feedbacks?.[fbIdx + 1];
+      if (nextFb) {
+        setFbEdits(prev => ({ ...prev, [nextFb.id]: { ...prev[nextFb.id], startDate: end } }));
+        onUpdateFeedback?.(realTaskId, nextFb.id, { startDate: end });
+      }
+
+      // Persist this feedback's dates
+      const fb = task.feedbacks[fbIdx];
+      const data = {};
+      if (start !== fb.startDate) data.startDate = start;
+      if (end !== (fb.endDate ?? fb.createdAt?.slice(0, 10))) data.endDate = end;
+      if (Object.keys(data).length) onUpdateFeedback?.(realTaskId, fbId, data);
+    }
+  };
+
   if (!task) return null;
 
   return (
+    <>
+    <style>{`.neo-modal-wrapper .ant-modal-content { overflow: visible !important; } .neo-modal-wrapper .ant-modal { overflow: visible !important; }`}</style>
     <Modal
       title={<span style={{ fontWeight: 900, fontSize: 14, letterSpacing: 0.3 }}>Edit Task</span>}
       open={open}
@@ -69,19 +144,44 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
       cancelText="Cancel"
       width={480}
       destroyOnClose
+      classNames={{ wrapper: 'neo-modal-wrapper' }}
       styles={{
         header: { borderBottom: '2px solid var(--border-color)', paddingBottom: 10, marginBottom: 0 },
+        body: { overflow: 'visible' },
         footer: { borderTop: '2px solid var(--border-color)', paddingTop: 10, marginTop: 0 },
       }}
     >
       <Space direction="vertical" size={10} style={{ width: '100%', paddingTop: 8 }}>
-        {/* Name */}
+        {/* Name + Feedback names inline */}
         <div>
           <Text style={neoLabel}>Name</Text>
           <NeoInput
             value={form.name ?? ''}
             onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
           />
+          {hasFeedbacks && task.feedbacks.map(fb => (
+            <Flex
+              key={fb.id} gap={6} align="center"
+              style={{ marginTop: 4, marginLeft: 16 }}
+              onMouseEnter={() => setHoveredFbId(fb.id)}
+              onMouseLeave={() => setHoveredFbId(null)}
+            >
+              <NeoInput
+                style={{ flex: 1 }}
+                value={fbEdits[fb.id]?.content ?? fb.content}
+                onChange={e => setFbEdits(prev => ({ ...prev, [fb.id]: { ...prev[fb.id], content: e.target.value } }))}
+                onBlur={() => handleFbSave(fb.id)}
+                onKeyDown={e => { if (e.key === 'Enter') handleFbSave(fb.id); }}
+              />
+              <Popconfirm title="Delete?" onConfirm={() => onDeleteFeedback?.(realTaskId, fb.id)} okText="OK" cancelText="Cancel">
+                <Button
+                  type="text" size="small" danger
+                  icon={<CloseOutlined style={{ fontSize: 12 }} />}
+                  style={{ flexShrink: 0, width: 24, height: 24, padding: 0, visibility: hoveredFbId === fb.id ? 'visible' : 'hidden' }}
+                />
+              </Popconfirm>
+            </Flex>
+          ))}
         </div>
 
         {/* Game + Project */}
@@ -106,7 +206,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
           </div>
         </Flex>
 
-        {/* Est time + Status */}
+        {/* Est time + Dates */}
         <Flex gap={8}>
           <div style={{ flex: 1 }}>
             <Text style={neoLabel}>Est Time</Text>
@@ -127,88 +227,30 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
               }}
             />
           </div>
-          <div style={{ flex: 1 }}>
-            <Text style={neoLabel}>Status</Text>
-            <NeoSelect
-              value={form.status}
-              options={STATUSES}
-              allowClear={false}
-              onChange={v => setForm(f => ({ ...f, status: v }))}
-            />
+          <div style={{ flex: 2 }}>
+            <Text style={neoLabel}>Dates</Text>
+            {dateRanges ? (
+              <NeoRangePicker
+                style={{ width: '100%' }}
+                ranges={dateRanges}
+                onRangeChange={handleRangeChange}
+              />
+            ) : (
+              <NeoRangePicker
+                style={{ width: '100%' }}
+                value={form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null}
+                onChange={dates => {
+                  if (dates?.[0] && dates?.[1]) {
+                    setForm(f => ({ ...f, startDate: dates[0].format('YYYY-MM-DD'), dueDate: dates[1].format('YYYY-MM-DD') }));
+                  }
+                }}
+              />
+            )}
           </div>
         </Flex>
 
-        {/* Dates */}
-        <div>
-          <Text style={neoLabel}>Dates</Text>
-          <NeoRangePicker
-            style={{ width: '100%' }}
-            value={form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null}
-            onChange={dates => {
-              if (dates?.[0] && dates?.[1]) {
-                const start = dates[0].format('YYYY-MM-DD');
-                const end = dates[1].format('YYYY-MM-DD');
-                setForm(f => ({ ...f, startDate: start, dueDate: end }));
-                // Linked boundary: first feedback startDate = task dueDate
-                const firstFb = task.feedbacks?.[0];
-                if (firstFb) {
-                  setFbEdits(prev => ({ ...prev, [firstFb.id]: { ...prev[firstFb.id], startDate: end } }));
-                  onUpdateFeedback?.(realTaskId, firstFb.id, { startDate: end });
-                }
-              }
-            }}
-          />
-        </div>
-
-        {/* Feedbacks */}
-        {task.feedbacks?.length > 0 && (
-          <>
-            <Divider style={{ margin: '4px 0', borderColor: 'var(--border-color)', borderWidth: 2 }}>
-              <Text style={{ ...neoLabel, fontSize: 10 }}>Feedbacks ({task.feedbacks.length})</Text>
-            </Divider>
-            {task.feedbacks.map(fb => (
-              <Flex key={fb.id} gap={6} align="center">
-                <NeoInput
-                  style={{ flex: 1 }}
-                  value={fbEdits[fb.id]?.content ?? fb.content}
-                  onChange={e => setFbEdits(prev => ({ ...prev, [fb.id]: { ...prev[fb.id], content: e.target.value } }))}
-                  onBlur={() => handleFbSave(fb.id)}
-                  onKeyDown={e => { if (e.key === 'Enter') handleFbSave(fb.id); }}
-                />
-                {/* Feedback date as range picker */}
-                <NeoRangePicker
-                  numberOfMonths={1}
-                  value={[
-                    dayjs(fbEdits[fb.id]?.startDate ?? fb.startDate ?? fb.createdAt),
-                    dayjs(fbEdits[fb.id]?.endDate ?? fb.endDate ?? fb.createdAt),
-                  ]}
-                  onChange={dates => {
-                    if (dates?.[0] && dates?.[1]) {
-                      const newStart = dates[0].format('YYYY-MM-DD');
-                      const newEnd = dates[1].format('YYYY-MM-DD');
-                      setFbEdits(prev => ({
-                        ...prev,
-                        [fb.id]: { ...prev[fb.id], startDate: newStart, endDate: newEnd },
-                      }));
-                      // Linked boundary: if first feedback, sync task dueDate = feedback startDate
-                      if (task.feedbacks?.indexOf(fb) === 0) {
-                        setForm(f => ({ ...f, dueDate: newStart }));
-                      }
-                      const data = {};
-                      if (newStart !== fb.startDate) data.startDate = newStart;
-                      if (newEnd !== (fb.endDate ?? fb.createdAt?.slice(0, 10))) data.endDate = newEnd;
-                      if (Object.keys(data).length) onUpdateFeedback?.(realTaskId, fb.id, data);
-                    }
-                  }}
-                />
-                <Popconfirm title="Delete?" onConfirm={() => onDeleteFeedback?.(realTaskId, fb.id)} okText="OK" cancelText="Cancel">
-                  <Button danger icon={<DeleteOutlined />} style={{ flexShrink: 0 }} />
-                </Popconfirm>
-              </Flex>
-            ))}
-          </>
-        )}
       </Space>
     </Modal>
+    </>
   );
 }

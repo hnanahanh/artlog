@@ -37,12 +37,13 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
   return (
     <div style={{ 
       display: 'grid', 
-      gridTemplateColumns: 'repeat(5, 1fr)', // Mon–Fri only
+      gridTemplateColumns: 'repeat(7, 1fr)', // Sun–Sat
+      width: '100%',
       border: '2px solid #222', 
       borderRadius: 4, 
       overflow: 'hidden', 
       boxShadow: '4px 4px 0px #222',
-      background: 'transparent' 
+      background: '#fffdf7'
     }}>
       {/* 1. Header: Thứ 2 -> CN */}
       {DAY_NAMES.map((name, i) => (
@@ -50,7 +51,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
           textAlign: 'center', fontSize: 12, fontWeight: 800,
           color: '#222', padding: '8px 0',
           background: '#fffdf7',
-          borderRight: i < 4 ? '1px solid #222' : 'none',
+          borderRight: i < 6 ? '1px solid #222' : 'none',
           borderBottom: '2px solid #222',
         }}>
           {name}
@@ -89,7 +90,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
         }
         const taskRows = packTasksIntoRows(positioned);
 
-        return weekDays.filter((_, i) => i < 5).map((day, dayIdx) => {
+        return weekDays.map((day, dayIdx) => {
           const dateStr = day.format('YYYY-MM-DD');
           const isCurrentMonth = day.month() + 1 === month;
           const isToday = dateStr === todayStr;
@@ -105,8 +106,8 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
               onDrop={e => handleDrop(e, dateStr)}
               style={{
                 minHeight: '120px',
-                background: isDragOver ? 'rgba(22,119,255,0.10)' : isToday ? '#e6f4ff' : !isCurrentMonth ? '#f5f5f5' : '#fffdf7',
-                borderRight: dayIdx < 4 ? '1px solid #222' : 'none',
+                background: isDragOver ? 'rgba(22,119,255,0.10)' : !isCurrentMonth ? '#f5f5f5' : 'transparent',
+                borderRight: dayIdx < 6 ? '1px solid #222' : 'none',
                 borderBottom: weekIdx < weeks.length - 1 ? '1px solid #222' : 'none',
                 display: 'flex',
                 flexDirection: 'column',
@@ -114,6 +115,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                 outlineOffset: '-2px',
                 transition: 'background 0.1s',
                 position: 'relative',
+                minWidth: 0,
               }}>
               {/* Date number + add button */}
               <div style={{
@@ -144,17 +146,18 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                   )}
                 </div>
                 <span style={{
-                  fontSize: 13,
-                  fontWeight: 800,
-                  fontFamily: "Google Sans Code",
-                  color: !isCurrentMonth ? '#bfbfbf' : '#222',
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                  width: 22, height: 22, borderRadius: '50%',
+                  background: isToday ? '#ff4d4f' : 'transparent',
+                  fontSize: 13, fontWeight: 800, fontFamily: "Google Sans Code",
+                  color: isToday ? '#fff' : !isCurrentMonth ? '#bfbfbf' : '#222',
                 }}>
                   {day.date()}
                 </span>
               </div>
 
               {/* Task hiển thị trong ô này */}
-              <div style={{ flex: 1, padding: '2px' }}>
+              <div style={{ flex: 1, padding: 0 }}>
                 {taskRows.map((row, rowIdx) => {
                   // Find the bar that STARTS at this column (exact match prevents task bar
                   // from shadowing an adjacent feedback bar sharing the same boundary column)
@@ -162,10 +165,11 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                   if (taskInCell) {
                     return (
                       <div key={taskInCell.id} style={{
-                        width: `calc(${taskInCell.span}00% + ${(taskInCell.span - 1)}px)`,
-                        zIndex: 10,
+                        width: `calc(${taskInCell.span}00%)`,
+                        zIndex: 2,
                         position: 'relative',
-                        marginBottom: '4px'
+                        marginBottom: '2px',
+                        padding: '0 1px'
                       }}>
                         <CalendarTaskBar task={taskInCell} span={taskInCell.span} todayStr={todayStr} onEdit={onEdit} onDelete={onDelete} onDeleteFeedback={onDeleteFeedback} onUpdateFeedback={onUpdateFeedback} gameOptions={gameOptions} projectOptions={projectOptions} />
                       </div>

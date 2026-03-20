@@ -1,20 +1,20 @@
 /* === CSS Variables for Theme === */
 :root {
-  --bg-primary: #ffffff;
+  --bg-primary: #ebefe6;
   --bg-secondary: #f5f5f5;
-  --bg-card: #fffdf7;
+  --bg-card: #f2eeee;
   --bg-header: #d9d9d9;
   --text-primary: #222222;
   --text-secondary: #8c8c8c;
   --border-color: #222222;
-  --shadow-color: #000000;
-  --accent-color: #c47dff;
+  --shadow-color: #222222;
+  --accent-color: #93b784;
   --accent-active: #fff566;
   --danger-color: #ff4d4f;
   --danger-bg: #ffccc7;
   --danger-text: #cf1322;
   --grid-line-color: rgba(0, 0, 0, 0.05);
-  --sidebar-bg: #7c3aed;
+  --sidebar-bg: #a48dee;
   --feedback-color: #722ed1;
   --highlight-duration: #52c41a;
   --col-todo-header: #fff566;
@@ -64,13 +64,15 @@
   box-shadow: none !important;
 }
 
-/* Calendar task bars: smaller shadow so stacked bars don't overlap */
+/* Calendar task bars: no border/shadow by default, show on hover */
 .calendar-task-bar .ant-card {
-  box-shadow: 2px 2px 0px var(--shadow-color) !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
 }
 .calendar-task-bar .ant-card:hover {
-  transform: translate(2px, 2px);
-  box-shadow: none !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 2px 2px 0px var(--shadow-color) !important;
+  transform: none;
 }
 
 /* Neo-box: reusable hover effect for shadow boxes */

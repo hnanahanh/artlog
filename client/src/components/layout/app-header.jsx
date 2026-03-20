@@ -16,14 +16,14 @@ const BTN_BASE = {
   cursor: 'pointer', userSelect: 'none',
   color: 'var(--text-primary)',
   transition: 'background-color 0.15s',
-  fontFamily: "'Google Sans Code', monospace",
+  fontFamily: "Google Sans Code",
   boxSizing: 'border-box',
 };
 
 const NAV_BTN = {
   ...BTN_BASE,
   padding: '0 24px',
-  fontWeight: 700, fontSize: 16,
+  fontWeight: 900, fontSize: 16,
   whiteSpace: 'nowrap',
 };
 
@@ -64,7 +64,7 @@ export default function AppHeader() {
                 flex: '1 1 0',
                 justifyContent: 'center',
                 background: isActive ? 'var(--accent-color)' : 'transparent',
-                color: isActive ? '#ffffff' : 'var(--text-primary)',
+                color: isActive ? '#222' : 'var(--text-primary)',
               }}
               onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--bg-secondary)'; }}
               onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}

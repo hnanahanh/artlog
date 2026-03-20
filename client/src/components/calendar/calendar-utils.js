@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 
-// Day name headers (Mon→Fri only, weekends hidden)
-export const DAY_NAMES = ['T2', 'T3', 'T4', 'T5', 'T6'];
+// Day name headers (Sun→Sat, 7 columns)
+export const DAY_NAMES = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
 /**
  * Get all weeks for a month view. Each week = array of 7 dayjs (Mon→Sun).
@@ -9,8 +9,8 @@ export const DAY_NAMES = ['T2', 'T3', 'T4', 'T5', 'T6'];
  */
 export function getWeeksInMonth(year, month) {
   const firstDay = dayjs(`${year}-${String(month).padStart(2, '0')}-01`);
-  // dayjs .day(): 0=Sun, 1=Mon. Convert to Mon-based: Mon=0, Sun=6
-  const startDow = (firstDay.day() + 6) % 7;
+  // dayjs .day(): 0=Sun. Week starts on Sunday.
+  const startDow = firstDay.day();
   const gridStart = firstDay.subtract(startDow, 'day');
 
   const weeks = [];
@@ -39,10 +39,10 @@ export function getTaskBarStyle(task, todayStr) {
   const isToday = !isDone && !isOverdue && (task.startDate || task.dueDate) <= todayStr && task.dueDate >= todayStr;
   const fb = !!task.isFeedback;
 
-  if (isDone) return { bg: '#f6ffed', border: '#52c41a', color: '#389e0d', emoji: '✅', isFeedback: fb };
-  if (isOverdue) return { bg: '#fff2f0', border: '#ff4d4f', color: '#cf1322', emoji: '🚨', isFeedback: fb };
-  if (isToday) return { bg: '#e6f4ff', border: '#1677ff', color: '#0958d9', emoji: '⚡', isFeedback: fb };
-  return { bg: '#f5f5f5', border: '#d9d9d9', color: '#595959', emoji: '', isFeedback: fb };
+  if (isDone) return { bg: '#d9f7be', border: '#52c41a', color: '#389e0d', emoji: '✅', isFeedback: fb };
+  if (isOverdue) return { bg: '#ffccc7', border: '#ff4d4f', color: '#cf1322', emoji: '🚨', isFeedback: fb };
+  if (isToday) return { bg: '#bae0ff', border: '#1677ff', color: '#0958d9', emoji: '⚡', isFeedback: fb };
+  return { bg: '#e8e8e8', border: '#d9d9d9', color: '#595959', emoji: '', isFeedback: fb };
 }
 
 /**
@@ -67,10 +67,10 @@ export function packTasksIntoRows(positionedTasks) {
         continue;
       }
     }
-    // Normal packing: exclusive boundary allows adjacent tasks to share a row
+    // Normal packing: inclusive boundary prevents column sharing
     let placed = false;
     for (const row of rows) {
-      const overlaps = row.some(t => task.startCol < t.endCol && task.endCol > t.startCol);
+      const overlaps = row.some(t => task.startCol <= t.endCol && task.endCol >= t.startCol);
       if (!overlaps) {
         row.push(task);
         placed = true;
@@ -96,8 +96,7 @@ export function getTaskWeekPosition(task, weekStart, weekEnd) {
   if (taskStart > we || taskEnd < ws) return null;
 
   const startCol = Math.max(0, dayjs(taskStart).diff(weekStart, 'day'));
-  const endCol = Math.min(4, dayjs(taskEnd).diff(weekStart, 'day'));
-  // Task falls entirely on weekend (Sat/Sun) or before Mon
-  if (startCol > 4 || endCol < 0) return null;
+  const endCol = Math.min(6, dayjs(taskEnd).diff(weekStart, 'day'));
+  if (startCol > 6 || endCol < 0) return null;
   return { startCol, endCol, span: endCol - startCol + 1 };
 }

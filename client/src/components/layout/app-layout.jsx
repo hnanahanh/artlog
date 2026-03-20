@@ -15,7 +15,7 @@ const SIDEBAR_STYLE = {
 const SIDEBAR_TEXT = {
   writingMode: 'vertical-rl',
   transform: 'rotate(180deg)',
-  color: '#ffffff',
+  color: '#222',
   fontWeight: 800,
   fontSize: 42,
   letterSpacing: 4,
@@ -38,6 +38,7 @@ export default function AppLayout({ children }) {
       {/* Outer wrapper: flex-row — sidebar left (full height), then header+content column */}
       <div style={{
         display: 'flex', flexDirection: 'row',
+        backgroundColor: 'var(--bg-primary)',
         border: '3px solid var(--border-color)',
         borderRadius: 4,
         boxShadow: '4px 4px 0px var(--shadow-color)',
@@ -57,7 +58,6 @@ export default function AppLayout({ children }) {
           <Content className="app-content" style={{
             flex: 1, display: 'flex', flexDirection: 'column',
             padding: 16, gap: 16, overflowY: 'auto',
-            backgroundColor: 'var(--bg-primary)',
             backgroundImage: `linear-gradient(var(--grid-line-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line-color) 1px, transparent 1px)`,
             backgroundSize: '20px 20px',
           }}>
@@ -67,9 +67,9 @@ export default function AppLayout({ children }) {
           {/* Fixed marquee footer */}
           <style>{`
             @keyframes marquee-horizontal { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-            .marquee-footer { height: 60px; overflow: hidden; border-top: 4px solid #000; background: var(--bg-header); display: flex; align-items: center; flex-shrink: 0; }
+            .marquee-footer { height: 60px; overflow: hidden; border-top: 4px solid #000; background color: #869f79; display: flex; align-items: center; flex-shrink: 0; }
             .marquee-track { display: flex; flex-direction: row; width: max-content; animation: marquee-horizontal 60s linear infinite; }
-            .marquee-item { height: 60px; display: flex; align-items: center; font-weight: 900; font-size: 18px; text-transform: uppercase; color: var(--text-primary); letter-spacing: 3px; white-space: nowrap; font-family: 'Google Sans Code', monospace; padding: 0 32px; }
+            .marquee-item { height: 60px; display: flex; align-items: center; font-weight: 900; font-size: 18px; text-transform: uppercase; color: var(--text-primary); letter-spacing: 3px; white-space: nowrap; font-family: 'Google Sans Code'; padding: 0 32px; }
           `}</style>
           <div className="marquee-footer">
             <div className="marquee-track">

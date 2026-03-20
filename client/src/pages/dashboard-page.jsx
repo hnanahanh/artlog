@@ -248,21 +248,13 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
 
   const tabItems = [
     { value: 'kanban', label: 'Kanban', children: <KanbanBoard refreshKey={refreshKey} onRefresh={handleRefresh} /> },
-    { value: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} /> },
+    { value: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} onTasksCreated={onTasksCreated} /> },
     { value: 'table', label: t('nav.table') || 'Bảng', children: <TableTab refreshKey={refreshKey} /> },
-    { value: 'reminder', label: t('reminder.title') || 'Nhắc nhở', children: <ReminderTab /> },
   ];
-
-  const NEO_BOX = {
-    border: '3px solid var(--border-color)', borderRadius: 2,
-    boxShadow: '4px 4px 0px var(--shadow-color)', background: 'var(--bg-card)',
-    overflow: 'hidden', transition: 'background-color 0.3s, border-color 0.3s, box-shadow 0.15s, transform 0.15s',
-  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      <style>{NEO_TABS_CSS}</style>
-      <CalendarTab refreshKey={refreshKey} onTasksCreated={onTasksCreated} />
+      <NeoTabs defaultValue="calendar" items={tabItems} />
     </div>
   );
 }
