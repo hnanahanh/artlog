@@ -15,7 +15,7 @@ const FALLBACK_OPTIONS = [
   { value: 'dueDate_asc', label: 'Deadline (sớm nhất trước)' },
 ];
 
-export default function SettingsModal({ open, onClose }) {
+export default function SettingsModal({ open, onClose, lang, toggleLang, isDark, toggleTheme }) {
   const { t } = useI18n();
   const [rules, setRules] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -65,7 +65,8 @@ export default function SettingsModal({ open, onClose }) {
     <Modal
       open={open}
       onCancel={onClose}
-      title={t('nav.settings')}
+      title={null}
+      closable={false}
       width={600}
       footer={
         <Space>
@@ -77,16 +78,55 @@ export default function SettingsModal({ open, onClose }) {
         </Space>
       }
       styles={{
-        header: { background: 'var(--bg-header)', borderBottom: '2px solid var(--border-color)', padding: '12px 20px' },
-        body: { background: 'var(--bg-card)', padding: '16px 20px', maxHeight: '70vh', overflowY: 'auto' },
+        header: { display: 'none' },
+        body: { background: 'var(--bg-card)', padding: 0, maxHeight: '70vh', overflowY: 'auto', fontFamily: "'Google Sans Code', monospace" },
         footer: { background: 'var(--bg-card)', borderTop: '2px solid var(--border-color)', padding: '12px 20px' },
-        content: { border: '3px solid var(--border-color)', borderRadius: 2, boxShadow: '4px 4px 0px var(--shadow-color)' },
       }}
     >
+      {/* Title row — integrated header like StatCard */}
+      <div style={{
+        background: 'var(--bg-header)', padding: '10px 20px',
+        borderBottom: '2px solid var(--border-color)',
+        textAlign: 'center', fontFamily: "'Google Sans Code', monospace",
+        fontWeight: 900, fontSize: 16, color: 'var(--text-primary)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        position: 'relative',
+      }}>
+        {t('nav.settings')}
+        <button onClick={onClose} style={{
+          position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
+          background: 'transparent', border: '2px solid var(--border-color)', borderRadius: 2,
+          width: 28, height: 28, cursor: 'pointer', fontWeight: 900, fontSize: 14,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--text-primary)',
+        }}>✕</button>
+      </div>
+
+      {/* Language & Theme toggles */}
+      <div style={{ padding: '16px 20px' }}>
+      {toggleLang && toggleTheme && (
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          <Button onClick={toggleLang} style={{
+            flex: 1, fontWeight: 800, fontFamily: "'Google Sans Code', monospace",
+            border: '2px solid var(--border-color)', borderRadius: 2,
+            boxShadow: '3px 3px 0 var(--shadow-color)',
+          }}>
+            {lang === 'vi' ? '🇬🇧 English' : '🇻🇳 Tiếng Việt'}
+          </Button>
+          <Button onClick={toggleTheme} style={{
+            flex: 1, fontWeight: 800, fontFamily: "'Google Sans Code', monospace",
+            border: '2px solid var(--border-color)', borderRadius: 2,
+            boxShadow: '3px 3px 0 var(--shadow-color)',
+          }}>
+            {isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}
+          </Button>
+        </div>
+      )}
+
       {rules && (
         <Space direction="vertical" size={16} style={{ width: '100%' }}>
           {/* Ngày làm việc */}
-          <Card title="Ngày làm việc" size="small">
+          <Card title={<span style={{ fontFamily: "'Google Sans Code', monospace", fontWeight: 900 }}>Ngày làm việc</span>} size="small">
             <Checkbox.Group value={rules.workingDays}
               onChange={v => setRules(r => ({ ...r, workingDays: v }))} options={ALL_DAYS} />
             <div style={{ marginTop: 8, fontSize: 12, color: '#8c8c8c' }}>
@@ -95,7 +135,7 @@ export default function SettingsModal({ open, onClose }) {
           </Card>
 
           {/* Feedback Keywords */}
-          <Card title="Từ khóa Feedback" size="small">
+          <Card title={<span style={{ fontFamily: "'Google Sans Code', monospace", fontWeight: 900 }}>Từ khóa Feedback</span>} size="small">
             <div style={{ marginBottom: 8 }}>
               {rules.feedbackKeywords?.map(kw => (
                 <Tag key={kw} closable onClose={() => removeKeyword(kw)} color="purple" style={{ marginBottom: 4 }}>{kw}</Tag>
@@ -114,7 +154,7 @@ export default function SettingsModal({ open, onClose }) {
           </Card>
 
           {/* Magic Input */}
-          <Card title="Magic Input" size="small">
+          <Card title={<span style={{ fontFamily: "'Google Sans Code', monospace", fontWeight: 900 }}>Magic Input</span>} size="small">
             <Form.Item label="Ký tự tách Game / Project" style={{ marginBottom: 8 }}>
               <Input size="small" value={rules.contextSeparator ?? ' - '} style={{ width: 100 }}
                 onChange={e => setRules(r => ({ ...r, contextSeparator: e.target.value }))} />
@@ -139,7 +179,7 @@ export default function SettingsModal({ open, onClose }) {
           </Card>
 
           {/* Priority Rules */}
-          <Card title="Luật ưu tiên" size="small">
+          <Card title={<span style={{ fontFamily: "'Google Sans Code', monospace", fontWeight: 900 }}>Luật ưu tiên</span>} size="small">
             {rules.priorityRules?.length > 0 && (
               <div style={{ marginBottom: 12 }}>
                 {rules.priorityRules.map((rule, idx) => (
@@ -179,6 +219,7 @@ export default function SettingsModal({ open, onClose }) {
           </Card>
         </Space>
       )}
+      </div>
     </Modal>
   );
 }

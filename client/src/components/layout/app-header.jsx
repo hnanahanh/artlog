@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Tooltip } from 'antd';
-import { SettingOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
+import { SettingOutlined } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '../../i18n/i18n-config';
 import { useTheme } from '../../theme/theme-context';
@@ -9,7 +9,6 @@ import SettingsModal from '../settings/settings-modal.jsx';
 const HEADER_HEIGHT = 48;
 
 const BTN_BASE = {
-  height: HEADER_HEIGHT,
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   borderRight: '3px solid var(--border-color)',
   flex: '0 0 auto',
@@ -30,6 +29,7 @@ const NAV_BTN = {
 const ACTION_BTN = {
   ...BTN_BASE,
   width: HEADER_HEIGHT, minWidth: HEADER_HEIGHT,
+  height: '100%',
 };
 
 export default function AppHeader() {
@@ -47,7 +47,7 @@ export default function AppHeader() {
   return (
     <>
       <div className="app-header-bar" style={{
-        display: 'flex', justifyContent: 'flex-start', gap: 0,
+        display: 'flex', justifyContent: 'flex-start', alignItems: 'stretch', gap: 0,
         background: 'var(--bg-header)',
         minHeight: HEADER_HEIGHT,
         borderBottom: '3px solid var(--border-color)',
@@ -75,29 +75,16 @@ export default function AppHeader() {
           );
         })}
 
-        {/* Action buttons */}
-        <Tooltip title={lang === 'vi' ? 'English' : 'Tiếng Việt'}>
-          <div className="action-btn" onClick={toggleLang} style={ACTION_BTN}>
-            <span style={{ fontWeight: 800, fontSize: 14 }}>{lang.toUpperCase()}</span>
-          </div>
-        </Tooltip>
-
+        {/* Settings button only — lang & theme moved to settings modal */}
         <Tooltip title={t('nav.settings')}>
-          <div className="action-btn" onClick={() => setSettingsOpen(true)} style={ACTION_BTN}>
+          <div className="action-btn" onClick={() => setSettingsOpen(true)} style={{ ...ACTION_BTN, borderRight: 'none' }}>
             <SettingOutlined style={{ fontSize: 18 }} />
-          </div>
-        </Tooltip>
-
-        <Tooltip title={isDark ? t('nav.light_mode') : t('nav.dark_mode')}>
-          <div className="action-btn" onClick={toggleTheme} style={{ ...ACTION_BTN, borderRight: 'none' }}>
-            {isDark
-              ? <SunOutlined style={{ fontSize: 18 }} />
-              : <MoonOutlined style={{ fontSize: 18 }} />}
           </div>
         </Tooltip>
       </div>
 
-      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)}
+        lang={lang} toggleLang={toggleLang} isDark={isDark} toggleTheme={toggleTheme} />
     </>
   );
 }

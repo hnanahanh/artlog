@@ -1,10 +1,10 @@
 {
   "app.title": "Nhật ký Hoạ nô",
-  "nav.home": "Trang chủ",
+  "nav.home": "Quản Lý Việc",
   "nav.kanban": "Kanban",
   "nav.calendar": "Lịch",
   "nav.table": "Bảng",
-  "nav.kpi": "KPI",
+  "nav.kpi": "Kết Quả Cày",
   "nav.settings": "Cài đặt",
   "status.todo": "Cần làm",
   "status.in_progress": "Đang làm",

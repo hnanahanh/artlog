@@ -26,12 +26,12 @@ const SIDEBAR_TEXT = {
 
 export default function AppLayout({ children }) {
   const { lang } = useI18n();
-  const sidebarTitle = lang === 'vi' ? 'Nhật ký Hoạ Nô' : 'ArtistLog';
+  const sidebarTitle = lang === 'vi' ? 'Nhật ký Hoạ Nô' : 'Artist Log';
 
   return (
     <Layout className="app-outer-layout" style={{
       height: '100vh', overflow: 'hidden',
-      backgroundColor: 'var(--bg-primary)',
+      backgroundColor: 'var(--bg-outer, #fff)',
       padding: '24px',
       transition: 'background-color 0.3s',
     }}>

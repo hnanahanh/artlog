@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { Table, Typography, Button } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
+import { PieChart, Pie, Cell, Label, Tooltip, ResponsiveContainer } from 'recharts';
 import { useI18n } from '../../i18n/i18n-config.jsx';
 import { getKPICsvUrl } from '../../api/task-api-client.js';
 
@@ -9,74 +11,77 @@ const { Text } = Typography;
 const CHART_COLORS = ['#c47dff', '#faad14', '#1677ff', '#52c41a', '#ff4d4f', '#13c2c2', '#eb2f96', '#8c8c8c'];
 
 /* Stat card styled like kanban column header */
-function StatCard({ label, value, headerBg, bodyBg }) {
+function StatCard({ label, value, headerBg }) {
   return (
-    <div style={{ overflow: 'hidden' }}>
-      <div style={{
-        background: headerBg, padding: '4px 10px',
-        fontWeight: 900, fontSize: 11, color: 'var(--text-primary)',
-        borderBottom: '2px solid var(--border-color)',
-      }}>{label}</div>
-      <div style={{
-        background: bodyBg, padding: '6px 12px', textAlign: 'center',
-      }}>
-        <Text strong style={{ fontSize: 18, color: 'var(--text-primary)' }}>{value}</Text>
-      </div>
+    <div style={{
+      overflow: 'hidden', background: headerBg,
+      padding: '8px 12px',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+    }}>
+      <span style={{ fontWeight: 900, fontSize: 11, color: 'var(--text-primary)', textTransform: 'uppercase' }}>{label}</span>
+      <Text strong style={{ fontSize: 20, color: 'var(--text-primary)' }}>{value}</Text>
     </div>
   );
 }
 
-/* SVG Donut chart with center text */
-function DonutChart({ data, title, size = 160 }) {
-  const total = data.reduce((s, d) => s + d.value, 0);
+/* Recharts Donut chart with center label */
+function DonutChart({ data, title }) {
+  const total = useMemo(() => data.reduce((s, d) => s + d.value, 0), [data]);
   if (total === 0) return <Text type="secondary">—</Text>;
 
-  const cx = size / 2, cy = size / 2, r = size * 0.35, stroke = size * 0.15;
-  let cumAngle = -90;
-
-  const arcs = data.map((d, i) => {
-    const angle = (d.value / total) * 360;
-    const startRad = (cumAngle * Math.PI) / 180;
-    const endRad = ((cumAngle + angle) * Math.PI) / 180;
-    cumAngle += angle;
-
-    const x1 = cx + r * Math.cos(startRad);
-    const y1 = cy + r * Math.sin(startRad);
-    const x2 = cx + r * Math.cos(endRad);
-    const y2 = cy + r * Math.sin(endRad);
-    const large = angle > 180 ? 1 : 0;
-
-    if (data.length === 1) {
-      return (
-        <circle key={i} cx={cx} cy={cy} r={r}
-          fill="none" stroke={CHART_COLORS[i % CHART_COLORS.length]}
-          strokeWidth={stroke} />
-      );
-    }
-
-    return (
-      <path key={i}
-        d={`M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`}
-        fill="none" stroke={CHART_COLORS[i % CHART_COLORS.length]}
-        strokeWidth={stroke} />
-    );
-  });
+  const chartData = data.map((d, i) => ({
+    name: d.label, value: d.value, fill: CHART_COLORS[i % CHART_COLORS.length],
+  }));
 
   return (
-    <div style={{ background: 'var(--bg-card)', padding: 12, overflow: 'hidden' }}>
+    <div style={{ background: 'var(--bg-card)', padding: 12, overflow: 'visible' }}>
       <Text strong style={{
         fontSize: 13, color: 'var(--text-primary)', display: 'block',
-        marginBottom: 8, fontWeight: 900,
+        marginBottom: 4, fontWeight: 900,
       }}>{title}</Text>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-          {arcs}
-          <text x={cx} y={cy - 6} textAnchor="middle" fontSize="22" fontWeight="900"
-            fill="var(--text-primary)">{total}</text>
-          <text x={cx} y={cy + 12} textAnchor="middle" fontSize="10"
-            fill="var(--text-secondary)">tasks</text>
-        </svg>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, flex: 1 }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
+        {/* Recharts pie */}
+        <div style={{ width: 160, height: 160, flexShrink: 0 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Tooltip
+                wrapperStyle={{ zIndex: 100 }}
+                contentStyle={{
+                  border: '2px solid var(--border-color)', borderRadius: 2,
+                  boxShadow: '3px 3px 0 var(--shadow-color)',
+                  background: 'var(--bg-card)', fontFamily: "'Google Sans Code', monospace",
+                  fontWeight: 700, fontSize: 12,
+                }}
+              />
+              <Pie data={chartData} dataKey="value" nameKey="name"
+                innerRadius={45} outerRadius={70} strokeWidth={2}
+                stroke="var(--border-color)"
+              >
+                {chartData.map((entry, i) => (
+                  <Cell key={i} fill={entry.fill} />
+                ))}
+                <Label
+                  content={({ viewBox }) => {
+                    if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                      return (
+                        <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
+                          <tspan x={viewBox.cx} y={viewBox.cy - 8} style={{ fontSize: 22, fontWeight: 900, fill: 'var(--text-primary)' }}>
+                            {total}
+                          </tspan>
+                          <tspan x={viewBox.cx} y={viewBox.cy + 10} style={{ fontSize: 10, fill: 'var(--text-secondary)' }}>
+                            tasks
+                          </tspan>
+                        </text>
+                      );
+                    }
+                  }}
+                />
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        {/* Legend */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 100, flex: '1 1 100px' }}>
           {data.map((d, i) => (
             <div key={d.label} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
               <div style={{
@@ -84,8 +89,8 @@ function DonutChart({ data, title, size = 160 }) {
                 background: CHART_COLORS[i % CHART_COLORS.length],
                 border: '1.5px solid var(--border-color)', flexShrink: 0,
               }} />
-              <Text style={{ color: 'var(--text-primary)', fontSize: 12, flex: 1 }}>{d.label}</Text>
-              <Text strong style={{ color: 'var(--text-primary)', fontSize: 12 }}>{d.value}</Text>
+              <Text style={{ color: 'var(--text-primary)', fontSize: 12, flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{d.label}</Text>
+              <Text strong style={{ color: 'var(--text-primary)', fontSize: 12, flexShrink: 0, marginLeft: 4 }}>{d.value}</Text>
             </div>
           ))}
         </div>
@@ -162,33 +167,32 @@ export default function KpiDashboard({ data, from, to }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {/* Row 1+2: Stats + Charts gom chung 1 khung */}
-      <div style={{
+      <div className="neo-box" style={{
         border: '3px solid var(--border-color)', borderRadius: 2,
         boxShadow: '4px 4px 0px var(--shadow-color)', background: 'var(--bg-card)',
         overflow: 'hidden',
       }}>
-        {/* Unified 3-col grid: stats row + charts row */}
-        <div className="kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
-          {/* 3 stat cards */}
+        {/* Stats row: 3 equal columns */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderBottom: '2px solid var(--border-color)' }}>
           {[
-            { label: t('kpi.total'), value: s.totalTasks, headerBg: 'var(--col-todo-header)', bodyBg: 'var(--col-todo-body)' },
-            { label: t('kpi.overdue_rate'), value: `${s.overdueCount || 0} (${s.overdueRate || 0}%)`, headerBg: 'var(--danger-bg)', bodyBg: 'var(--danger-bg)' },
-            { label: t('kpi.est_days'), value: s.totalEstDays, headerBg: 'var(--col-progress-header)', bodyBg: 'var(--col-progress-body)' },
+            { label: t('kpi.total'), value: s.totalTasks, headerBg: 'var(--col-todo-header)' },
+            { label: t('kpi.overdue_rate'), value: `${s.overdueCount || 0} (${s.overdueRate || 0}%)`, headerBg: 'var(--danger-bg)' },
+            { label: t('kpi.est_days'), value: s.totalEstDays, headerBg: 'var(--col-progress-header)' },
           ].map((card, i, arr) => (
             <div key={card.label} style={{
               borderRight: i < arr.length - 1 ? '2px solid var(--border-color)' : 'none',
-              borderBottom: '2px solid var(--border-color)',
             }}>
-              <StatCard label={card.label} value={card.value} headerBg={card.headerBg} bodyBg={card.bodyBg} />
+              <StatCard label={card.label} value={card.value} headerBg={card.headerBg} />
             </div>
           ))}
+        </div>
 
-          {/* Pie chart 1: span 1 col */}
+        {/* Charts row: 2 equal columns */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', background: 'var(--bg-secondary)' }}>
           <div style={{ borderRight: '2px solid var(--border-color)' }}>
             <DonutChart data={gameChartData} title={t('kpi.by_game')} />
           </div>
-          {/* Pie chart 2: span 2 cols */}
-          <div style={{ gridColumn: 'span 2' }}>
+          <div>
             <DonutChart data={projectChartData} title={t('kpi.by_project')} />
           </div>
         </div>

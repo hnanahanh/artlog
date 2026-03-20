@@ -154,18 +154,22 @@ function CalendarTab({ refreshKey, onAddTask }) {
     try { await updateFeedback(taskId, fbId, data); loadTasks(); } catch { message.error('Update feedback failed'); }
   };
 
+  const titleBar = (
+    <Flex align="center" justify="space-between">
+      <Title level={5} style={{ margin: 0, color: 'var(--text-primary)' }}>
+        {(t('calendar.month_format') || '{month}/{year}').replace('{month}', month).replace('{year}', year)}
+      </Title>
+      <Flex gap={8}>
+        <Button icon={<LeftOutlined />} size="small" onClick={() => setCurrent(c => c.subtract(1, 'month'))} />
+        <Button size="small" onClick={() => setCurrent(dayjs())}>{t('calendar.today') || 'Hôm nay'}</Button>
+        <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
+      </Flex>
+    </Flex>
+  );
+
   return (
     <div>
-      <Flex align="center" gap={12} style={{ marginBottom: 12 }}>
-        <Button icon={<LeftOutlined />} size="small" onClick={() => setCurrent(c => c.subtract(1, 'month'))} />
-        <Title level={5} style={{ margin: 0, minWidth: 160, textAlign: 'center', color: 'var(--text-primary)' }}>
-          {(t('calendar.month_format') || '{month}/{year}').replace('{month}', month).replace('{year}', year)}
-        </Title>
-        <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
-        <Button size="small" onClick={() => setCurrent(dayjs())}>{t('calendar.today') || 'Hôm nay'}</Button>
-      </Flex>
-
-      <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} onAddTask={onAddTask} />
+      <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} onAddTask={onAddTask} navBar={titleBar} />
     </div>
   );
 }

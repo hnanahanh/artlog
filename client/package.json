@@ -28,6 +28,7 @@
     "react-dom": "^19.2.0",
     "react-grab": "^0.1.28",
     "react-router-dom": "^6.30.3",
+    "recharts": "^3.8.0",
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {

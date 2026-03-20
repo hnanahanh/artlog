@@ -1,5 +1,6 @@
 /* === CSS Variables for Theme === */
 :root {
+  --bg-outer: #ffffff;
   --bg-primary: #ebefe6;
   --bg-secondary: #f5f5f5;
   --bg-card: #f2eeee;
@@ -26,6 +27,7 @@
 }
 
 [data-theme="dark"] {
+  --bg-outer: #000000;
   --bg-primary: #1a1a2e;
   --bg-secondary: #16213e;
   --bg-card: #222240;
@@ -154,11 +156,62 @@
   box-shadow: 3px 3px 0px rgba(255, 107, 53, 0.3) !important;
 }
 
-/* Modal */
-.ant-modal-content {
-  border: 2px solid var(--border-color) !important;
+/* Modal — neo-brutalism */
+:root .ant-modal .ant-modal-content {
+  border: 3px solid var(--border-color) !important;
   box-shadow: 6px 6px 0px var(--shadow-color) !important;
+  border-radius: 2px !important;
+  padding: 0 !important;
+}
+.ant-modal-header {
+  font-family: 'Google Sans Code', monospace !important;
+  text-align: center !important;
+  border-bottom: 2px solid var(--border-color) !important;
+  background: var(--bg-header) !important;
+}
+.ant-modal-title {
+  font-family: 'Google Sans Code', monospace !important;
+  font-weight: 900 !important;
+  font-size: 18px !important;
+}
+.ant-modal-body { font-family: 'Google Sans Code', monospace !important; }
+
+/* Modal scrollbar — neo */
+.ant-modal-body::-webkit-scrollbar { width: 8px; }
+.ant-modal-body::-webkit-scrollbar-track { background: var(--bg-secondary); border-left: 2px solid var(--border-color); }
+.ant-modal-body::-webkit-scrollbar-thumb { background: var(--border-color); border: 2px solid var(--border-color); border-radius: 0; }
+
+/* Checkbox — neo stroke */
+:root .ant-checkbox-inner {
+  border: 2px solid var(--border-color) !important;
+  border-radius: 2px !important;
+}
+:root .ant-checkbox-checked .ant-checkbox-inner {
+  background: var(--accent-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Slider — neo */
+:root .ant-slider-rail {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border-color) !important;
   border-radius: 0 !important;
+  height: 8px !important;
+}
+:root .ant-slider-track {
+  background: var(--accent-color) !important;
+  border-radius: 0 !important;
+  height: 8px !important;
+}
+:root .ant-slider-handle::after {
+  width: 16px !important; height: 16px !important;
+  border: 3px solid var(--border-color) !important;
+  border-radius: 2px !important;
+  background: var(--bg-card) !important;
+  box-shadow: 2px 2px 0 var(--shadow-color) !important;
+}
+:root .ant-slider-handle:hover::after {
+  box-shadow: none !important;
 }
 
 /* Tags: bold */
@@ -241,7 +294,7 @@
 
 /* Background */
 body {
-  background-color: var(--bg-primary);
+  background-color: var(--bg-outer);
   color: var(--text-primary);
   transition: background-color 0.3s, color 0.3s;
 }
@@ -251,22 +304,19 @@ body {
   /* Hide sidebar on mobile */
   .app-sidebar { display: none !important; }
 
-  /* Reduce outer padding */
-  .app-outer-layout { padding: 0 !important; }
+  /* Reduce outer padding but keep space for border + shadow */
+  .app-outer-layout { padding: 8px !important; }
 
-  /* Remove border-radius and shadow on outer wrapper */
+  /* Keep border and shadow on mobile, just reduce radius */
   .app-outer-wrapper {
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    border-left: none !important;
-    border-right: none !important;
+    border-radius: 2px !important;
   }
 
-  /* Compact header */
-  .app-header-bar { min-height: 40px !important; }
+  /* Compact header — keep action-btn same size as desktop (48px) */
+  .app-header-bar { min-height: 48px !important; }
   .app-header-bar .nav-btn { padding: 0 12px !important; font-size: 14px !important; }
-  .app-header-bar .action-btn { width: 40px !important; min-width: 40px !important; height: 40px !important; }
-
+  /* Tooltip wrapper must also stretch */
+  .app-header-bar > span { display: flex; }
   /* Reduce content padding */
   .app-content { padding: 8px !important; gap: 8px !important; }
 

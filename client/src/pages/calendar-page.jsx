@@ -25,22 +25,22 @@ export default function CalendarPage({ refreshKey }) {
 
   const goToday = () => setCurrent(dayjs());
 
+  const titleBar = (
+    <Flex align="center" justify="space-between">
+      <Title level={5} style={{ margin: 0 }}>
+        {t('calendar.month_format').replace('{month}', month).replace('{year}', year)}
+      </Title>
+      <Flex gap={8}>
+        <Button icon={<LeftOutlined />} size="small" onClick={() => setCurrent(c => c.subtract(1, 'month'))} />
+        <Button size="small" onClick={goToday}>{t('calendar.today')}</Button>
+        <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
+      </Flex>
+    </Flex>
+  );
+
   return (
     <div>
-      {/* Month navigation */}
-      <Flex align="center" gap={12} style={{ marginBottom: 12 }}>
-        <Button icon={<LeftOutlined />} size="small" onClick={() => setCurrent(c => c.subtract(1, 'month'))} />
-        <Title level={5} style={{ margin: 0, minWidth: 160, textAlign: 'center' }}>
-          {t('calendar.month_format').replace('{month}', month).replace('{year}', year)}
-        </Title>
-        <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
-        <Button size="small" onClick={goToday}>{t('calendar.today')}</Button>
-      </Flex>
-
-      {/* Calendar grid */}
-      <div style={{ background: '#fff', borderRadius: 8, padding: 12, border: '1px solid #f0f0f0' }}>
-        <CalendarMonthGrid year={year} month={month} tasks={tasks} />
-      </div>
+      <CalendarMonthGrid year={year} month={month} tasks={tasks} navBar={titleBar} />
     </div>
   );
 }

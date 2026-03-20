@@ -67,7 +67,7 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
           borderRadius: 2,
           boxShadow: '4px 4px 0px var(--shadow-color)',
           background: 'var(--bg-header)',
-          overflow: 'hidden',
+          overflow: 'visible',
           transition: 'background-color 0.3s, border-color 0.3s',
           flexShrink: 0,
         }}>

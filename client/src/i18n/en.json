@@ -1,6 +1,6 @@
 {
-  "app.title": "ArtistLog",
-  "nav.home": "Home",
+  "app.title": "Artist Log",
+  "nav.home": "Task Manager",
   "nav.kanban": "Kanban",
   "nav.calendar": "Calendar",
   "nav.table": "Table",

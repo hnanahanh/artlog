@@ -49,9 +49,10 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
       {navBar && (
         <div style={{
           gridColumn: '1 / -1',
-          padding: '8px 12px',
+          padding: '10px 12px',
           borderBottom: '2px solid #222',
-          background: '#fffdf7',
+          background: 'var(--bg-header, #f5f0e8)',
+          textAlign: 'center',
         }}>
           {navBar}
         </div>
