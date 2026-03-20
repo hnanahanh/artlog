@@ -13,15 +13,14 @@ function StatCard({ label, value, headerBg, bodyBg }) {
   return (
     <div style={{ overflow: 'hidden' }}>
       <div style={{
-        background: headerBg, padding: '6px 12px',
-        fontWeight: 900, fontSize: 12, color: 'var(--text-primary)',
+        background: headerBg, padding: '4px 10px',
+        fontWeight: 900, fontSize: 11, color: 'var(--text-primary)',
         borderBottom: '2px solid var(--border-color)',
       }}>{label}</div>
       <div style={{
-        background: bodyBg, padding: '12px',
-        textAlign: 'center',
+        background: bodyBg, padding: '6px 12px', textAlign: 'center',
       }}>
-        <Text strong style={{ fontSize: 26, color: 'var(--text-primary)' }}>{value}</Text>
+        <Text strong style={{ fontSize: 18, color: 'var(--text-primary)' }}>{value}</Text>
       </div>
     </div>
   );
@@ -168,28 +167,30 @@ export default function KpiDashboard({ data, from, to }) {
         boxShadow: '4px 4px 0px var(--shadow-color)', background: 'var(--bg-card)',
         overflow: 'hidden',
       }}>
-        {/* 3 stat cards — chia cột bằng border */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+        {/* Unified 3-col grid: stats row + charts row */}
+        <div className="kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+          {/* 3 stat cards */}
           {[
             { label: t('kpi.total'), value: s.totalTasks, headerBg: 'var(--col-todo-header)', bodyBg: 'var(--col-todo-body)' },
             { label: t('kpi.overdue_rate'), value: `${s.overdueCount || 0} (${s.overdueRate || 0}%)`, headerBg: 'var(--danger-bg)', bodyBg: 'var(--danger-bg)' },
             { label: t('kpi.est_days'), value: s.totalEstDays, headerBg: 'var(--col-progress-header)', bodyBg: 'var(--col-progress-body)' },
           ].map((card, i, arr) => (
-            <div key={card.label} style={{ borderRight: i < arr.length - 1 ? '2px solid var(--border-color)' : 'none' }}>
+            <div key={card.label} style={{
+              borderRight: i < arr.length - 1 ? '2px solid var(--border-color)' : 'none',
+              borderBottom: '2px solid var(--border-color)',
+            }}>
               <StatCard label={card.label} value={card.value} headerBg={card.headerBg} bodyBg={card.bodyBg} />
             </div>
           ))}
-        </div>
 
-        {/* Divider */}
-        <div style={{ borderTop: '2px solid var(--border-color)' }} />
-
-        {/* 2 donut charts */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+          {/* Pie chart 1: span 1 col */}
           <div style={{ borderRight: '2px solid var(--border-color)' }}>
             <DonutChart data={gameChartData} title={t('kpi.by_game')} />
           </div>
-          <DonutChart data={projectChartData} title={t('kpi.by_project')} />
+          {/* Pie chart 2: span 2 cols */}
+          <div style={{ gridColumn: 'span 2' }}>
+            <DonutChart data={projectChartData} title={t('kpi.by_project')} />
+          </div>
         </div>
       </div>
 
@@ -215,6 +216,11 @@ export default function KpiDashboard({ data, from, to }) {
           </a>
         </div>
         <style>{`
+          @media (max-width: 768px) {
+            .kpi-grid { grid-template-columns: 1fr !important; }
+            .kpi-grid > div { grid-column: span 1 !important; border-right: none !important; border-bottom: 2px solid var(--border-color); }
+            .kpi-grid > div:last-child { border-bottom: none !important; }
+          }
           .kpi-table .ant-table { background: transparent !important; }
           .kpi-table .ant-table-thead > tr > th { background: var(--bg-header) !important; border-bottom: 2px solid var(--border-color) !important; }
           .kpi-table .ant-table-tbody > tr > td { border-bottom: 2px solid var(--border-color) !important; background: transparent !important; }

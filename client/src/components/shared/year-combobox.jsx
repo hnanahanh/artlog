@@ -2,12 +2,13 @@ import { useState, useRef, useEffect } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 
 /* Trigger button style matching NeoRangePicker */
-const triggerStyle = (open) => ({
-  padding: '3px 8px', fontSize: 13, fontWeight: 600,
+const triggerStyle = (open, active) => ({
+  padding: '3px 8px', fontSize: 13, fontWeight: active ? 900 : 600,
   fontFamily: "'Google Sans Code', monospace",
   border: '2px solid var(--border-color)',
-  borderRadius: 2, background: 'var(--bg-card)',
-  color: 'var(--text-primary)',
+  borderRadius: 2,
+  background: active ? '#222' : 'var(--bg-card)',
+  color: active ? '#fff' : 'var(--text-primary)',
   cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4,
   boxShadow: open ? '0 0 0' : '2px 2px 0 var(--shadow-color)',
   transform: open ? 'translate(2px,2px)' : 'none',
@@ -27,7 +28,7 @@ const dropdownStyle = {
  * onChange: (year: number) => void
  * range: years back/forward from current (default 3)
  */
-export default function YearCombobox({ value, onChange, range = 3 }) {
+export default function YearCombobox({ value, onChange, range = 3, active = false, label }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const currentYear = new Date().getFullYear();
@@ -43,8 +44,8 @@ export default function YearCombobox({ value, onChange, range = 3 }) {
 
   return (
     <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <button style={triggerStyle(open)} onClick={() => setOpen(o => !o)}>
-        {value ?? 'Năm...'}
+      <button style={triggerStyle(open, active)} onClick={() => setOpen(o => !o)}>
+        {active ? value : (label || value || 'Năm...')}
         <ChevronsUpDown size={14} style={{ opacity: 0.5 }} />
       </button>
 
