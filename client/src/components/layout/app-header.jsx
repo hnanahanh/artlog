@@ -46,7 +46,7 @@ export default function AppHeader() {
 
   return (
     <>
-      <div style={{
+      <div className="app-header-bar" style={{
         display: 'flex', justifyContent: 'flex-start', gap: 0,
         background: 'var(--bg-header)',
         minHeight: HEADER_HEIGHT,
@@ -58,6 +58,7 @@ export default function AppHeader() {
           return (
             <div
               key={item.key}
+              className="nav-btn"
               onClick={() => navigate(item.key)}
               style={{
                 ...NAV_BTN,
@@ -76,19 +77,19 @@ export default function AppHeader() {
 
         {/* Action buttons */}
         <Tooltip title={lang === 'vi' ? 'English' : 'Tiếng Việt'}>
-          <div onClick={toggleLang} style={ACTION_BTN}>
+          <div className="action-btn" onClick={toggleLang} style={ACTION_BTN}>
             <span style={{ fontWeight: 800, fontSize: 14 }}>{lang.toUpperCase()}</span>
           </div>
         </Tooltip>
 
         <Tooltip title={t('nav.settings')}>
-          <div onClick={() => setSettingsOpen(true)} style={ACTION_BTN}>
+          <div className="action-btn" onClick={() => setSettingsOpen(true)} style={ACTION_BTN}>
             <SettingOutlined style={{ fontSize: 18 }} />
           </div>
         </Tooltip>
 
         <Tooltip title={isDark ? t('nav.light_mode') : t('nav.dark_mode')}>
-          <div onClick={toggleTheme} style={{ ...ACTION_BTN, borderRight: 'none' }}>
+          <div className="action-btn" onClick={toggleTheme} style={{ ...ACTION_BTN, borderRight: 'none' }}>
             {isDark
               ? <SunOutlined style={{ fontSize: 18 }} />
               : <MoonOutlined style={{ fontSize: 18 }} />}

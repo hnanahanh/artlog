@@ -29,14 +29,14 @@ export default function AppLayout({ children }) {
   const sidebarTitle = lang === 'vi' ? 'Nhật ký Hoạ Nô' : 'ArtistLog';
 
   return (
-    <Layout style={{
+    <Layout className="app-outer-layout" style={{
       height: '100vh', overflow: 'hidden',
       backgroundColor: 'var(--bg-primary)',
       padding: '24px',
       transition: 'background-color 0.3s',
     }}>
       {/* Outer wrapper: flex-row — sidebar left (full height), then header+content column */}
-      <div style={{
+      <div className="app-outer-wrapper" style={{
         display: 'flex', flexDirection: 'row',
         backgroundColor: 'var(--bg-primary)',
         border: '3px solid var(--border-color)',
@@ -47,7 +47,7 @@ export default function AppLayout({ children }) {
         transition: 'border-color 0.3s',
       }}>
         {/* Purple sidebar — full height, left */}
-        <div style={SIDEBAR_STYLE}>
+        <div className="app-sidebar" style={SIDEBAR_STYLE}>
           <span style={SIDEBAR_TEXT}>{sidebarTitle}</span>
         </div>
 

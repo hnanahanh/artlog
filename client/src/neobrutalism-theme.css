@@ -245,3 +245,35 @@ body {
   color: var(--text-primary);
   transition: background-color 0.3s, color 0.3s;
 }
+
+/* === Responsive Mobile === */
+@media (max-width: 768px) {
+  /* Hide sidebar on mobile */
+  .app-sidebar { display: none !important; }
+
+  /* Reduce outer padding */
+  .app-outer-layout { padding: 0 !important; }
+
+  /* Remove border-radius and shadow on outer wrapper */
+  .app-outer-wrapper {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border-left: none !important;
+    border-right: none !important;
+  }
+
+  /* Compact header */
+  .app-header-bar { min-height: 40px !important; }
+  .app-header-bar .nav-btn { padding: 0 12px !important; font-size: 14px !important; }
+  .app-header-bar .action-btn { width: 40px !important; min-width: 40px !important; height: 40px !important; }
+
+  /* Reduce content padding */
+  .app-content { padding: 8px !important; gap: 8px !important; }
+
+  /* Compact marquee */
+  .marquee-footer { height: 36px !important; }
+  .marquee-item { height: 36px !important; font-size: 13px !important; padding: 0 16px !important; }
+
+  /* Calendar grid: smaller cells */
+  .calendar-task-bar .ant-card { padding: 0 2px !important; }
+}

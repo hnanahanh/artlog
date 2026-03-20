@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Typography, Flex, Button, message } from 'antd';
 import NeoTabs from '../components/shared/neo-tabs.jsx';
 import { LeftOutlined, RightOutlined, PlusOutlined } from '@ant-design/icons';
+// PlusOutlined still used by addButton below
 import { Drawer } from 'antd';
 import dayjs from 'dayjs';
 import { fetchTodayTasks, fetchTasks, updateTask, deleteTask, deleteFeedback, updateFeedback, fetchCalendarTasks } from '../api/task-api-client.js';
@@ -121,10 +122,10 @@ function TableTab({ refreshKey }) {
 }
 
 // --- Calendar Tab ---
-function CalendarTab({ refreshKey, onTasksCreated }) {  const { t } = useI18n();
+function CalendarTab({ refreshKey, onAddTask }) {
+  const { t } = useI18n();
   const [current, setCurrent] = useState(dayjs());
   const [tasks, setTasks] = useState([]);
-  const [addOpen, setAddOpen] = useState(false);
   const year = current.year();
   const month = current.month() + 1;
 
@@ -138,7 +139,6 @@ function CalendarTab({ refreshKey, onTasksCreated }) {  const { t } = useI18n();
 
   const handleEdit = async (id, formData) => {
     try {
-      // Optimistic update — task bar reflects changes immediately
       setTasks(prev => prev.map(t => t.id === id ? { ...t, ...formData } : t));
       await updateTask(id, formData);
       loadTasks();
@@ -163,46 +163,9 @@ function CalendarTab({ refreshKey, onTasksCreated }) {  const { t } = useI18n();
         </Title>
         <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
         <Button size="small" onClick={() => setCurrent(dayjs())}>{t('calendar.today') || 'Hôm nay'}</Button>
-        <div style={{ flex: 1 }} />
-        <button
-          onClick={() => setAddOpen(true)}
-          style={{
-            padding: '20px 40px', fontSize: 18, fontWeight: 900,
-            fontFamily: "'Google Sans Code', monospace",
-            color: '#222', background: '#7cff40',
-            border: '2px solid #222', borderRadius: 2,
-            boxShadow: '3px 3px 0 #222',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-            transition: 'transform 0.08s, box-shadow 0.08s',
-          }}
-          onMouseDown={e => { e.currentTarget.style.transform = 'translate(3px,3px)'; e.currentTarget.style.boxShadow = 'none'; }}
-          onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
-        >
-          <PlusOutlined style={{ fontSize: 14 }} /> ADD TASK
-        </button>
       </Flex>
 
-      <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} onAddTask={() => setAddOpen(true)} />
-
-      {/* Right drawer: Quick Magic Input */}
-      <Drawer
-        open={addOpen}
-        onClose={() => setAddOpen(false)}
-        placement="right"
-        width={340}
-        title={<span style={{ fontWeight: 900, fontFamily: "'Google Sans Code', monospace" }}>Add Task</span>}
-        styles={{
-          header: { border: 'none', borderBottom: '2px solid var(--border-color)', background: 'var(--bg-header)' },
-          body: { padding: 0, background: 'var(--bg-card)' },
-          wrapper: { boxShadow: '-6px 0 0 var(--shadow-color)' },
-        }}
-        destroyOnClose={false}
-      >
-        <QuickMagicInput
-          onTasksCreated={() => { loadTasks(); onTasksCreated?.(); setAddOpen(false); }}
-        />
-      </Drawer>
+      <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} onAddTask={onAddTask} />
     </div>
   );
 }
@@ -246,15 +209,57 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
     </div>
   );
 
+  const [addOpen, setAddOpen] = useState(false);
+
   const tabItems = [
     { value: 'kanban', label: 'Kanban', children: <KanbanBoard refreshKey={refreshKey} onRefresh={handleRefresh} /> },
-    { value: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} onTasksCreated={onTasksCreated} /> },
+    { value: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} onAddTask={() => setAddOpen(true)} /> },
     { value: 'table', label: t('nav.table') || 'Bảng', children: <TableTab refreshKey={refreshKey} /> },
   ];
 
+  const addButton = (
+    <button
+      onClick={() => setAddOpen(true)}
+      style={{
+        padding: '8px 16px', fontSize: 13, fontWeight: 900,
+        fontFamily: "'Google Sans Code', monospace",
+        color: '#222', background: '#7cff40',
+        border: '2px solid #222', borderRadius: 2,
+        boxShadow: '3px 3px 0 #222',
+        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+        transition: 'transform 0.08s, box-shadow 0.08s',
+        whiteSpace: 'nowrap',
+      }}
+      onMouseDown={e => { e.currentTarget.style.transform = 'translate(3px,3px)'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
+    >
+      <PlusOutlined style={{ fontSize: 12 }} /> ADD
+    </button>
+  );
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      <NeoTabs defaultValue="calendar" items={tabItems} />
+      <NeoTabs defaultValue="calendar" defaultVisible={['calendar']} items={tabItems} extra={addButton} />
+
+      {/* Shared Add Task drawer */}
+      <Drawer
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        placement="right"
+        width={340}
+        title={<span style={{ fontWeight: 900, fontFamily: "'Google Sans Code', monospace" }}>Add Task</span>}
+        styles={{
+          header: { border: 'none', borderBottom: '2px solid var(--border-color)', background: 'var(--bg-header)' },
+          body: { padding: 0, background: 'var(--bg-card)' },
+          wrapper: { boxShadow: '-6px 0 0 var(--shadow-color)' },
+        }}
+        destroyOnClose={false}
+      >
+        <QuickMagicInput
+          onTasksCreated={() => { handleRefresh(); onTasksCreated?.(); setAddOpen(false); }}
+        />
+      </Drawer>
     </div>
   );
 }
