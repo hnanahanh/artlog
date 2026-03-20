@@ -5,7 +5,7 @@ import CalendarTaskBar from './calendar-task-bar.jsx';
 
 const todayStr = dayjs().format('YYYY-MM-DD');
 
-export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, onAddTask }) {
+export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, onAddTask, navBar }) {
   const weeks = getWeeksInMonth(year, month);
   // Derive unique game/project options from all tasks for the edit modal
   const gameOptions = [...new Set(tasks.map(t => t.game).filter(Boolean))];
@@ -45,18 +45,33 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
       boxShadow: '4px 4px 0px #222',
       background: '#fffdf7'
     }}>
-      {/* 1. Header: Thứ 2 -> CN */}
-      {DAY_NAMES.map((name, i) => (
-        <div key={name} style={{
-          textAlign: 'center', fontSize: 12, fontWeight: 800,
-          color: '#222', padding: '8px 0',
-          background: '#fffdf7',
-          borderRight: i < 6 ? '1px solid #222' : 'none',
+      {/* 0. Navigation bar spanning all columns */}
+      {navBar && (
+        <div style={{
+          gridColumn: '1 / -1',
+          padding: '8px 12px',
           borderBottom: '2px solid #222',
+          background: '#fffdf7',
         }}>
-          {name}
+          {navBar}
         </div>
-      ))}
+      )}
+
+      {/* 1. Header: Thứ 2 -> CN — weekend columns (0=CN, 6=T7) muted */}
+      {DAY_NAMES.map((name, i) => {
+        const isWeekend = i === 0 || i === 6;
+        return (
+          <div key={name} style={{
+            textAlign: 'center', fontSize: 12, fontWeight: 800,
+            color: isWeekend ? '#bbb' : '#222', padding: '8px 0',
+            background: '#fffdf7',
+            borderRight: i < 6 ? `1px solid ${isWeekend ? '#ddd' : '#222'}` : 'none',
+            borderBottom: '2px solid #222',
+          }}>
+            {name}
+          </div>
+        );
+      })}
 
       {/* 2. Toàn bộ các ô ngày trong tháng */}
       {weeks.map((weekDays, weekIdx) => {
@@ -94,6 +109,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
           const dateStr = day.format('YYYY-MM-DD');
           const isCurrentMonth = day.month() + 1 === month;
           const isToday = dateStr === todayStr;
+          const isWeekend = dayIdx === 0 || dayIdx === 6;
 
           const isDragOver = dragOverDate === dateStr;
           const isHovered = hoveredDate === dateStr;
@@ -106,8 +122,8 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
               onDrop={e => handleDrop(e, dateStr)}
               style={{
                 minHeight: '120px',
-                background: isDragOver ? 'rgba(22,119,255,0.10)' : !isCurrentMonth ? '#f5f5f5' : 'transparent',
-                borderRight: dayIdx < 6 ? '1px solid #222' : 'none',
+                background: isDragOver ? 'rgba(22,119,255,0.10)' : !isCurrentMonth ? '#f5f5f5' : isWeekend ? '#f9f9f6' : 'transparent',
+                borderRight: dayIdx < 6 ? `1px solid ${isWeekend ? '#ddd' : '#222'}` : 'none',
                 borderBottom: weekIdx < weeks.length - 1 ? '1px solid #222' : 'none',
                 display: 'flex',
                 flexDirection: 'column',
@@ -150,7 +166,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                   width: 22, height: 22, borderRadius: '50%',
                   background: isToday ? '#ff4d4f' : 'transparent',
                   fontSize: 13, fontWeight: 800, fontFamily: "Google Sans Code",
-                  color: isToday ? '#fff' : !isCurrentMonth ? '#bfbfbf' : '#222',
+                  color: isToday ? '#fff' : !isCurrentMonth ? '#bfbfbf' : isWeekend ? '#bbb' : '#222',
                 }}>
                   {day.date()}
                 </span>

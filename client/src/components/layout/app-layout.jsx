@@ -29,14 +29,14 @@ export default function AppLayout({ children }) {
   const sidebarTitle = lang === 'vi' ? 'Nhật ký Hoạ Nô' : 'ArtistLog';
 
   return (
-    <Layout style={{
+    <Layout className="app-layout-root" style={{
       height: '100vh', overflow: 'hidden',
       backgroundColor: 'var(--bg-primary)',
       padding: '24px',
       transition: 'background-color 0.3s',
     }}>
       {/* Outer wrapper: flex-row — sidebar left (full height), then header+content column */}
-      <div style={{
+      <div className="app-layout-outer" style={{
         display: 'flex', flexDirection: 'row',
         backgroundColor: 'var(--bg-primary)',
         border: '3px solid var(--border-color)',
@@ -44,10 +44,9 @@ export default function AppLayout({ children }) {
         boxShadow: '4px 4px 0px var(--shadow-color)',
         overflow: 'hidden',
         height: '100%',
-        transition: 'border-color 0.3s',
       }}>
         {/* Purple sidebar — full height, left */}
-        <div style={SIDEBAR_STYLE}>
+        <div className="app-sidebar" style={SIDEBAR_STYLE}>
           <span style={SIDEBAR_TEXT}>{sidebarTitle}</span>
         </div>
 
@@ -64,12 +63,20 @@ export default function AppLayout({ children }) {
             {children}
           </Content>
 
-          {/* Fixed marquee footer */}
+          {/* Fixed marquee footer + responsive styles */}
           <style>{`
             @keyframes marquee-horizontal { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-            .marquee-footer { height: 60px; overflow: hidden; border-top: 4px solid #000; background color: #869f79; display: flex; align-items: center; flex-shrink: 0; }
+            .marquee-footer { height: 60px; overflow: hidden; border-top: 4px solid #000; display: flex; align-items: center; flex-shrink: 0; }
             .marquee-track { display: flex; flex-direction: row; width: max-content; animation: marquee-horizontal 60s linear infinite; }
             .marquee-item { height: 60px; display: flex; align-items: center; font-weight: 900; font-size: 18px; text-transform: uppercase; color: var(--text-primary); letter-spacing: 3px; white-space: nowrap; font-family: 'Google Sans Code'; padding: 0 32px; }
+            @media (max-width: 768px) {
+              .app-layout-root { padding: 0 !important; }
+              .app-layout-outer { border-radius: 0 !important; border: none !important; box-shadow: none !important; }
+              .app-sidebar { display: none !important; }
+              .app-content { padding: 8px !important; gap: 8px !important; }
+              .marquee-footer { height: 40px; }
+              .marquee-item { height: 40px; font-size: 14px; letter-spacing: 2px; padding: 0 16px; }
+            }
           `}</style>
           <div className="marquee-footer">
             <div className="marquee-track">

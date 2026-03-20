@@ -52,8 +52,8 @@ export function updateTask(id, updates) {
 
   const task = { ...tasks[idx], ...updates, updatedAt: nowISO() };
 
-  // Recalculate due date if est or start changed
-  if (updates.estTime !== undefined || updates.estUnit !== undefined || updates.startDate !== undefined) {
+  // Recalculate due date if est or start changed (skip if dueDate explicitly provided)
+  if (updates.dueDate === undefined && (updates.estTime !== undefined || updates.estUnit !== undefined || updates.startDate !== undefined)) {
     task.dueDate = recalculateDueDate(task);
   }
 

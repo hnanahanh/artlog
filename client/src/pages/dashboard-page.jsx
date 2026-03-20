@@ -121,10 +121,10 @@ function TableTab({ refreshKey }) {
 }
 
 // --- Calendar Tab ---
-function CalendarTab({ refreshKey, onTasksCreated }) {  const { t } = useI18n();
+function CalendarTab({ refreshKey, onAddTask }) {
+  const { t } = useI18n();
   const [current, setCurrent] = useState(dayjs());
   const [tasks, setTasks] = useState([]);
-  const [addOpen, setAddOpen] = useState(false);
   const year = current.year();
   const month = current.month() + 1;
 
@@ -138,7 +138,6 @@ function CalendarTab({ refreshKey, onTasksCreated }) {  const { t } = useI18n();
 
   const handleEdit = async (id, formData) => {
     try {
-      // Optimistic update — task bar reflects changes immediately
       setTasks(prev => prev.map(t => t.id === id ? { ...t, ...formData } : t));
       await updateTask(id, formData);
       loadTasks();
@@ -154,56 +153,19 @@ function CalendarTab({ refreshKey, onTasksCreated }) {  const { t } = useI18n();
     try { await updateFeedback(taskId, fbId, data); loadTasks(); } catch { message.error('Update feedback failed'); }
   };
 
+  const navBar = (
+    <Flex align="center" gap={12}>
+      <Button icon={<LeftOutlined />} size="small" onClick={() => setCurrent(c => c.subtract(1, 'month'))} />
+      <Title level={5} style={{ margin: 0, minWidth: 160, textAlign: 'center', color: 'var(--text-primary)' }}>
+        {(t('calendar.month_format') || '{month}/{year}').replace('{month}', month).replace('{year}', year)}
+      </Title>
+      <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
+      <Button size="small" onClick={() => setCurrent(dayjs())}>{t('calendar.today') || 'Hôm nay'}</Button>
+    </Flex>
+  );
+
   return (
-    <div>
-      <Flex align="center" gap={12} style={{ marginBottom: 12 }}>
-        <Button icon={<LeftOutlined />} size="small" onClick={() => setCurrent(c => c.subtract(1, 'month'))} />
-        <Title level={5} style={{ margin: 0, minWidth: 160, textAlign: 'center', color: 'var(--text-primary)' }}>
-          {(t('calendar.month_format') || '{month}/{year}').replace('{month}', month).replace('{year}', year)}
-        </Title>
-        <Button icon={<RightOutlined />} size="small" onClick={() => setCurrent(c => c.add(1, 'month'))} />
-        <Button size="small" onClick={() => setCurrent(dayjs())}>{t('calendar.today') || 'Hôm nay'}</Button>
-        <div style={{ flex: 1 }} />
-        <button
-          onClick={() => setAddOpen(true)}
-          style={{
-            padding: '20px 40px', fontSize: 18, fontWeight: 900,
-            fontFamily: "'Google Sans Code', monospace",
-            color: '#222', background: '#7cff40',
-            border: '2px solid #222', borderRadius: 2,
-            boxShadow: '3px 3px 0 #222',
-            cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-            transition: 'transform 0.08s, box-shadow 0.08s',
-          }}
-          onMouseDown={e => { e.currentTarget.style.transform = 'translate(3px,3px)'; e.currentTarget.style.boxShadow = 'none'; }}
-          onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
-        >
-          <PlusOutlined style={{ fontSize: 14 }} /> ADD TASK
-        </button>
-      </Flex>
-
-      <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} onAddTask={() => setAddOpen(true)} />
-
-      {/* Right drawer: Quick Magic Input */}
-      <Drawer
-        open={addOpen}
-        onClose={() => setAddOpen(false)}
-        placement="right"
-        width={340}
-        title={<span style={{ fontWeight: 900, fontFamily: "'Google Sans Code', monospace" }}>Add Task</span>}
-        styles={{
-          header: { border: 'none', borderBottom: '2px solid var(--border-color)', background: 'var(--bg-header)' },
-          body: { padding: 0, background: 'var(--bg-card)' },
-          wrapper: { boxShadow: '-6px 0 0 var(--shadow-color)' },
-        }}
-        destroyOnClose={false}
-      >
-        <QuickMagicInput
-          onTasksCreated={() => { loadTasks(); onTasksCreated?.(); setAddOpen(false); }}
-        />
-      </Drawer>
-    </div>
+    <CalendarMonthGrid year={year} month={month} tasks={tasks} onEdit={handleEdit} onDelete={handleDelete} onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} onAddTask={onAddTask} navBar={navBar} />
   );
 }
 
@@ -212,11 +174,18 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
   const { t } = useI18n();
   const [data, setData] = useState({ today: [], overdue: [], upcoming: [] });
   const [localRefresh, setLocalRefresh] = useState(0);
+  const [addOpen, setAddOpen] = useState(false);
 
   const loadData = () => fetchTodayTasks().then(setData).catch(console.error);
   useEffect(() => { loadData(); }, [refreshKey, localRefresh]);
 
   const handleRefresh = () => setLocalRefresh(k => k + 1);
+
+  const handleTasksCreated = () => {
+    setLocalRefresh(k => k + 1);
+    onTasksCreated?.();
+    setAddOpen(false);
+  };
 
   const { urgentList, upcomingList } = categorizeByDueDate(data);
   const hasUrgent = urgentList.length > 0;
@@ -246,15 +215,54 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
     </div>
   );
 
+  const addTaskBtn = (
+    <button
+      onClick={() => setAddOpen(true)}
+      style={{
+        padding: '8px 20px', fontSize: 13, fontWeight: 900,
+        fontFamily: "'Google Sans Code', monospace",
+        color: '#222', background: '#7cff40',
+        border: '3px solid var(--border-color)',
+        borderRadius: 2, cursor: 'pointer',
+        boxShadow: '4px 4px 0px var(--shadow-color)',
+        display: 'flex', alignItems: 'center', gap: 6,
+        transition: 'transform 0.08s, box-shadow 0.08s',
+        whiteSpace: 'nowrap',
+      }}
+      onMouseDown={e => { e.currentTarget.style.transform = 'translate(4px,4px)'; e.currentTarget.style.boxShadow = 'none'; }}
+      onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '4px 4px 0px var(--shadow-color)'; }}
+      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '4px 4px 0px var(--shadow-color)'; }}
+    >
+      <PlusOutlined style={{ fontSize: 12 }} /> ADD TASK
+    </button>
+  );
+
   const tabItems = [
     { value: 'kanban', label: 'Kanban', children: <KanbanBoard refreshKey={refreshKey} onRefresh={handleRefresh} /> },
-    { value: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} onTasksCreated={onTasksCreated} /> },
+    { value: 'calendar', label: t('nav.calendar') || 'Lịch', children: <CalendarTab refreshKey={refreshKey} onAddTask={() => setAddOpen(true)} /> },
     { value: 'table', label: t('nav.table') || 'Bảng', children: <TableTab refreshKey={refreshKey} /> },
   ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      <NeoTabs defaultValue="calendar" items={tabItems} />
+      <NeoTabs defaultValue="calendar" items={tabItems} extra={addTaskBtn} />
+
+      {/* Right drawer: Quick Magic Input — shared across all tabs */}
+      <Drawer
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        placement="right"
+        width={340}
+        title={<span style={{ fontWeight: 900, fontFamily: "'Google Sans Code', monospace" }}>Add Task</span>}
+        styles={{
+          header: { border: 'none', borderBottom: '2px solid var(--border-color)', background: 'var(--bg-header)' },
+          body: { padding: 0, background: 'var(--bg-card)' },
+          wrapper: { boxShadow: '-6px 0 0 var(--shadow-color)' },
+        }}
+        destroyOnClose={false}
+      >
+        <QuickMagicInput onTasksCreated={handleTasksCreated} />
+      </Drawer>
     </div>
   );
 }
