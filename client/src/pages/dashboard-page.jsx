@@ -27,7 +27,7 @@ const NEO_TABS_CSS = `
   border-right: 2px solid var(--border-color) !important;
   border-radius: 0 !important;
   font-weight: 700 !important;
-  font-family: 'Google Sans Code', monospace !important;
+  font-family: 'JetBrains Mono' !important;
   padding: 8px 20px !important;
   margin: 0 !important;
   background: transparent !important;
@@ -87,7 +87,7 @@ function ReminderRow({ task, type }) {
         {task.feedbacks?.length > 0 && (() => {
           const fb = task.feedbacks.at(-1);
           const fbEnd = fb.endDate ?? fb.createdAt;
-          return <span style={{ color: '#722ed1' }}> → {fb.startDate?.slice(5)} → {fbEnd?.slice(5, 10)}</span>;
+          return <span style={{ color: 'var(--feedback-color)' }}> → {fb.startDate?.slice(5)} → {fbEnd?.slice(5, 10)}</span>;
         })()}
       </Text>
     </Flex>
@@ -157,7 +157,7 @@ function CalendarTab({ refreshKey, onAddTask }) {
   const titleBar = (
     <Flex align="center" justify="space-between">
       <Title level={5} style={{ margin: 0, color: 'var(--text-primary)' }}>
-        {(t('calendar.month_format') || '{month}/{year}').replace('{month}', month).replace('{year}', year)}
+        {(t('calendar.month_format') || '{month}/{year}').replace('{month}', month).replace('{monthName}', current.format('MMMM')).replace('{year}', year)}
       </Title>
       <Flex gap={8}>
         <Button icon={<LeftOutlined />} size="small" onClick={() => setCurrent(c => c.subtract(1, 'month'))} />
@@ -223,22 +223,16 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
 
   const addButton = (
     <button
+      className="neo-btn"
       onClick={() => setAddOpen(true)}
       style={{
         padding: '8px 16px', fontSize: 13, fontWeight: 900,
-        fontFamily: "'Google Sans Code', monospace",
-        color: '#222', background: '#7cff40',
-        border: '2px solid #222', borderRadius: 2,
-        boxShadow: '3px 3px 0 #222',
-        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
-        transition: 'transform 0.08s, box-shadow 0.08s',
+        color: '#222', background: 'var(--btn-add-bg)',
+        display: 'flex', alignItems: 'center', gap: 6,
         whiteSpace: 'nowrap',
       }}
-      onMouseDown={e => { e.currentTarget.style.transform = 'translate(3px,3px)'; e.currentTarget.style.boxShadow = 'none'; }}
-      onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '3px 3px 0 #222'; }}
     >
-      <PlusOutlined style={{ fontSize: 12 }} /> ADD
+      <PlusOutlined style={{ fontSize: 12 }} /> {t('common.add_task')}
     </button>
   );
 
@@ -250,13 +244,14 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
       <Drawer
         open={addOpen}
         onClose={() => setAddOpen(false)}
-        placement="right"
-        width={340}
-        title={<span style={{ fontWeight: 900, fontFamily: "'Google Sans Code', monospace" }}>Add Task</span>}
+        placement={window.innerWidth <= 768 ? 'bottom' : 'right'}
+        width={520}
+        height="85vh"
+        title={<span style={{ fontWeight: 900, fontFamily: "'JetBrains Mono'" }}>{t('magic.drawer_title')}</span>}
         styles={{
-          header: { border: 'none', borderBottom: '2px solid var(--border-color)', background: 'var(--bg-header)' },
-          body: { padding: 0, background: 'var(--bg-card)' },
-          wrapper: { boxShadow: '-6px 0 0 var(--shadow-color)' },
+          header: { border: 'none', borderBottom: '2px solid var(--border-color)', background: 'var(--bg-header)', flexShrink: 0 },
+          body: { padding: 0, background: 'var(--bg-card)', overflow: 'hidden', display: 'flex', flexDirection: 'column' },
+          wrapper: { boxShadow: 'none' },
         }}
         destroyOnClose={false}
       >

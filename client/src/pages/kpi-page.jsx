@@ -46,8 +46,8 @@ export default function KpiPage() {
   return (
     <div>
       <div style={{ padding: 20 }}>
-        <Flex align="center" justify="space-between" gap={12} style={{ marginBottom: 20 }}>
-          <Title level={4} style={{ margin: 0, flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-primary)', fontFamily: "'Google Sans Code', monospace" }}>
+        <Flex align="center" justify="space-between" gap={12} wrap="wrap" style={{ marginBottom: 20 }}>
+          <Title level={4} style={{ margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-primary)', fontFamily: "'JetBrains Mono'" }}>
             <BarChartOutlined /> {t('kpi.title')}
           </Title>
 

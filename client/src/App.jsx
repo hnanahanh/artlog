@@ -22,7 +22,7 @@ export default function App() {
         colorBgContainer: '#fffdf7',
         colorBorder: '#222222',
         colorText: '#222222',
-        fontFamily: "'Inter', -apple-system, sans-serif",
+        fontFamily: "'JetBrains Mono', -apple-system, sans-serif",
         boxShadow: '4px 4px 0px #222222',
         controlHeight: 36,
       },

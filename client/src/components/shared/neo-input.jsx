@@ -5,7 +5,7 @@ const neoInputStyle = {
   padding: '4px 8px',
   fontSize: 13,
   fontWeight: 600,
-  fontFamily: "'Google Sans Code', monospace",
+  fontFamily: "'JetBrains Mono'",
   border: '2px solid var(--border-color)',
   borderRadius: 2,
   background: 'var(--bg-card)',

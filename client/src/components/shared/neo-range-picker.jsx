@@ -9,7 +9,7 @@ dayjs.extend(customParseFormat);
 /* ── Color palette for multi-range (task=0, fb1=1, fb2=2, fb3=3, cycles) ── */
 const RANGE_COLORS = [
   { hex: '#ff6b35', bg: 'rgba(255,107,53,0.15)' },
-  { hex: '#722ed1', bg: 'rgba(114,46,209,0.15)' },
+  { hex: '#e9a13d', bg: 'rgba(233,161,61,0.15)' },
   { hex: '#13c2c2', bg: 'rgba(19,194,194,0.15)' },
   { hex: '#eb2f96', bg: 'rgba(235,47,150,0.15)' },
 ];
@@ -17,15 +17,19 @@ const RANGE_COLORS = [
 /* ── Shared CSS ── */
 const NEO_CSS = `
 .neo-rdp .rdp-root { --rdp-accent-color: var(--accent-color, #ff6b35); --rdp-accent-background-color: rgba(255,107,53,0.15); position: relative; }
-.neo-rdp { background: var(--bg-card); font-family: 'Google Sans Code', monospace; }
-.neo-rdp .rdp-months { display: flex; flex-direction: row; gap: 0; }
-.neo-rdp .rdp-month { flex: 1; }
-.neo-rdp .rdp-month + .rdp-month { border-left: 2px solid var(--border-color); }
-.neo-rdp .rdp-nav { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; justify-content: space-between; pointer-events: none; z-index: 2; }
-.neo-rdp .rdp-button_previous, .neo-rdp .rdp-button_next { pointer-events: all; border: 2px solid var(--border-color) !important; border-radius: 2px !important; background: var(--bg-card) !important; width: 28px; height: 28px; font-weight: 900; color: var(--text-primary) !important; }
-.neo-rdp .rdp-button_previous:hover, .neo-rdp .rdp-button_next:hover { background: var(--bg-secondary) !important; box-shadow: 2px 2px 0 var(--shadow-color) !important; }
-.neo-rdp .rdp-month_caption { font-weight: 900; font-size: 14px; color: var(--text-primary); padding: 8px 36px; background: var(--bg-header); border-bottom: 2px solid var(--border-color); text-align: center; }
-.neo-rdp .rdp-caption_label { display: block; text-align: center; }
+.neo-rdp { background: var(--bg-card); font-family: 'JetBrains Mono'; }
+.neo-rdp .rdp-months { display: flex !important; flex-direction: column !important; gap: 0 !important; max-height: 300px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; position: relative; }
+.neo-rdp .rdp-months::-webkit-scrollbar { width: 6px; }
+.neo-rdp .rdp-months::-webkit-scrollbar-track { background: var(--bg-secondary); }
+.neo-rdp .rdp-months::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0; }
+.neo-rdp .rdp-month { flex-shrink: 0; }
+.neo-rdp .rdp-month + .rdp-month { border-top: 2px solid var(--border-color); }
+.neo-rdp .rdp-nav { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; pointer-events: none; z-index: 2; height: 40px; padding: 0 6px; }
+.neo-rdp .rdp-chevron { fill: var(--text-primary); }
+.neo-rdp .rdp-button_previous, .neo-rdp .rdp-button_next { pointer-events: all; border: 2px solid var(--border-color) !important; border-radius: 2px !important; background: var(--bg-card) !important; width: 28px; height: 28px; font-weight: 900; color: var(--text-primary) !important; box-shadow: 2px 2px 0 var(--shadow-color); transition: transform 0.1s, box-shadow 0.1s; }
+.neo-rdp .rdp-button_previous:hover, .neo-rdp .rdp-button_next:hover { transform: translate(2px, 2px); box-shadow: none !important; }
+.neo-rdp .rdp-month_caption { font-weight: 900; font-size: 14px; color: var(--text-primary); padding: 8px 36px; background: var(--bg-header); border-bottom: 2px solid var(--border-color); text-align: center; height: 40px; display: flex; align-items: center; justify-content: center; }
+.neo-rdp .rdp-caption_label { display: block; text-align: center; flex: 1; }
 .neo-rdp .rdp-weekdays { border-bottom: 2px solid var(--border-color); }
 .neo-rdp .rdp-weekday { font-weight: 900; font-size: 11px; color: var(--text-secondary); padding: 6px 0; }
 .neo-rdp .rdp-day { font-weight: 600; font-size: 12px; color: var(--text-primary); border-radius: 2px !important; position: relative; }
@@ -46,13 +50,16 @@ ${RANGE_COLORS.map((c, i) => `
 `).join('')}
 
 /* Header */
-.neo-rdp-header { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-bottom: 2px solid var(--border-color); }
+.neo-rdp-header { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-bottom: 2px solid var(--border-color); max-height: 120px; overflow-y: auto; }
+.neo-rdp-header::-webkit-scrollbar { width: 6px; }
+.neo-rdp-header::-webkit-scrollbar-track { background: var(--bg-secondary); border-left: 2px solid var(--border-color); }
+.neo-rdp-header::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0; }
 .neo-rdp-row { display: flex; align-items: center; gap: 8px; }
 .neo-rdp-field { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .neo-rdp-field label { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
 .neo-rdp-field input {
   width: 100%; padding: 4px 6px; font-size: 12px; font-weight: 600;
-  font-family: 'Google Sans Code', monospace;
+  font-family: 'JetBrains Mono';
   border: 2px solid var(--border-color); border-radius: 2px;
   background: var(--bg-card); color: var(--text-primary);
   outline: none; transition: all 0.15s;
@@ -72,7 +79,7 @@ ${RANGE_COLORS.map((c, i) => `
 .neo-rdp-range-dates { display: flex; align-items: center; gap: 4px; flex: 1; }
 .neo-rdp-range-dates input {
   width: 82px; padding: 2px 4px; font-size: 11px; font-weight: 600;
-  font-family: 'Google Sans Code', monospace;
+  font-family: 'JetBrains Mono';
   border: 2px solid var(--border-color); border-radius: 2px;
   background: var(--bg-card); color: var(--text-primary);
   outline: none; transition: all 0.15s;
@@ -134,6 +141,8 @@ export default function NeoRangePicker({
 }) {
   const isMultiRange = !!ranges?.length;
   const [open, setOpen] = useState(false);
+  const [popupPos, setPopupPos] = useState({ top: 0, left: 0 });
+  const containerRef = useRef(null);
   const triggerRef = useRef(null);
   const popupRef = useRef(null);
   const openRef = useRef(open);
@@ -145,7 +154,7 @@ export default function NeoRangePicker({
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [activeField, setActiveField] = useState('start');
-  const [endDateEnabled, setEndDateEnabled] = useState(true);
+  const endDateEnabled = true; // Always enabled — double-click same day for single day
   const [startText, setStartText] = useState('');
   const [endText, setEndText] = useState('');
 
@@ -246,6 +255,22 @@ export default function NeoRangePicker({
       if (!prev) {
         if (isMultiRange) { setActiveRangeIdx(0); setMActiveField('start'); }
         else setActiveField('start');
+        // Calculate fixed position, clamp to viewport
+        requestAnimationFrame(() => {
+          if (!containerRef.current) return;
+          const rect = containerRef.current.getBoundingClientRect();
+          const popupW = 280, popupH = 400;
+          let top = rect.bottom + 4;
+          let left = rect.left;
+          // If overflows bottom, show above trigger
+          if (top + popupH > window.innerHeight) top = rect.top - popupH - 4;
+          // If overflows right, align to right edge
+          if (left + popupW > window.innerWidth) left = window.innerWidth - popupW - 8;
+          // Clamp
+          if (top < 4) top = 4;
+          if (left < 4) left = 4;
+          setPopupPos({ top, left });
+        });
       }
       return !prev;
     });
@@ -271,21 +296,25 @@ export default function NeoRangePicker({
    *  SINGLE-RANGE handlers
    * ════════════════════════════════════════════════════════════════════ */
   const handleDayClick = useCallback((day) => {
+    // Double-click same day = select single day (start = end)
+    if (startDate && dayjs(day).isSame(dayjs(startDate), 'day') && activeField === 'end') {
+      setEndDate(day); setEndText(dayjs(day).format(DISPLAY_FMT));
+      fireChange(day, day);
+      return;
+    }
     if (activeField === 'start') {
       setStartDate(day); setStartText(dayjs(day).format(DISPLAY_FMT));
-      if (endDateEnabled && endDate && day > endDate) {
+      if (endDate && day > endDate) {
         setEndDate(day); setEndText(dayjs(day).format(DISPLAY_FMT));
       }
-      if (endDateEnabled) {
-        setActiveField('end');
-        fireChange(day, endDate && day <= endDate ? endDate : day);
-      } else { fireChange(day, day); }
+      setActiveField('end');
+      fireChange(day, endDate && day <= endDate ? endDate : day);
     } else {
       const finalEnd = startDate && day < startDate ? startDate : day;
       setEndDate(finalEnd); setEndText(dayjs(finalEnd).format(DISPLAY_FMT));
       fireChange(startDate, finalEnd);
     }
-  }, [activeField, endDateEnabled, startDate, endDate, fireChange]);
+  }, [activeField, startDate, endDate, fireChange]);
 
   const commitStartText = useCallback(() => {
     const d = parseInput(startText);
@@ -305,12 +334,7 @@ export default function NeoRangePicker({
     } else if (endDate) setEndText(dayjs(endDate).format(DISPLAY_FMT));
   }, [endText, startDate, endDate, fireChange]);
 
-  const handleToggleEnd = useCallback((e) => {
-    const enabled = e.target.checked;
-    setEndDateEnabled(enabled);
-    if (!enabled && startDate) { setActiveField('start'); fireChange(startDate, startDate); }
-    else if (enabled) setActiveField('end');
-  }, [startDate, fireChange]);
+  // handleToggleEnd removed — end always enabled, double-click same day for single day
 
   /* ════════════════════════════════════════════════════════════════════════
    *  MULTI-RANGE handlers
@@ -445,31 +469,68 @@ export default function NeoRangePicker({
     return dayjs(startDate).format('MM-DD');
   }, [isMultiRange, ranges, startDate, endDate, endDateEnabled, placeholder]);
 
-  // Default month to show
-  const defaultMonth = isMultiRange
-    ? mRanges[0]?.start || undefined
-    : startDate || undefined;
+  // Controlled month — auto-scroll when selecting date near end of month
+  const [calMonth, setCalMonth] = useState(() => {
+    const d = isMultiRange ? mRanges[0]?.start : startDate;
+    return d ? dayjs(d).startOf('month').toDate() : new Date();
+  });
+
+  // Auto-scroll: picking date near end of month → scroll to show transition zone
+  const monthsRef = useRef(null);
+
+  const scrollToTransition = useCallback(() => {
+    const el = monthsRef.current;
+    if (!el) return;
+    // Find second month element (the next month)
+    const months = el.querySelectorAll('.rdp-month');
+    if (months.length < 2) return;
+    // Scroll so that ~last 2 rows of month1 + caption of month2 are visible
+    const secondMonth = months[1];
+    const targetScroll = secondMonth.offsetTop - 160; // show transition zone
+    el.scrollTo({ top: Math.max(0, targetScroll), behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    const d = activeField === 'end' ? (endDate || startDate) : startDate;
+    if (!d) return;
+    const day = dayjs(d);
+    setCalMonth(day.startOf('month').toDate());
+    // If day >= 15, scroll to show transition between months
+    if (day.date() >= 15) {
+      setTimeout(scrollToTransition, 100);
+    } else {
+      // Scroll to top
+      setTimeout(() => { if (monthsRef.current) monthsRef.current.scrollTop = 0; }, 50);
+    }
+  }, [startDate, endDate, activeField, scrollToTransition]);
+
+  // Attach ref to rdp-months container after render
+  useEffect(() => {
+    if (!open) return;
+    const timer = setTimeout(() => {
+      const el = popupRef.current?.querySelector('.rdp-months');
+      if (el) monthsRef.current = el;
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [open]);
 
   /* ════════════════════════════════════════════════════════════════════════
    *  RENDER
    * ════════════════════════════════════════════════════════════════════ */
   return (
-    <div style={{ position: 'relative', display: 'inline-block', ...style }}>
+    <div ref={containerRef} style={{ position: 'relative', display: 'inline-block', ...style }}>
       <style>{NEO_CSS}</style>
 
       <button
+        className="neo-btn"
         ref={triggerRef} onClick={openPicker} type="button"
         style={{
           width: '100%', padding: '3px 8px', fontSize: 13, fontWeight: active ? 900 : 600,
-          fontFamily: "'Google Sans Code', monospace",
-          border: '2px solid var(--border-color)',
-          borderRadius: 2,
           background: active ? '#222' : 'var(--bg-card)',
           color: active ? '#fff' : ((isMultiRange ? ranges?.[0]?.value?.[0] : startDate) ? 'var(--text-primary)' : 'var(--text-secondary)'),
-          cursor: 'pointer', whiteSpace: 'nowrap',
-          boxShadow: open ? '0 0 0' : '2px 2px 0 var(--shadow-color)',
-          transform: open ? 'translate(2px,2px)' : 'none',
-          transition: 'all 0.1s',
+          whiteSpace: 'nowrap',
+          transform: open ? 'translate(3px,3px)' : 'none',
+          boxShadow: open ? 'none' : undefined,
         }}
       >
         {active ? display : (label || display)}
@@ -479,11 +540,13 @@ export default function NeoRangePicker({
         <div
           ref={popupRef}
           style={{
-            position: 'absolute', zIndex: 9999,
-            top: '100%', left: 0, marginTop: 4,
+            position: 'fixed', zIndex: 9999,
+            top: popupPos.top, left: popupPos.left,
             border: '3px solid var(--border-color)', borderRadius: 2,
             boxShadow: '6px 6px 0 var(--shadow-color)',
-            background: 'var(--bg-card)', overflow: 'visible',
+            background: 'var(--bg-card)', overflow: 'hidden',
+            display: 'flex', flexDirection: 'column',
+            maxHeight: 'calc(100vh - 20px)',
           }}
         >
           {/* ── HEADER ── */}
@@ -532,34 +595,26 @@ export default function NeoRangePicker({
                   className={`neo-rdp-field ${activeField === 'start' ? 'neo-rdp-field--active' : ''}`}
                   onClick={() => setActiveField('start')}
                 >
-                  <label>Start</label>
                   <input
-                    value={startText} placeholder="MM/DD/YYYY"
+                    value={startText} placeholder="Start"
                     onChange={e => setStartText(e.target.value)}
                     onBlur={commitStartText}
                     onKeyDown={e => { if (e.key === 'Enter') commitStartText(); }}
                     onFocus={() => setActiveField('start')}
                   />
                 </div>
-                {endDateEnabled && (
-                  <div
-                    className={`neo-rdp-field ${activeField === 'end' ? 'neo-rdp-field--active' : ''}`}
-                    onClick={() => setActiveField('end')}
-                  >
-                    <label>End</label>
-                    <input
-                      value={endText} placeholder="MM/DD/YYYY"
-                      onChange={e => setEndText(e.target.value)}
-                      onBlur={commitEndText}
-                      onKeyDown={e => { if (e.key === 'Enter') commitEndText(); }}
-                      onFocus={() => setActiveField('end')}
-                    />
-                  </div>
-                )}
-                <label className="neo-rdp-toggle">
-                  <input type="checkbox" checked={endDateEnabled} onChange={handleToggleEnd} />
-                  <span>End</span>
-                </label>
+                <div
+                  className={`neo-rdp-field ${activeField === 'end' ? 'neo-rdp-field--active' : ''}`}
+                  onClick={() => setActiveField('end')}
+                >
+                  <input
+                    value={endText} placeholder="End"
+                    onChange={e => setEndText(e.target.value)}
+                    onBlur={commitEndText}
+                    onKeyDown={e => { if (e.key === 'Enter') commitEndText(); }}
+                    onFocus={() => setActiveField('end')}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -571,7 +626,8 @@ export default function NeoRangePicker({
             onDayClick={isMultiRange ? handleMDayClick : handleDayClick}
             numberOfMonths={numberOfMonths}
             pagedNavigation
-            defaultMonth={defaultMonth}
+            month={calMonth}
+            onMonthChange={setCalMonth}
           />
         </div>
       )}

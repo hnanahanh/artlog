@@ -43,11 +43,12 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
     padding: '8px 16px',
     fontWeight: 700,
     fontSize: 13,
-    fontFamily: "'Google Sans Code', monospace",
+    fontFamily: "'JetBrains Mono'",
+    textTransform: 'none',
     border: 'none',
     borderRadius: 0,
-    background: isActive ? 'var(--accent-active)' : 'transparent',
-    color: isActive ? '#222' : 'var(--text-primary)',
+    background: isActive ? 'var(--tab-active-bg)' : 'transparent',
+    color: 'var(--text-primary)',
     cursor: 'pointer',
     transition: 'background 0.15s',
     outline: 'none',
@@ -61,12 +62,12 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
     <div>
       {/* ---- Desktop tabs row (>768px) ---- */}
       <div className="neo-tabs-desktop" style={{ display: 'flex', alignItems: 'stretch', gap: 8 }}>
-        <div style={{
+        <div className="neo-box" style={{
           display: 'flex',
           border: '3px solid var(--border-color)',
           borderRadius: 2,
           boxShadow: '4px 4px 0px var(--shadow-color)',
-          background: 'var(--bg-header)',
+          background: 'var(--bg-primary)',
           overflow: 'visible',
           transition: 'background-color 0.3s, border-color 0.3s',
           flexShrink: 0,
@@ -83,7 +84,7 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
                   borderRight: isLast ? 'none' : '2px solid var(--border-color)',
                 }}
                 onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'rgba(0,0,0,0.08)'; }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = isActive ? 'var(--accent-active)' : 'transparent'; }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}
               >
                 {item.label}
                 {/* Close button — only if more than 1 tab visible */}
@@ -106,7 +107,8 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
                 onClick={() => setAddMenuOpen(!addMenuOpen)}
                 style={{
                   ...btnStyle(false),
-                  padding: '8px 12px',
+                  padding: '0 12px',
+                  height: '100%',
                   borderLeft: visibleItems.length > 0 ? '2px solid var(--border-color)' : 'none',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,0,0,0.08)'; }}
@@ -134,7 +136,7 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
                         style={{
                           display: 'block', width: '100%', textAlign: 'left',
                           padding: '8px 16px', border: 'none', background: 'transparent',
-                          fontWeight: 700, fontSize: 13, fontFamily: "'Google Sans Code', monospace",
+                          fontWeight: 700, fontSize: 13, fontFamily: "'JetBrains Mono'",
                           color: 'var(--text-primary)', cursor: 'pointer',
                           borderBottom: '2px solid var(--border-color)',
                         }}
@@ -195,8 +197,8 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
                     style={{
                       display: 'block', width: '100%', textAlign: 'left',
                       padding: '8px 16px', border: 'none',
-                      background: active === item.value ? 'var(--accent-active)' : 'transparent',
-                      fontWeight: 700, fontSize: 13, fontFamily: "'Google Sans Code', monospace",
+                      background: active === item.value ? 'var(--tab-active-bg)' : 'transparent',
+                      fontWeight: 700, fontSize: 13, fontFamily: "'JetBrains Mono'",
                       color: active === item.value ? '#222' : 'var(--text-primary)',
                       cursor: 'pointer',
                       borderBottom: '2px solid var(--border-color)',

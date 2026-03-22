@@ -64,10 +64,10 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
         return (
           <div key={name} style={{
             textAlign: 'center', fontSize: 12, fontWeight: 800,
-            color: isWeekend ? '#bbb' : '#222', padding: '8px 0',
-            background: '#fffdf7',
-            borderRight: i < 6 ? `1px solid ${isWeekend ? '#ddd' : '#222'}` : 'none',
-            borderBottom: '2px solid #222',
+            color: isWeekend ? 'var(--text-secondary)' : 'var(--text-primary)', padding: '8px 0',
+            background: isWeekend ? 'var(--bg-secondary)' : 'var(--bg-header)',
+            borderRight: i < 6 ? `1px solid ${isWeekend ? 'var(--bg-secondary)' : 'var(--border-color)'}` : 'none',
+            borderBottom: `2px solid var(--border-color)`,
           }}>
             {name}
           </div>
@@ -79,30 +79,15 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
         const weekStart = weekDays[0];
         const weekEnd = weekDays[6];
 
-        // Lọc Task bars + Feedback bars riêng (adjacent, cùng row với parent)
+        // Position tasks — feedback merged into parent task name
         const positioned = [];
         for (const task of tasks) {
           const pos = getTaskWeekPosition(task, weekStart, weekEnd);
-          if (pos) positioned.push({ ...task, ...pos });
-
-          // Latest feedback as a separate adjacent bar in the same row
+          if (!pos) continue;
+          // Append latest feedback name to task
           const latestFb = task.feedbacks?.at(-1);
-          if (latestFb) {
-            const fbStart = latestFb.startDate ?? latestFb.createdAt?.slice(0, 10) ?? task.dueDate;
-            const fbEnd = latestFb.endDate ?? fbStart;
-            const fbProxy = {
-              // Carry full task data so EditTaskModal works when clicking the feedback bar
-              ...task,
-              id: `fb-${latestFb.id}`,
-              name: latestFb.content,
-              startDate: fbStart,
-              dueDate: fbEnd,
-              _isFeedbackBar: true,
-              _parentId: task.id,
-            };
-            const fbPos = getTaskWeekPosition(fbProxy, weekStart, weekEnd);
-            if (fbPos) positioned.push({ ...fbProxy, ...fbPos });
-          }
+          const displayName = latestFb ? `${task.name} [+ ${latestFb.content}]` : task.name;
+          positioned.push({ ...task, ...pos, _displayName: displayName, isFeedback: !!latestFb });
         }
         const taskRows = packTasksIntoRows(positioned);
 
@@ -123,8 +108,8 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
               onDrop={e => handleDrop(e, dateStr)}
               style={{
                 minHeight: '120px',
-                background: isDragOver ? 'rgba(22,119,255,0.10)' : !isCurrentMonth ? '#f5f5f5' : isWeekend ? '#f9f9f6' : 'transparent',
-                borderRight: dayIdx < 6 ? `1px solid ${isWeekend ? '#ddd' : '#222'}` : 'none',
+                background: isDragOver ? 'rgba(22,119,255,0.10)' : !isCurrentMonth ? 'var(--bg-secondary)' : isWeekend ? 'var(--bg-secondary)' : 'transparent',
+                borderRight: dayIdx < 6 ? `1px solid ${isWeekend ? 'var(--bg-secondary)' : 'var(--border-color)'}` : 'none',
                 borderBottom: weekIdx < weeks.length - 1 ? '1px solid #222' : 'none',
                 display: 'flex',
                 flexDirection: 'column',
@@ -166,8 +151,8 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 22, height: 22, borderRadius: '50%',
                   background: isToday ? '#ff4d4f' : 'transparent',
-                  fontSize: 13, fontWeight: 800, fontFamily: "Google Sans Code",
-                  color: isToday ? '#fff' : !isCurrentMonth ? '#bfbfbf' : isWeekend ? '#bbb' : '#222',
+                  fontSize: 13, fontWeight: 800, fontFamily: "JetBrains Mono",
+                  color: isToday ? '#fff' : !isCurrentMonth ? 'var(--text-secondary)' : isWeekend ? 'var(--text-secondary)' : 'var(--text-primary)',
                 }}>
                   {day.date()}
                 </span>

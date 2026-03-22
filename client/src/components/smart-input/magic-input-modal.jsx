@@ -48,7 +48,7 @@ export default function MagicInputModal({ open, onClose, onTasksCreated }) {
         onChange={e => { setRawText(e.target.value); setParsed(false); }}
         placeholder={t('magic.placeholder')}
         style={{ 
-          fontFamily: "'Google Sans Code', monospace", 
+          fontFamily: "'JetBrains Mono'", 
           marginBottom: 16,
           border: '3px solid #000',
           borderRadius: '8px',

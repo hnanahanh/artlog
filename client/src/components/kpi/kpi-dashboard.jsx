@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Table, Typography, Button } from 'antd';
+import { Table, Typography } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import { PieChart, Pie, Cell, Label, Tooltip, ResponsiveContainer } from 'recharts';
 import { useI18n } from '../../i18n/i18n-config.jsx';
@@ -18,8 +18,8 @@ function StatCard({ label, value, headerBg }) {
       padding: '8px 12px',
       display: 'flex', flexDirection: 'column', alignItems: 'center',
     }}>
-      <span style={{ fontWeight: 900, fontSize: 11, color: 'var(--text-primary)', textTransform: 'uppercase' }}>{label}</span>
-      <Text strong style={{ fontSize: 20, color: 'var(--text-primary)' }}>{value}</Text>
+      <span style={{ fontWeight: 900, fontSize: 11, color: 'var(--text-primary)', textTransform: 'uppercase', fontFamily: "'JetBrains Mono'" }}>{label}</span>
+      <Text strong style={{ fontSize: 20, color: 'var(--text-primary)', fontFamily: "'JetBrains Mono'" }}>{value}</Text>
     </div>
   );
 }
@@ -49,7 +49,7 @@ function DonutChart({ data, title }) {
                 contentStyle={{
                   border: '2px solid var(--border-color)', borderRadius: 2,
                   boxShadow: '3px 3px 0 var(--shadow-color)',
-                  background: 'var(--bg-card)', fontFamily: "'Google Sans Code', monospace",
+                  background: 'var(--bg-card)', fontFamily: "'JetBrains Mono'",
                   fontWeight: 700, fontSize: 12,
                 }}
               />
@@ -149,7 +149,7 @@ export default function KpiDashboard({ data, from, to }) {
     { title: t('kpi.game_weight'), dataIndex: 'game', key: 'kpi_weight', width: 70, align: 'center',
       onCell: (_, index) => ({ rowSpan: gameRowSpans[index], style: COL_BORDER }),
       onHeaderCell: () => ({ style: COL_BORDER }),
-      render: (val) => <Text strong style={{ color: '#722ed1', fontSize: 13 }}>{kpiMap[val] ?? 0}%</Text> },
+      render: (val) => <Text strong style={{ color: 'var(--feedback-color)', fontSize: 13 }}>{kpiMap[val] ?? 0}%</Text> },
     { title: t('table.project'), dataIndex: 'project', key: 'project', width: 140,
       onCell: () => ({ style: COL_BORDER }),
       onHeaderCell: () => ({ style: COL_BORDER }),
@@ -211,12 +211,14 @@ export default function KpiDashboard({ data, from, to }) {
         }}>
           <span>{t('kpi.completed_tasks')} ({tableData.length})</span>
           <a href={getKPICsvUrl(from, to)} download>
-            <Button icon={<DownloadOutlined />} style={{
-              background: '#722ed1', color: '#fff',
-              border: '2px solid var(--border-color)', borderRadius: 2, fontWeight: 700,
+            <button className="neo-btn" style={{
+              padding: '6px 14px', fontSize: 13, fontWeight: 900,
+              color: '#222', background: 'var(--btn-add-bg)',
+              display: 'flex', alignItems: 'center', gap: 6,
+              whiteSpace: 'nowrap',
             }}>
-              {t('kpi.download_csv')}
-            </Button>
+              <DownloadOutlined style={{ fontSize: 12 }} /> {t('kpi.download_csv')}
+            </button>
           </a>
         </div>
         <style>{`
@@ -229,7 +231,7 @@ export default function KpiDashboard({ data, from, to }) {
           .kpi-table .ant-table-thead > tr > th { background: var(--bg-header) !important; border-bottom: 2px solid var(--border-color) !important; }
           .kpi-table .ant-table-tbody > tr > td { border-bottom: 2px solid var(--border-color) !important; background: transparent !important; }
           .kpi-table .ant-table-tbody > tr:last-child > td { border-bottom: none !important; }
-          .kpi-table .ant-table-tbody > tr:hover > td { background: var(--bg-secondary) !important; }
+          .kpi-table .ant-table-tbody > tr:hover > td { background: transparent !important; }
           .kpi-table .ant-table-container { border: none !important; box-shadow: none !important; }
           .kpi-table .ant-table-cell::before { display: none !important; }
           .kpi-table .ant-table-content { border: none !important; }

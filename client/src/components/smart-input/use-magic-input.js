@@ -1,16 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { message } from 'antd';
 import { parseRawInput, createTasksBatch, detectFeedback, addFeedback } from '../../api/task-api-client.js';
 import { separateFeedbacks, buildSaveResultMessage } from '../../processors/magic-input-processor.js';
 
+const DRAFT_KEY = 'magic-input-draft';
+
+/* Load draft from localStorage */
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch { return null; }
+}
+
+/* Save draft to localStorage */
+function saveDraft(data) {
+  try { localStorage.setItem(DRAFT_KEY, JSON.stringify(data)); } catch { /* ignore */ }
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
+}
+
 // Custom hook encapsulating all state and handlers for MagicInputModal
 export function useMagicInput({ onClose, onTasksCreated }) {
-  const [rawText, setRawText] = useState('');
-  const [parsedTasks, setParsedTasks] = useState([]);
-  const [feedbackItems, setFeedbackItems] = useState([]); // { index, detection }
+  const draft = loadDraft();
+  const [rawText, setRawText] = useState(draft?.rawText || '');
+  const [parsedTasks, setParsedTasks] = useState(draft?.parsedTasks || []);
+  const [feedbackItems, setFeedbackItems] = useState(draft?.feedbackItems || []);
   const [warnings, setWarnings] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [parsed, setParsed] = useState(false);
+  const [parsed, setParsed] = useState(draft?.parsed || false);
+
+  // Auto-save draft on changes
+  useEffect(() => {
+    saveDraft({ rawText, parsedTasks, feedbackItems, parsed });
+  }, [rawText, parsedTasks, feedbackItems, parsed]);
 
   const reset = () => {
     setRawText('');
@@ -18,10 +44,11 @@ export function useMagicInput({ onClose, onTasksCreated }) {
     setFeedbackItems([]);
     setWarnings([]);
     setParsed(false);
+    clearDraft();
   };
 
   const handleClose = () => {
-    reset();
+    // Don't reset — keep draft for next open
     onClose();
   };
 
@@ -75,7 +102,8 @@ export function useMagicInput({ onClose, onTasksCreated }) {
 
       message.success(buildSaveResultMessage(newTasks.length, feedbacksToAppend.length));
 
-      handleClose();
+      reset(); // Clear draft after successful save
+      onClose();
       onTasksCreated?.();
     } catch (err) {
       message.error('Save failed: ' + (err.response?.data?.error || err.message));

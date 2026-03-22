@@ -15,7 +15,7 @@ const BTN_BASE = {
   cursor: 'pointer', userSelect: 'none',
   color: 'var(--text-primary)',
   transition: 'background-color 0.15s',
-  fontFamily: "Google Sans Code",
+  fontFamily: "JetBrains Mono",
   boxSizing: 'border-box',
 };
 
@@ -48,7 +48,7 @@ export default function AppHeader() {
     <>
       <div className="app-header-bar" style={{
         display: 'flex', justifyContent: 'flex-start', alignItems: 'stretch', gap: 0,
-        background: 'var(--bg-header)',
+        background: 'var(--bg-app-header)',
         minHeight: HEADER_HEIGHT,
         borderBottom: '3px solid var(--border-color)',
       }}>
@@ -64,8 +64,8 @@ export default function AppHeader() {
                 ...NAV_BTN,
                 flex: '1 1 0',
                 justifyContent: 'center',
-                background: isActive ? 'var(--accent-color)' : 'transparent',
-                color: isActive ? '#222' : 'var(--text-primary)',
+                background: isActive ? 'var(--nav-active-bg)' : 'transparent',
+                color: isActive ? 'var(--nav-active-text)' : 'var(--text-primary)',
               }}
               onMouseEnter={e => { if (!isActive) e.currentTarget.style.background = 'var(--bg-secondary)'; }}
               onMouseLeave={e => { if (!isActive) e.currentTarget.style.background = 'transparent'; }}

@@ -17,11 +17,11 @@ const SIDEBAR_TEXT = {
   transform: 'rotate(180deg)',
   color: '#222',
   fontWeight: 800,
-  fontSize: 42,
+  fontSize: 38,
   letterSpacing: 4,
   whiteSpace: 'nowrap',
   userSelect: 'none',
-  fontFamily: 'Google Sans Code',
+  fontFamily: "JetBrains Mono",
 };
 
 export default function AppLayout({ children }) {
@@ -69,7 +69,7 @@ export default function AppLayout({ children }) {
             @keyframes marquee-horizontal { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
             .marquee-footer { height: 60px; overflow: hidden; border-top: 4px solid #000; background color: #869f79; display: flex; align-items: center; flex-shrink: 0; }
             .marquee-track { display: flex; flex-direction: row; width: max-content; animation: marquee-horizontal 60s linear infinite; }
-            .marquee-item { height: 60px; display: flex; align-items: center; font-weight: 900; font-size: 18px; text-transform: uppercase; color: var(--text-primary); letter-spacing: 3px; white-space: nowrap; font-family: 'Google Sans Code'; padding: 0 32px; }
+            .marquee-item { height: 60px; display: flex; align-items: center; font-weight: 900; font-size: 18px; text-transform: uppercase; color: var(--text-primary); letter-spacing: 3px; white-space: nowrap; font-family: 'JetBrains Mono'; padding: 0 32px; }
           `}</style>
           <div className="marquee-footer">
             <div className="marquee-track">

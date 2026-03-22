@@ -1,18 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import { Check, ChevronsUpDown } from 'lucide-react';
 
-/* Trigger button style matching NeoRangePicker */
+/* Trigger button style — uses .neo-btn class for border/shadow/hover */
 const triggerStyle = (open, active) => ({
   padding: '3px 8px', fontSize: 13, fontWeight: active ? 900 : 600,
-  fontFamily: "'Google Sans Code', monospace",
-  border: '2px solid var(--border-color)',
-  borderRadius: 2,
   background: active ? '#222' : 'var(--bg-card)',
   color: active ? '#fff' : 'var(--text-primary)',
-  cursor: 'pointer', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4,
-  boxShadow: open ? '0 0 0' : '2px 2px 0 var(--shadow-color)',
-  transform: open ? 'translate(2px,2px)' : 'none',
-  transition: 'all 0.1s',
+  whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4,
+  transform: open ? 'translate(3px,3px)' : 'none',
+  boxShadow: open ? 'none' : undefined,
 });
 
 const dropdownStyle = {
@@ -44,7 +40,7 @@ export default function YearCombobox({ value, onChange, range = 3, active = fals
 
   return (
     <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
-      <button style={triggerStyle(open, active)} onClick={() => setOpen(o => !o)}>
+      <button className="neo-btn" style={triggerStyle(open, active)} onClick={() => setOpen(o => !o)}>
         {active ? value : (label || value || 'Năm...')}
         <ChevronsUpDown size={14} style={{ opacity: 0.5 }} />
       </button>
@@ -58,7 +54,7 @@ export default function YearCombobox({ value, onChange, range = 3, active = fals
               style={{
                 padding: '6px 10px', fontSize: 13, fontWeight: 600, cursor: 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                fontFamily: "'Google Sans Code', monospace",
+                fontFamily: "'JetBrains Mono'",
                 borderBottom: '1px solid var(--border-color)',
                 background: y === value ? 'var(--bg-secondary)' : 'transparent',
                 color: 'var(--text-primary)',

@@ -55,7 +55,7 @@ export default function NeoSelect({ value, options = [], onChange, placeholder =
         onClick={() => setOpen(o => !o)}
         style={{
           width: '100%', padding: '4px 8px', fontSize: 13, fontWeight: 600,
-          fontFamily: "'Google Sans Code', monospace",
+          fontFamily: "'JetBrains Mono'",
           border: '2px solid var(--border-color)',
           borderRadius: 2, background: 'var(--bg-card)',
           color: value ? 'var(--text-primary)' : 'var(--text-secondary)',
@@ -101,7 +101,7 @@ export default function NeoSelect({ value, options = [], onChange, placeholder =
               placeholder="Search or type new…"
               style={{
                 width: '100%', border: 'none', outline: 'none', background: 'transparent',
-                fontFamily: "'Google Sans Code', monospace", fontSize: 12, fontWeight: 600,
+                fontFamily: "'JetBrains Mono'", fontSize: 12, fontWeight: 600,
                 color: 'var(--text-primary)', padding: '2px 4px',
               }}
             />
@@ -115,7 +115,7 @@ export default function NeoSelect({ value, options = [], onChange, placeholder =
                 onMouseDown={() => select(opt)}
                 style={{
                   padding: '5px 10px', fontSize: 12, fontWeight: opt === value ? 900 : 600,
-                  fontFamily: "'Google Sans Code', monospace",
+                  fontFamily: "'JetBrains Mono'",
                   background: opt === value ? 'var(--accent-color, #ff6b35)' : 'transparent',
                   color: opt === value ? '#fff' : 'var(--text-primary)',
                   cursor: 'pointer', borderBottom: '1px solid var(--border-color)',
@@ -133,7 +133,7 @@ export default function NeoSelect({ value, options = [], onChange, placeholder =
                 onMouseDown={() => select(search.trim())}
                 style={{
                   padding: '5px 10px', fontSize: 12, fontWeight: 700,
-                  fontFamily: "'Google Sans Code', monospace",
+                  fontFamily: "'JetBrains Mono'",
                   color: 'var(--accent-color, #ff6b35)',
                   cursor: 'pointer', borderTop: '1px dashed var(--border-color)',
                 }}

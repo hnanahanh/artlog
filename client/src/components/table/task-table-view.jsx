@@ -16,45 +16,51 @@ const neoDropdownStyle = { border: '2px solid #222', borderRadius: 4, background
 
 // Neo-brutalism CSS for table
 const NEO_TABLE_CSS = `
-.task-table .ant-table { background: transparent !important; }
+.task-table .ant-table { background: var(--bg-card) !important; border: 3px solid var(--border-color) !important; box-shadow: 4px 4px 0px var(--shadow-color) !important; border-radius: 2px !important; overflow: hidden; }
 .task-table .ant-table-container { background: transparent !important; }
 .task-table .ant-table-content { background: transparent !important; }
-.task-table .ant-table-wrapper { background: transparent !important; }
 .task-table .ant-table-thead > tr > th {
-  background: #fffdf7 !important;
-  border-bottom: 3px solid #222 !important;
+  background: var(--bg-header) !important;
+  border-bottom: 3px solid var(--border-color) !important;
   font-weight: 700 !important;
 }
 .task-table .ant-table-tbody > tr > td {
-  border-bottom: 2px solid #ddd !important;
+  border-bottom: 2px solid var(--border-color) !important;
+  background: var(--bg-card) !important;
 }
+.task-table .ant-table-tbody > tr:last-child > td { border-bottom: none !important; }
 .task-table .ant-table-tbody > tr:hover > td {
-  background: #f0f0f0 !important;
+  background: var(--bg-secondary) !important;
 }
 .task-table .ant-table-cell { cursor: pointer; }
+.task-table .ant-table-cell::before { display: none !important; }
 .task-table .ant-input,
 .task-table .ant-picker {
-  border: 2px solid #222 !important;
-  border-radius: 4px !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 2px !important;
 }
 .task-table .ant-input:focus,
 .task-table .ant-input-focused,
 .task-table .ant-picker-focused {
-  border-color: #222 !important;
-  box-shadow: 2px 2px 0px #222 !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 2px 2px 0px var(--shadow-color) !important;
 }
 .task-table .ant-select .ant-select-selector {
-  border: 2px solid #222 !important;
-  border-radius: 4px !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 2px !important;
 }
 .task-table .ant-select-focused .ant-select-selector {
-  box-shadow: 2px 2px 0px #222 !important;
+  box-shadow: 2px 2px 0px var(--shadow-color) !important;
 }
 .task-table .ant-pagination { background: transparent; }
+.task-table .status-todo > td { background: var(--col-todo-card) !important; }
+.task-table .status-in_progress > td { background: var(--col-progress-card) !important; }
+.task-table .status-done > td { background: var(--col-done-card) !important; }
+.task-table .overdue-row > td { background: var(--danger-bg) !important; }
 .task-table .fb-row > td { background: #faf5ff !important; }
 .task-table .fb-row:hover > td { background: #f0e6ff !important; }
-.task-table .fb-row .ant-input { border-color: #722ed1 !important; }
-.task-table .fb-row .ant-picker { border-color: #722ed1 !important; }
+.task-table .fb-row .ant-input { border-color: var(--feedback-color) !important; }
+.task-table .fb-row .ant-picker { border-color: var(--feedback-color) !important; }
 .task-table .fb-row .ant-table-selection-column .ant-checkbox-wrapper { display: none; }
 `;
 
@@ -169,7 +175,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
           if (editing) {
             return (
               <Flex gap={4} align="center">
-                <Text style={{ color: '#722ed1', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>└─</Text>
+                <Text style={{ color: 'var(--feedback-color)', fontSize: 12, fontWeight: 600, flexShrink: 0 }}>└─</Text>
                 <Input size="small" style={{ flex: 1 }}
                   value={fbEdits[fb.id]?.content ?? fb.content}
                   onClick={e => e.stopPropagation()}
@@ -180,7 +186,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
             );
           }
           return (
-            <Text style={{ color: '#722ed1', fontSize: 13, fontWeight: 600, paddingLeft: 8 }}>
+            <Text style={{ color: 'var(--feedback-color)', fontSize: 13, fontWeight: 600, paddingLeft: 8 }}>
               └─ {fb.content}
             </Text>
           );
@@ -202,7 +208,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
             {latestFb && (
               <>
                 <span style={{ color: '#8c8c8c', margin: '0 4px', fontWeight: 400 }}>+</span>
-                <span style={{ color: '#722ed1' }}>{latestFb.content}</span>
+                <span style={{ color: 'var(--feedback-color)' }}>{latestFb.content}</span>
               </>
             )}
           </Text>
@@ -234,11 +240,11 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
                       ...prev, [fb.id]: { ...prev[fb.id], endDate: newEnd },
                     }));
                   }} />
-                <Text style={{ color: '#722ed1', fontSize: 11, fontWeight: 600 }}>d</Text>
+                <Text style={{ color: 'var(--feedback-color)', fontSize: 11, fontWeight: 600 }}>d</Text>
               </Flex>
             );
           }
-          return <Text style={{ color: '#722ed1', fontSize: 13, fontWeight: 600 }}>{fbDays}d</Text>;
+          return <Text style={{ color: 'var(--feedback-color)', fontSize: 13, fontWeight: 600 }}>{fbDays}d</Text>;
         }
         // Task row
         if (isEditing(record.id)) {
@@ -282,7 +288,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
             );
           }
           return (
-            <Text style={{ color: '#722ed1', fontSize: 13, fontWeight: 600 }}>
+            <Text style={{ color: 'var(--feedback-color)', fontSize: 13, fontWeight: 600 }}>
               {fbStart?.slice(5)} → {fbEnd?.slice(5, 10)}
             </Text>
           );
@@ -308,7 +314,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
         return (
           <Text style={{ color: isOverdue ? '#cf1322' : '#595959', fontSize: 13, fontWeight: 600 }}>
             {record.startDate?.slice(5)} → {record.dueDate?.slice(5)}
-            {fbEnd && <span style={{ color: '#722ed1' }}> → {fbEnd.slice(5, 10)}</span>}
+            {fbEnd && <span style={{ color: 'var(--feedback-color)' }}> → {fbEnd.slice(5, 10)}</span>}
           </Text>
         );
       },
@@ -405,7 +411,8 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
         scroll={{ x: 800 }}
         rowClassName={(record) => {
           if (record._isFb) return 'fb-row';
-          return record.dueDate < todayStr && record.status !== 'done' ? 'overdue-row' : '';
+          if (record.dueDate < todayStr && record.status !== 'done') return 'overdue-row';
+          return `status-${record.status || 'todo'}`;
         }}
         style={{ background: 'transparent' }}
       />

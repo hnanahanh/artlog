@@ -71,15 +71,16 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
       footer={
         <Space>
           <Button icon={<ReloadOutlined />} onClick={loadRules}>Reset</Button>
-          <Button type="primary" icon={<SaveOutlined />} loading={loading} onClick={handleSave}
-            style={{ border: '2px solid var(--border-color)', borderRadius: 2, fontWeight: 700 }}>
+          <Button icon={<SaveOutlined />} loading={loading} onClick={handleSave}
+            style={{ background: 'var(--btn-add-bg)', color: '#222', fontWeight: 900 }}>
             {t('common.save')}
           </Button>
         </Space>
       }
       styles={{
+        content: { padding: 0 },
         header: { display: 'none' },
-        body: { background: 'var(--bg-card)', padding: 0, maxHeight: '70vh', overflowY: 'auto', fontFamily: "'Google Sans Code', monospace" },
+        body: { background: 'var(--bg-card)', padding: 0, maxHeight: '80vh', overflowY: 'auto', overflowX: 'hidden', fontFamily: "'JetBrains Mono'" },
         footer: { background: 'var(--bg-card)', borderTop: '2px solid var(--border-color)', padding: '12px 20px' },
       }}
     >
@@ -87,36 +88,35 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
       <div style={{
         background: 'var(--bg-header)', padding: '10px 20px',
         borderBottom: '2px solid var(--border-color)',
-        textAlign: 'center', fontFamily: "'Google Sans Code', monospace",
+        textAlign: 'center', fontFamily: "'JetBrains Mono'",
         fontWeight: 900, fontSize: 16, color: 'var(--text-primary)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         position: 'relative',
       }}>
         {t('nav.settings')}
-        <button onClick={onClose} style={{
+        <button className="neo-btn" onClick={onClose} style={{
           position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)',
-          background: 'transparent', border: '2px solid var(--border-color)', borderRadius: 2,
-          width: 28, height: 28, cursor: 'pointer', fontWeight: 900, fontSize: 14,
+          background: 'var(--bg-card)', width: 28, height: 28,
+          fontWeight: 900, fontSize: 14, padding: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'var(--text-primary)',
         }}>✕</button>
       </div>
 
       {/* Language & Theme toggles */}
-      <div style={{ padding: '16px 20px' }}>
+      <div style={{ padding: 0 }}>
       {toggleLang && toggleTheme && (
-        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 0 }}>
           <Button onClick={toggleLang} style={{
-            flex: 1, fontWeight: 800, fontFamily: "'Google Sans Code', monospace",
-            border: '2px solid var(--border-color)', borderRadius: 2,
-            boxShadow: '3px 3px 0 var(--shadow-color)',
+            flex: 1, fontWeight: 800, borderRadius: 0, boxShadow: 'none',
+            borderBottom: '2px solid var(--border-color)',
           }}>
             {lang === 'vi' ? '🇬🇧 English' : '🇻🇳 Tiếng Việt'}
           </Button>
           <Button onClick={toggleTheme} style={{
-            flex: 1, fontWeight: 800, fontFamily: "'Google Sans Code', monospace",
-            border: '2px solid var(--border-color)', borderRadius: 2,
-            boxShadow: '3px 3px 0 var(--shadow-color)',
+            flex: 1, fontWeight: 800, borderRadius: 0, boxShadow: 'none',
+            borderLeft: '2px solid var(--border-color)',
+            borderBottom: '2px solid var(--border-color)',
           }}>
             {isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}
           </Button>
@@ -124,9 +124,9 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
       )}
 
       {rules && (
-        <Space direction="vertical" size={16} style={{ width: '100%' }}>
+        <Space direction="vertical" size={0} style={{ width: '100%' }}>
           {/* Ngày làm việc */}
-          <Card title={<span style={{ fontFamily: "'Google Sans Code', monospace", fontWeight: 900 }}>Ngày làm việc</span>} size="small">
+          <Card title={<span style={{ fontFamily: "'JetBrains Mono'", fontWeight: 900 }}>Ngày làm việc</span>} size="small">
             <Checkbox.Group value={rules.workingDays}
               onChange={v => setRules(r => ({ ...r, workingDays: v }))} options={ALL_DAYS} />
             <div style={{ marginTop: 8, fontSize: 12, color: '#8c8c8c' }}>
@@ -135,7 +135,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
           </Card>
 
           {/* Feedback Keywords */}
-          <Card title={<span style={{ fontFamily: "'Google Sans Code', monospace", fontWeight: 900 }}>Từ khóa Feedback</span>} size="small">
+          <Card title={<span style={{ fontFamily: "'JetBrains Mono'", fontWeight: 900 }}>Từ khóa Feedback</span>} size="small">
             <div style={{ marginBottom: 8 }}>
               {rules.feedbackKeywords?.map(kw => (
                 <Tag key={kw} closable onClose={() => removeKeyword(kw)} color="purple" style={{ marginBottom: 4 }}>{kw}</Tag>
@@ -154,8 +154,8 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
           </Card>
 
           {/* Magic Input */}
-          <Card title={<span style={{ fontFamily: "'Google Sans Code', monospace", fontWeight: 900 }}>Magic Input</span>} size="small">
-            <Form.Item label="Ký tự tách Game / Project" style={{ marginBottom: 8 }}>
+          <Card title={<span style={{ fontFamily: "'JetBrains Mono'", fontWeight: 900 }}>Magic Input</span>} size="small">
+            <Form.Item label="Ký tự tách Project / Type" style={{ marginBottom: 8 }}>
               <Input size="small" value={rules.contextSeparator ?? ' - '} style={{ width: 100 }}
                 onChange={e => setRules(r => ({ ...r, contextSeparator: e.target.value }))} />
             </Form.Item>
@@ -174,12 +174,12 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
                 placeholder="Để trống = dùng mặc định" />
             </Form.Item>
             <div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 8 }}>
-              Cú pháp: Dòng context (Game{rules.contextSeparator ?? ' - '}Project), dòng task (TênTask {rules.defaultEstTime ?? 1}{rules.defaultEstUnit ?? 'd'})
+              Cú pháp: Dòng context (Project{rules.contextSeparator ?? ' - '}Type), dòng task (TênTask {rules.defaultEstTime ?? 1}{rules.defaultEstUnit ?? 'd'})
             </div>
           </Card>
 
           {/* Priority Rules */}
-          <Card title={<span style={{ fontFamily: "'Google Sans Code', monospace", fontWeight: 900 }}>Luật ưu tiên</span>} size="small">
+          <Card title={<span style={{ fontFamily: "'JetBrains Mono'", fontWeight: 900 }}>Luật ưu tiên</span>} size="small">
             {rules.priorityRules?.length > 0 && (
               <div style={{ marginBottom: 12 }}>
                 {rules.priorityRules.map((rule, idx) => (
@@ -198,8 +198,8 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
               <Select size="small" value={newRule.field} style={{ width: 100 }}
                 onChange={v => setNewRule(r => ({ ...r, field: v }))}
                 options={[
-                  { value: 'game', label: 'Game' },
-                  { value: 'project', label: 'Project' },
+                  { value: 'game', label: 'Project' },
+                  { value: 'project', label: 'Type' },
                   { value: 'name', label: 'Tên task' },
                 ]} />
               <Input size="small" placeholder="chứa..." value={newRule.contains} style={{ width: 120 }}
@@ -209,7 +209,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
               <Button size="small" icon={<PlusOutlined />} onClick={addPriorityRule}>Thêm</Button>
             </Space>
             <div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 8 }}>
-              Boost âm = ưu tiên cao hơn. VD: game chứa "pusoy" → boost -100
+              Boost âm = ưu tiên cao hơn. VD: project chứa "pusoy" → boost -100
             </div>
             <Divider style={{ margin: '12px 0' }} />
             <Form.Item label="Sắp xếp mặc định" style={{ marginBottom: 0 }}>

@@ -17,6 +17,8 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
   const [form, setForm] = useState({});
   const [fbEdits, setFbEdits] = useState({});
   const overdue = isOverdue(task);
+  /* Card bg: very light tint of status color */
+  const statusBg = { todo: 'var(--col-todo-card)', in_progress: 'var(--col-progress-card)', done: 'var(--col-done-card)' }[task.status] || 'var(--bg-card)';
   const latestFb = task.feedbacks?.at(-1);
   const hasFeedbacks = task.feedbacks?.length > 0;
 
@@ -96,6 +98,7 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
           <Card
             size="small"
             style={{
+              background: statusBg,
               border: '2px solid var(--border-color)',
               borderRadius: 4,
               borderLeft: overdue ? '4px solid var(--danger-color)' : '2px solid var(--border-color)',
@@ -187,7 +190,7 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
                     <ClockCircleOutlined /> {task.dueDate?.slice(5)}
                   </Text>
                   {latestFb && (
-                    <Text style={{ color: '#722ed1', fontSize: 11, fontWeight: 600 }}>
+                    <Text style={{ color: 'var(--feedback-color)', fontSize: 11, fontWeight: 600 }}>
                       {latestFb.startDate?.slice(5)} → {(latestFb.endDate ?? latestFb.createdAt)?.slice(5, 10)}
                     </Text>
                   )}

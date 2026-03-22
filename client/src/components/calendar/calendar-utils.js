@@ -39,10 +39,10 @@ export function getTaskBarStyle(task, todayStr) {
   const isToday = !isDone && !isOverdue && (task.startDate || task.dueDate) <= todayStr && task.dueDate >= todayStr;
   const fb = !!task.isFeedback;
 
-  if (isDone) return { bg: '#d9f7be', border: '#52c41a', color: '#389e0d', emoji: '✅', isFeedback: fb };
-  if (isOverdue) return { bg: '#ffccc7', border: '#ff4d4f', color: '#cf1322', emoji: '🚨', isFeedback: fb };
-  if (isToday) return { bg: '#bae0ff', border: '#1677ff', color: '#0958d9', emoji: '⚡', isFeedback: fb };
-  return { bg: '#e8e8e8', border: '#d9d9d9', color: '#595959', emoji: '', isFeedback: fb };
+  if (isDone) return { bg: 'var(--col-done-header)', border: 'var(--col-done-header)', color: 'var(--text-primary)', emoji: '✅', isFeedback: fb };
+  if (isOverdue) return { bg: 'var(--danger-bg)', border: 'var(--danger-color)', color: 'var(--danger-text)', emoji: '🚨', isFeedback: fb };
+  if (isToday) return { bg: 'var(--col-progress-header)', border: 'var(--col-progress-header)', color: 'var(--text-primary)', emoji: '⚡', isFeedback: fb };
+  return { bg: 'var(--col-todo-header)', border: 'var(--col-todo-header)', color: 'var(--text-secondary)', emoji: '', isFeedback: fb };
 }
 
 /**

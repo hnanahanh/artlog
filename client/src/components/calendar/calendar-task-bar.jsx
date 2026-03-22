@@ -31,12 +31,13 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
   const [hovered, setHovered] = useState(false);
   const [editing, setEditing] = useState(false);
   const [resizing, setResizing] = useState(false);
+  const [resizePreview, setResizePreview] = useState(null); // { left, width }
   const barRef = useRef(null);
   const resizeRef = useRef(null);
 
   const isFb = task._isFeedbackBar;
   const style = getTaskBarStyle(task, todayStr);
-  const accentColor = isFb ? '#722ed1' : style.border;
+  const accentColor = isFb ? 'var(--feedback-color)' : style.border;
   const bgColor = isFb ? '#d3adf7' : style.bg;
 
   const handleDelete = () => {
@@ -70,12 +71,15 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
     const origStartDate = task.startDate;
     const origDueDate = task.dueDate;
 
+    const origBarLeft = barEl.offsetLeft;
+    const origBarWidth = barEl.offsetWidth;
     setResizing(true);
+    setResizePreview(null);
 
     const onMouseMove = (ev) => {
       const dx = ev.clientX - startX;
       const colDelta = Math.round(dx / cellWidth);
-      if (colDelta === 0) return;
+      if (colDelta === 0) { setResizePreview(null); return; }
 
       let newStart = origStartDate;
       let newDue = origDueDate;
@@ -83,9 +87,11 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
       if (side === 'right') {
         newDue = dayjs(origDueDate).add(colDelta, 'day').format('YYYY-MM-DD');
         if (newDue <= newStart) return;
+        setResizePreview({ left: 0, width: origBarWidth + colDelta * cellWidth });
       } else {
         newStart = dayjs(origStartDate).add(colDelta, 'day').format('YYYY-MM-DD');
         if (newStart >= newDue) return;
+        setResizePreview({ left: colDelta * cellWidth, width: origBarWidth - colDelta * cellWidth });
       }
 
       resizeRef.current = { startDate: newStart, dueDate: newDue };
@@ -95,6 +101,7 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
       setResizing(false);
+      setResizePreview(null);
 
       if (resizeRef.current) {
         const { startDate, dueDate } = resizeRef.current;
@@ -156,7 +163,7 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               flex: 1, minWidth: 0,
             }}>
-              {task.name}
+              {task._displayName || task.name}
               {(task.game || task.project) && (
                 <span style={{ fontSize: 10, fontWeight: 400, opacity: 0.7 }}>
                   {' · '}{[task.game, task.project].filter(Boolean).join(' / ')}
@@ -182,6 +189,17 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
             </Popconfirm>
           </Flex>
         </Card>
+
+        {/* Ghost preview bar during resize */}
+        {resizePreview && (
+          <div style={{
+            position: 'absolute', top: 0, bottom: 0,
+            left: resizePreview.left, width: resizePreview.width,
+            background: accentColor, opacity: 0.25,
+            borderRadius: 2, pointerEvents: 'none', zIndex: 5,
+            border: `2px dashed ${accentColor}`,
+          }} />
+        )}
 
         {/* Resize handles — visible on hover, not for feedback bars */}
         {hovered && !isFb && (
