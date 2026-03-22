@@ -1,0 +1,49 @@
+{
+  "tasks": [
+    {
+      "id": "t_demo_1", "name": "main ui", "game": "pusoy", "project": "main",
+      "estTime": 3, "estUnit": "d", "startDate": "2026-03-18", "dueDate": "2026-03-21",
+      "status": "done", "priority": 900, "feedbacks": [], "createdAt": "2026-03-18T00:00:00Z", "updatedAt": "2026-03-21T00:00:00Z"
+    },
+    {
+      "id": "t_demo_2", "name": "icon lobby", "game": "pusoy", "project": "main",
+      "estTime": 1, "estUnit": "d", "startDate": "2026-03-20", "dueDate": "2026-03-21",
+      "status": "done", "priority": 950, "feedbacks": [], "createdAt": "2026-03-20T00:00:00Z", "updatedAt": "2026-03-21T00:00:00Z"
+    },
+    {
+      "id": "t_demo_3", "name": "icon event", "game": "pusoy", "project": "event fishing",
+      "estTime": 5, "estUnit": "d", "startDate": "2026-03-17", "dueDate": "2026-03-22",
+      "status": "in_progress", "priority": 800, "feedbacks": [
+        { "id": "fb_demo_1", "content": "fix icon", "createdAt": "2026-03-20T00:00:00Z", "startDate": "2026-03-20", "endDate": "2026-03-21" }
+      ], "createdAt": "2026-03-17T00:00:00Z", "updatedAt": "2026-03-20T00:00:00Z"
+    },
+    {
+      "id": "t_demo_4", "name": "popup reward", "game": "pusoy", "project": "event fishing",
+      "estTime": 2, "estUnit": "d", "startDate": "2026-03-22", "dueDate": "2026-03-24",
+      "status": "todo", "priority": 850, "feedbacks": [], "createdAt": "2026-03-22T00:00:00Z", "updatedAt": "2026-03-22T00:00:00Z"
+    },
+    {
+      "id": "t_demo_5", "name": "anim icon", "game": "pusoy", "project": "main",
+      "estTime": 1, "estUnit": "d", "startDate": "2026-03-22", "dueDate": "2026-03-23",
+      "status": "todo", "priority": 900, "feedbacks": [], "createdAt": "2026-03-22T00:00:00Z", "updatedAt": "2026-03-22T00:00:00Z"
+    },
+    {
+      "id": "t_demo_6", "name": "bg loading screen", "game": "unknown", "project": "main",
+      "estTime": 2, "estUnit": "d", "startDate": "2026-03-15", "dueDate": "2026-03-17",
+      "status": "done", "priority": 950, "feedbacks": [], "createdAt": "2026-03-15T00:00:00Z", "updatedAt": "2026-03-17T00:00:00Z"
+    }
+  ],
+  "rules": {
+    "workingDays": [1, 2, 3, 4, 5],
+    "feedbackKeywords": ["fix", "sửa", "chỉnh"],
+    "similarityThreshold": 0.6,
+    "contextSeparator": " - ",
+    "defaultEstTime": 1,
+    "defaultEstUnit": "d",
+    "priorityRules": [],
+    "prioritySortFallback": "estTime_desc"
+  },
+  "settings": {
+    "hoursPerDay": 8
+  }
+}
