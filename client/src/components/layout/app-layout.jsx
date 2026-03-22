@@ -25,7 +25,7 @@ const SIDEBAR_TEXT = {
 };
 
 export default function AppLayout({ children }) {
-  const { lang } = useI18n();
+  const { lang, t } = useI18n();
   const sidebarTitle = lang === 'vi' ? 'Nhật ký Hoạ Nô' : 'Artist Log';
 
   return (
@@ -74,7 +74,7 @@ export default function AppLayout({ children }) {
           <div className="marquee-footer">
             <div className="marquee-track">
               {Array.from({ length: 20 }, (_, i) => (
-                <span key={i} className="marquee-item">VẼ • VẼ NỮA • VẼ MÃI • ANHHN2 •</span>
+                <span key={i} className="marquee-item">{t('footer.marquee')}</span>
               ))}
             </div>
           </div>

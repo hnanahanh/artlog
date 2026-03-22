@@ -53,7 +53,7 @@
   "common.add": "Thêm Task Nhanh",
   "common.language": "Ngôn ngữ",
   "calendar.today": "Hôm nay",
-  "calendar.month_format": "Tháng {month} năm {year}",
+  "calendar.month_format": "Tháng {month}, {year}",
   "nav.dark_mode": "Chế độ tối",
   "nav.light_mode": "Chế độ sáng",
   "magic.hint_shortcut": "Nhấn Ctrl+Enter để phân tích",
@@ -61,5 +61,10 @@
   "kpi.game_weight": "KPI %",
   "common.add_task": "Thêm task",
   "magic.drawer_title": "Nhập Task Lẹ",
-  "magic.keyboard_hint": "↵ thêm dòng · ⌫ xoá trống · Shift+Del xoá · ← → ↑ ↓ di chuyển · Tab tiếp"
+  "magic.keyboard_hint": "↵ thêm dòng · ⌫ xoá trống · Shift+Del xoá · ← → ↑ ↓ di chuyển · Tab tiếp",
+  "footer.marquee": "VẼ • VẼ NỮA • VẼ MÃI • ANHHN2 •",
+  "welcome.greeting": "Chào mừng trở lại! 🎨",
+  "welcome.subtitle": "Sẵn sàng cày chưa?",
+  "overdue.title": "Task quá hạn rồi kìa! 💀",
+  "overdue.message": "{count} task đang chờ xử lý, đừng để chúng chết mòn!"
 }

@@ -259,6 +259,8 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
           onTasksCreated={() => { handleRefresh(); onTasksCreated?.(); setAddOpen(false); }}
         />
       </Drawer>
+
+{/* Overdue notification moved to App level */}
     </div>
   );
 }

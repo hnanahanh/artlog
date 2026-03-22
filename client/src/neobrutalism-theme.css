@@ -13,8 +13,8 @@
   --accent-color: #a88bec;
   --accent-active: #ccb9f4;
   --danger-color: #e03e3e;
-  --danger-bg: #ff8356;
-  --danger-text: #a01010;
+  --danger-bg: #ff5e5e;
+  --danger-text: #ffffff;
   --grid-line-color: rgba(0, 0, 0, 0.05);
   --sidebar-bg: #918cdf;
   --feedback-color: #444aff;
@@ -361,12 +361,12 @@ body {
   /* Hide sidebar on mobile */
   .app-sidebar { display: none !important; }
 
-  /* Reduce outer padding but keep space for border + shadow */
-  .app-outer-layout { padding: 8px !important; }
-
-  /* Keep border and shadow on mobile, just reduce radius */
+  /* Full screen on mobile — no outer padding, border, shadow */
+  .app-outer-layout { padding: 0 !important; }
   .app-outer-wrapper {
-    border-radius: 2px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   /* Compact header — keep action-btn same size as desktop (48px) */
@@ -385,6 +385,21 @@ body {
   .marquee-footer { height: 36px !important; }
   .marquee-item { height: 36px !important; font-size: 13px !important; padding: 0 16px !important; }
 
-  /* Calendar grid: smaller cells */
-  .calendar-task-bar .ant-card { padding: 0 2px !important; }
+  /* Calendar grid: no text selection on touch, compact on mobile */
+  .calendar-month-grid {
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  }
+  .calendar-month-grid > div:not([style*="grid-column"]) { min-height: 60px !important; }
+  /* Compact calendar nav bar on mobile */
+  .calendar-month-grid > div[style*="grid-column"] { padding: 6px 8px !important; }
+  .calendar-month-grid > div[style*="grid-column"] h5 { font-size: 14px !important; }
+  .calendar-month-grid > div[style*="grid-column"] .ant-btn-sm { height: 24px !important; padding: 0 6px !important; font-size: 12px !important; }
+  /* Mobile tab bar scrolls with content */
+  /* Calendar task bar: bigger touch target on mobile */
+  .calendar-task-bar .ant-card .ant-card-body .ant-flex { padding: 6px 10px 6px 6px !important; min-height: 32px; }
+  .calendar-task-bar .ant-card { touch-action: manipulation; }
+
+  /* KPI mobile: keep 3-col stats + 2-col charts, scale down */
+  .kpi-stats-row { grid-template-columns: repeat(3, 1fr) !important; }
+  .kpi-charts-row { grid-template-columns: repeat(2, 1fr) !important; }
 }

@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Card, Typography, Flex, Dropdown, Button, Popconfirm } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Card, Typography, Flex, Dropdown } from 'antd';
 import dayjs from 'dayjs';
 import EditTaskModal from '../kanban/edit-task-modal.jsx';
 import { getTaskBarStyle } from './calendar-utils.js';
@@ -171,22 +170,7 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
               )}
             </Text>
 
-            <Popconfirm
-              title={isFb ? 'Xóa feedback?' : 'Xóa task?'}
-              onConfirm={e => { e?.stopPropagation(); handleDelete(); }}
-              okText="OK" cancelText="Hủy"
-              onClick={e => e.stopPropagation()}
-            >
-              <Button
-                type="text" size="small" danger
-                icon={<DeleteOutlined style={{ fontSize: 11 }} />}
-                style={{
-                  width: 20, height: 20, padding: 0, fontSize: 11, flexShrink: 0,
-                  visibility: hovered ? 'visible' : 'hidden',
-                }}
-                onClick={e => e.stopPropagation()}
-              />
-            </Popconfirm>
+{/* Delete button moved to edit modal */}
           </Flex>
         </Card>
 
@@ -225,6 +209,7 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
             open={editing}
             onClose={() => setEditing(false)}
             onEdit={onEdit}
+            onDelete={onDelete}
             onDeleteFeedback={onDeleteFeedback}
             onUpdateFeedback={onUpdateFeedback}
             gameOptions={gameOptions}

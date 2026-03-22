@@ -35,8 +35,8 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
   };
 
   return (
-    <div style={{ 
-      display: 'grid', 
+    <div className="calendar-month-grid" style={{
+      display: 'grid',
       gridTemplateColumns: 'repeat(7, 1fr)', // Sun–Sat
       width: '100%',
       border: '2px solid #222', 
@@ -62,7 +62,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
       {DAY_NAMES.map((name, i) => {
         const isWeekend = i === 0 || i === 6;
         return (
-          <div key={name} style={{
+          <div key={name} className={`cal-col-${i}`} style={{
             textAlign: 'center', fontSize: 12, fontWeight: 800,
             color: isWeekend ? 'var(--text-secondary)' : 'var(--text-primary)', padding: '8px 0',
             background: isWeekend ? 'var(--bg-secondary)' : 'var(--bg-header)',
@@ -100,7 +100,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
           const isDragOver = dragOverDate === dateStr;
           const isHovered = hoveredDate === dateStr;
           return (
-            <div key={dateStr}
+            <div key={dateStr} className={`cal-col-${dayIdx}`}
               onMouseEnter={() => setHoveredDate(dateStr)}
               onMouseLeave={() => setHoveredDate(null)}
               onDragOver={e => { e.preventDefault(); setDragOverDate(dateStr); }}
@@ -124,29 +124,8 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                 padding: '4px 8px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
+                justifyContent: 'flex-end',
               }}>
-                <div style={{ width: 18 }}>
-                  {isHovered && (
-                    <button
-                      onClick={() => onAddTask?.(dateStr)}
-                      style={{
-                        width: 18, height: 18,
-                        border: '2px solid #222',
-                        borderRadius: 2,
-                        background: '#fff',
-                        boxShadow: '2px 2px 0 #222',
-                        cursor: 'pointer',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: 13, fontWeight: 900, lineHeight: 1,
-                        padding: 0,
-                        transition: 'transform 0.08s, box-shadow 0.08s',
-                      }}
-                      onMouseDown={e => { e.currentTarget.style.transform = 'translate(2px,2px)'; e.currentTarget.style.boxShadow = 'none'; }}
-                      onMouseUp={e => { e.currentTarget.style.transform = ''; e.currentTarget.style.boxShadow = '2px 2px 0 #222'; }}
-                    >+</button>
-                  )}
-                </div>
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: 22, height: 22, borderRadius: '50%',

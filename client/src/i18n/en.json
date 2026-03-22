@@ -61,5 +61,10 @@
   "kpi.game_weight": "KPI %",
   "common.add_task": "Add Task",
   "magic.drawer_title": "Quick Task",
-  "magic.keyboard_hint": "↵ new row · ⌫ remove empty · Shift+Del remove · ← → ↑ ↓ move · Tab next"
+  "magic.keyboard_hint": "↵ new row · ⌫ remove empty · Shift+Del remove · ← → ↑ ↓ move · Tab next",
+  "footer.marquee": "DRAW • DRAW MORE • DRAW FOREVER • ANHHN2 •",
+  "welcome.greeting": "Welcome back! 🎨",
+  "welcome.subtitle": "Ready to grind?",
+  "overdue.title": "Overdue tasks alert! 💀",
+  "overdue.message": "{count} task(s) waiting — don't let them rot!"
 }

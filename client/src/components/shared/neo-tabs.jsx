@@ -62,7 +62,7 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
     <div>
       {/* ---- Desktop tabs row (>768px) ---- */}
       <div className="neo-tabs-desktop" style={{ display: 'flex', alignItems: 'stretch', gap: 8 }}>
-        <div className="neo-box" style={{
+        <div className="neo-box neo-tabs-bar" style={{
           display: 'flex',
           border: '3px solid var(--border-color)',
           borderRadius: 2,

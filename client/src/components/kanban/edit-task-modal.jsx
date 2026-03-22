@@ -10,7 +10,7 @@ const { Text } = Typography;
 
 const neoLabel = { fontSize: 11, fontWeight: 700, color: 'var(--text-secondary, #666)', textTransform: 'uppercase', letterSpacing: 0.5 };
 
-export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFeedback, onUpdateFeedback, t, gameOptions = [], projectOptions = [] }) {
+export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, t, gameOptions = [], projectOptions = [] }) {
   const [form, setForm] = useState({});
   const [fbEdits, setFbEdits] = useState({});
   const [hoveredFbId, setHoveredFbId] = useState(null);
@@ -139,9 +139,19 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDeleteFee
       title={<span style={{ fontWeight: 900, fontSize: 14, letterSpacing: 0.3 }}>Edit Task</span>}
       open={open}
       onCancel={onClose}
-      onOk={handleSave}
-      okText="Save"
-      cancelText="Cancel"
+      footer={
+        <Flex justify="space-between" align="center">
+          {onDelete ? (
+            <Popconfirm title="Delete task?" onConfirm={() => { onDelete(realTaskId); onClose(); }} okText="OK" cancelText="Cancel">
+              <Button danger style={{ fontWeight: 700, height: 32 }}>Delete</Button>
+            </Popconfirm>
+          ) : <span />}
+          <Space>
+            <Button onClick={onClose} style={{ height: 32 }}>Cancel</Button>
+            <Button type="primary" onClick={handleSave} style={{ height: 32, background: 'var(--accent-color)', color: '#222' }}>Save</Button>
+          </Space>
+        </Flex>
+      }
       width={480}
       destroyOnClose
       classNames={{ wrapper: 'neo-modal-wrapper' }}

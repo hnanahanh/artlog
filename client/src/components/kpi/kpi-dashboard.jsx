@@ -15,11 +15,12 @@ function StatCard({ label, value, headerBg }) {
   return (
     <div style={{
       overflow: 'hidden', background: headerBg,
-      padding: '8px 12px',
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      padding: '8px 6px',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      height: '100%',
     }}>
-      <span style={{ fontWeight: 900, fontSize: 11, color: 'var(--text-primary)', textTransform: 'uppercase', fontFamily: "'JetBrains Mono'" }}>{label}</span>
-      <Text strong style={{ fontSize: 20, color: 'var(--text-primary)', fontFamily: "'JetBrains Mono'" }}>{value}</Text>
+      <span style={{ fontWeight: 900, fontSize: 10, color: 'var(--text-primary)', textTransform: 'uppercase', fontFamily: "'JetBrains Mono'", textAlign: 'center', lineHeight: 1.2 }}>{label}</span>
+      <Text strong style={{ fontSize: 18, color: 'var(--text-primary)', fontFamily: "'JetBrains Mono'", textAlign: 'center' }}>{value}</Text>
     </div>
   );
 }
@@ -41,7 +42,7 @@ function DonutChart({ data, title }) {
       }}>{title}</Text>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
         {/* Recharts pie */}
-        <div style={{ width: 160, height: 160, flexShrink: 0 }}>
+        <div className="kpi-pie-box" style={{ width: '100%', height: 160, margin: '0 auto' }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Tooltip
@@ -54,7 +55,7 @@ function DonutChart({ data, title }) {
                 }}
               />
               <Pie data={chartData} dataKey="value" nameKey="name"
-                innerRadius={45} outerRadius={70} strokeWidth={2}
+                innerRadius={25} outerRadius={50} strokeWidth={2}
                 stroke="var(--border-color)"
               >
                 {chartData.map((entry, i) => (
@@ -173,7 +174,7 @@ export default function KpiDashboard({ data, from, to }) {
         overflow: 'hidden',
       }}>
         {/* Stats row: 3 equal columns */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderBottom: '2px solid var(--border-color)' }}>
+        <div className="kpi-stats-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', borderBottom: '2px solid var(--border-color)' }}>
           {[
             { label: t('kpi.total'), value: s.totalTasks, headerBg: 'var(--col-todo-header)' },
             { label: t('kpi.overdue_rate'), value: `${s.overdueCount || 0} (${s.overdueRate || 0}%)`, headerBg: 'var(--danger-bg)' },
@@ -188,7 +189,7 @@ export default function KpiDashboard({ data, from, to }) {
         </div>
 
         {/* Charts row: 2 equal columns */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', background: 'var(--bg-secondary)' }}>
+        <div className="kpi-charts-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', background: 'var(--bg-secondary)' }}>
           <div style={{ borderRight: '2px solid var(--border-color)' }}>
             <DonutChart data={gameChartData} title={t('kpi.by_game')} />
           </div>

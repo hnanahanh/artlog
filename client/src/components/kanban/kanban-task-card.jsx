@@ -3,7 +3,7 @@ import { Card, Typography, Flex, Button, Popconfirm, Input, Select, Space, Tag }
 import NeoRangePicker from '../shared/neo-range-picker.jsx';
 import { Draggable } from '@hello-pangea/dnd';
 import {
-  ClockCircleOutlined, EditOutlined, DeleteOutlined,
+  ClockCircleOutlined, DeleteOutlined,
   CheckOutlined, CloseOutlined,
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -109,6 +109,7 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
               cursor: 'grab',
             }}
             styles={{ body: { padding: '6px 8px' } }}
+            onClick={() => { if (!editing) startEdit(); }}
           >
             {editing ? (
               /* Inline edit form */
@@ -154,9 +155,14 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
                     ))}
                   </div>
                 )}
-                <Flex gap={4}>
-                  <Button size="small" type="primary" icon={<CheckOutlined />} onClick={handleSave} />
-                  <Button size="small" icon={<CloseOutlined />} onClick={() => setEditing(false)} />
+                <Flex gap={4} justify="space-between" style={{ width: '100%' }}>
+                  <Popconfirm title="Delete?" onConfirm={() => onDelete?.(task.id)} okText="OK" cancelText="Cancel">
+                    <Button size="small" danger icon={<DeleteOutlined />} />
+                  </Popconfirm>
+                  <Space size={4}>
+                    <Button size="small" type="primary" icon={<CheckOutlined />} onClick={handleSave} />
+                    <Button size="small" icon={<CloseOutlined />} onClick={() => setEditing(false)} />
+                  </Space>
                 </Flex>
               </Space>
             ) : (
@@ -172,18 +178,7 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
                       <span style={{ color: 'var(--feedback-color)', fontWeight: 600 }}> +{latestFb.content}</span>
                     )}
                   </Text>
-                  {hovered && (
-                    <Space size={0} style={{ flexShrink: 0, marginLeft: 4 }}>
-                      <Button type="text" size="small" icon={<EditOutlined />} onClick={startEdit}
-                        style={{ width: 22, height: 22, padding: 0 }} />
-                      <Popconfirm title={`${t?.('common.delete') || 'Delete'}?`}
-                        onConfirm={() => onDelete?.(task.id)} okText="OK"
-                        cancelText={t?.('common.cancel') || 'Cancel'}>
-                        <Button type="text" size="small" danger icon={<DeleteOutlined />}
-                          style={{ width: 22, height: 22, padding: 0 }} />
-                      </Popconfirm>
-                    </Space>
-                  )}
+{/* Click card to edit */}
                 </Flex>
                 <Flex align="center" gap={6} style={{ marginTop: 2 }}>
                   <Text type={overdue ? 'danger' : 'secondary'} style={{ fontSize: 11, fontWeight: 600 }}>
