@@ -18,7 +18,8 @@ function write(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 export async function ensureSeeded() {
   if (localStorage.getItem(STORAGE_KEYS.seeded)) return;
   try {
-    const res = await fetch('/sample-data.json');
+    const base = import.meta.env.BASE_URL || '/';
+    const res = await fetch(`${base}sample-data.json`);
     const data = await res.json();
     write(STORAGE_KEYS.tasks, data.tasks || []);
     write(STORAGE_KEYS.rules, data.rules || {});
