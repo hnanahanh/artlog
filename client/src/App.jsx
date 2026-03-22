@@ -57,7 +57,7 @@ export default function App() {
       <AntApp>
         <ThemeProvider>
         <I18nProvider defaultLang="vi">
-          <BrowserRouter>
+          <BrowserRouter basename={import.meta.env.BASE_URL}>
             <AppLayout>
               <Routes>
                 <Route path="/" element={<DashboardPage refreshKey={refreshKey} onTasksCreated={handleTasksCreated} />} />
