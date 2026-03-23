@@ -7,8 +7,14 @@ import { getKPICsvUrl } from '../../api/task-api-client.js';
 
 const { Text } = Typography;
 
-/* Neo-brutalism palette for chart slices */
-const CHART_COLORS = ['#c47dff', '#faad14', '#1677ff', '#52c41a', '#ff4d4f', '#13c2c2', '#eb2f96', '#8c8c8c'];
+/* Fallback chart colors — actual values read from CSS vars at render time */
+const CHART_FALLBACK = ['#c47dff', '#faad14', '#1677ff', '#52c41a', '#ff4d4f', '#13c2c2', '#eb2f96', '#8c8c8c'];
+function getChartColors() {
+  try {
+    const s = getComputedStyle(document.documentElement);
+    return Array.from({ length: 8 }, (_, i) => s.getPropertyValue(`--chart-color-${i + 1}`).trim() || CHART_FALLBACK[i]);
+  } catch { return CHART_FALLBACK; }
+}
 
 /* Stat card styled like kanban column header */
 function StatCard({ label, value, headerBg }) {
@@ -27,6 +33,7 @@ function StatCard({ label, value, headerBg }) {
 
 /* Recharts Donut chart with center label */
 function DonutChart({ data, title }) {
+  const CHART_COLORS = useMemo(getChartColors, []);
   const total = useMemo(() => data.reduce((s, d) => s + d.value, 0), [data]);
   if (total === 0) return <Text type="secondary">—</Text>;
 
@@ -42,7 +49,7 @@ function DonutChart({ data, title }) {
       }}>{title}</Text>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
         {/* Recharts pie */}
-        <div className="kpi-pie-box" style={{ width: '100%', height: 160, margin: '0 auto' }}>
+        <div className="kpi-pie-box" style={{ width: '100%', aspectRatio: '1', maxHeight: 280, margin: '0 auto' }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Tooltip
@@ -55,7 +62,7 @@ function DonutChart({ data, title }) {
                 }}
               />
               <Pie data={chartData} dataKey="value" nameKey="name"
-                innerRadius={25} outerRadius={50} strokeWidth={2}
+                innerRadius="40%" outerRadius="70%" strokeWidth={2}
                 stroke="var(--border-color)"
               >
                 {chartData.map((entry, i) => (

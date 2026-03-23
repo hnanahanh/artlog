@@ -156,12 +156,13 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
       destroyOnClose
       classNames={{ wrapper: 'neo-modal-wrapper' }}
       styles={{
-        header: { borderBottom: '2px solid var(--border-color)', paddingBottom: 10, marginBottom: 0 },
-        body: { overflow: 'visible' },
-        footer: { borderTop: '2px solid var(--border-color)', paddingTop: 10, marginTop: 0 },
+        content: { border: '3px solid var(--border-color)', boxShadow: '6px 6px 0px var(--shadow-color)', borderRadius: 2, padding: 0 },
+        header: { borderBottom: '2px solid var(--border-color)', padding: '10px 16px', marginBottom: 0, background: 'var(--bg-header)' },
+        body: { overflow: 'visible', padding: '20px 24px' },
+        footer: { borderTop: '2px solid var(--border-color)', padding: '10px 16px', marginTop: 0 },
       }}
     >
-      <Space direction="vertical" size={10} style={{ width: '100%', paddingTop: 8 }}>
+      <Space direction="vertical" size={10} style={{ width: '100%' }}>
         {/* Name + Feedback names inline */}
         <div>
           <Text style={neoLabel}>Name</Text>

@@ -32,6 +32,21 @@
   --nav-active-text: #fff;
   --btn-add-bg: #9bf546;
   --tab-active-bg: #c8c2ff;
+  /* Chart slice colors */
+  --chart-color-1: #c47dff;
+  --chart-color-2: #faad14;
+  --chart-color-3: #1677ff;
+  --chart-color-4: #52c41a;
+  --chart-color-5: #ff4d4f;
+  --chart-color-6: #13c2c2;
+  --chart-color-7: #eb2f96;
+  --chart-color-8: #8c8c8c;
+  /* Marquee name colors — easy to change */
+  --marquee-color-1: #9177CF;
+  --marquee-color-2: #2EB52E;
+  --marquee-color-3: #1677ff;
+  --marquee-color-4: #a88bec;
+  --marquee-color-5: #52c41a;
 }
 
 [data-theme="dark"] {
@@ -194,7 +209,9 @@ button.neo-btn:active {
 }
 
 /* Modal — neo-brutalism */
-:root .ant-modal .ant-modal-content {
+:root .ant-modal .ant-modal-content,
+:root :where(.css-dev-only-do-not-override-1daqxe2).ant-modal .ant-modal-content,
+:root :where(.ant-modal-css-var) .ant-modal .ant-modal-content {
   border: 3px solid var(--border-color) !important;
   box-shadow: 6px 6px 0px var(--shadow-color) !important;
   border-radius: 2px !important;
@@ -204,6 +221,10 @@ button.neo-btn:active {
 :root .ant-modal .ant-modal-body {
   padding: 0 !important;
 }
+/* Neo scrollbar inside modal body */
+.ant-modal-body::-webkit-scrollbar { width: 8px; }
+.ant-modal-body::-webkit-scrollbar-track { background: var(--bg-secondary); border-left: 2px solid var(--border-color); }
+.ant-modal-body::-webkit-scrollbar-thumb { background: var(--border-color); border: 2px solid var(--border-color); border-radius: 0; }
 :root .ant-modal .ant-modal-footer {
   margin-top: 0 !important;
 }
@@ -369,8 +390,8 @@ body {
     box-shadow: none !important;
   }
 
-  /* Compact header — keep action-btn same size as desktop (48px) */
-  .app-header-bar { min-height: 48px !important; }
+  /* Fixed header on mobile, only content scrolls */
+  .app-header-bar { min-height: 48px !important; flex-shrink: 0; position: sticky; top: 0; z-index: 20; }
   .app-header-bar .nav-btn { padding: 0 12px !important; font-size: 14px !important; }
   /* Tooltip wrapper must also stretch */
   .app-header-bar > span { display: flex; }
@@ -379,10 +400,12 @@ body {
 
   /* Settings modal: full width on mobile */
   .ant-modal { max-width: calc(100vw - 16px) !important; margin: 8px auto !important; }
-  .ant-modal .ant-modal-content { box-shadow: 3px 3px 0px var(--shadow-color) !important; }
+  /* Settings modal: popup style, no extra padding */
+  .ant-modal { max-width: calc(100vw - 16px) !important; margin: 8px auto !important; }
+  .ant-modal .ant-modal-content { padding: 0 !important; }
 
-  /* Compact marquee */
-  .marquee-footer { height: 36px !important; }
+  /* Compact marquee — fixed at bottom on mobile */
+  .marquee-footer { height: 36px !important; flex-shrink: 0; position: sticky; bottom: 0; z-index: 20; }
   .marquee-item { height: 36px !important; font-size: 13px !important; padding: 0 16px !important; }
 
   /* Calendar grid: no text selection on touch, compact on mobile */
@@ -398,6 +421,8 @@ body {
   /* Calendar task bar: bigger touch target on mobile */
   .calendar-task-bar .ant-card .ant-card-body .ant-flex { padding: 6px 10px 6px 6px !important; min-height: 32px; }
   .calendar-task-bar .ant-card { touch-action: manipulation; }
+  /* Always show resize handles on mobile */
+  .calendar-task-bar .resize-handle { opacity: 0.6 !important; width: 14px !important; }
 
   /* KPI mobile: keep 3-col stats + 2-col charts, scale down */
   .kpi-stats-row { grid-template-columns: repeat(3, 1fr) !important; }

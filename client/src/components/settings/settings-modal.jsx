@@ -78,7 +78,8 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
         </Space>
       }
       styles={{
-        content: { padding: 0 },
+        wrapper: { padding: 0 },
+        content: { padding: 0, borderRadius: 2 },
         header: { display: 'none' },
         body: { background: 'var(--bg-card)', padding: 0, maxHeight: '80vh', overflowY: 'auto', overflowX: 'hidden', fontFamily: "'JetBrains Mono'" },
         footer: { background: 'var(--bg-card)', borderTop: '2px solid var(--border-color)', padding: '12px 20px' },
@@ -104,7 +105,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
       </div>
 
       {/* Language & Theme toggles */}
-      <div style={{ padding: 0 }}>
+      <div style={{ padding: 0, marginTop: 8 }}>
       {toggleLang && toggleTheme && (
         <div style={{ display: 'flex', gap: 0 }}>
           <Button onClick={toggleLang} style={{
@@ -124,7 +125,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
       )}
 
       {rules && (
-        <Space direction="vertical" size={0} style={{ width: '100%' }}>
+        <Space direction="vertical" size={8} style={{ width: '100%', padding: '12px 16px' }}>
           {/* Ngày làm việc */}
           <Card title={<span style={{ fontFamily: "'JetBrains Mono'", fontWeight: 900 }}>Ngày làm việc</span>} size="small">
             <Checkbox.Group value={rules.workingDays}

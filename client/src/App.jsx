@@ -67,6 +67,11 @@ export default function App() {
         Table: {
           borderColor: '#222222',
         },
+        Modal: {
+          paddingLG: 0,
+          paddingMD: 0,
+          paddingContentHorizontalLG: 0,
+        },
       },
     }}>
       <AntApp>

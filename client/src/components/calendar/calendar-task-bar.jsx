@@ -58,31 +58,29 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
     if (key === 'delete') handleDelete();
   };
 
-  // Resize handler — side: 'left' or 'right'
+  // Unified resize handler — works with mouse & touch
   const handleResizeStart = useCallback((e, side) => {
     e.preventDefault();
     e.stopPropagation();
     if (!barRef.current || !weekStart) return;
 
+    const isTouch = e.type === 'touchstart';
+    const startX = isTouch ? e.touches[0].clientX : e.clientX;
     const barEl = barRef.current;
     const cellWidth = barEl.offsetWidth / span;
-    const startX = e.clientX;
     const origStartDate = task.startDate;
     const origDueDate = task.dueDate;
-
-    const origBarLeft = barEl.offsetLeft;
     const origBarWidth = barEl.offsetWidth;
     setResizing(true);
     setResizePreview(null);
 
-    const onMouseMove = (ev) => {
-      const dx = ev.clientX - startX;
+    const onMove = (ev) => {
+      const x = ev.touches ? ev.touches[0].clientX : ev.clientX;
+      const dx = x - startX;
       const colDelta = Math.round(dx / cellWidth);
       if (colDelta === 0) { setResizePreview(null); return; }
 
-      let newStart = origStartDate;
-      let newDue = origDueDate;
-
+      let newStart = origStartDate, newDue = origDueDate;
       if (side === 'right') {
         newDue = dayjs(origDueDate).add(colDelta, 'day').format('YYYY-MM-DD');
         if (newDue <= newStart) return;
@@ -92,16 +90,16 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
         if (newStart >= newDue) return;
         setResizePreview({ left: colDelta * cellWidth, width: origBarWidth - colDelta * cellWidth });
       }
-
       resizeRef.current = { startDate: newStart, dueDate: newDue };
     };
 
-    const onMouseUp = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+    const onEnd = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
       setResizing(false);
       setResizePreview(null);
-
       if (resizeRef.current) {
         const { startDate, dueDate } = resizeRef.current;
         const estTime = calcEstTime(startDate, dueDate, task.estUnit);
@@ -110,8 +108,8 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
       }
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener(isTouch ? 'touchmove' : 'mousemove', onMove, { passive: false });
+    document.addEventListener(isTouch ? 'touchend' : 'mouseup', onEnd);
   }, [span, task, weekStart, onEdit]);
 
   // Cleanup listeners on unmount
@@ -185,18 +183,22 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
           }} />
         )}
 
-        {/* Resize handles — visible on hover, not for feedback bars */}
-        {hovered && !isFb && (
+        {/* Resize handles — visible on hover (desktop) or always (mobile), not for feedback bars */}
+        {!isFb && (
           <>
             <div
-              style={{ ...HANDLE_STYLE, left: 0 }}
+              className="resize-handle"
+              style={{ ...HANDLE_STYLE, left: 0, opacity: hovered ? 1 : undefined }}
               onMouseDown={e => handleResizeStart(e, 'left')}
+              onTouchStart={e => handleResizeStart(e, 'left')}
             >
               <div style={{ ...HANDLE_INDICATOR, left: 1 }} />
             </div>
             <div
-              style={{ ...HANDLE_STYLE, right: 0 }}
+              className="resize-handle"
+              style={{ ...HANDLE_STYLE, right: 0, opacity: hovered ? 1 : undefined }}
               onMouseDown={e => handleResizeStart(e, 'right')}
+              onTouchStart={e => handleResizeStart(e, 'right')}
             >
               <div style={{ ...HANDLE_INDICATOR, right: 1 }} />
             </div>

@@ -68,14 +68,26 @@ export default function AppLayout({ children }) {
           <style>{`
             @keyframes marquee-horizontal { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
             .marquee-footer { height: 60px; overflow: hidden; border-top: 4px solid #000; background color: #869f79; display: flex; align-items: center; flex-shrink: 0; }
-            .marquee-track { display: flex; flex-direction: row; width: max-content; animation: marquee-horizontal 60s linear infinite; }
+            .marquee-track { display: flex; flex-direction: row; width: max-content; animation: marquee-horizontal 120s linear infinite; }
             .marquee-item { height: 60px; display: flex; align-items: center; font-weight: 900; font-size: 18px; text-transform: uppercase; color: var(--text-primary); letter-spacing: 3px; white-space: nowrap; font-family: 'JetBrains Mono'; padding: 0 32px; }
           `}</style>
           <div className="marquee-footer">
             <div className="marquee-track">
-              {Array.from({ length: 20 }, (_, i) => (
-                <span key={i} className="marquee-item">{t('footer.marquee')}</span>
-              ))}
+              {Array.from({ length: 20 }, (_, i) => {
+                const COLORS = ['var(--marquee-color-1)', 'var(--marquee-color-2)', 'var(--marquee-color-3)', 'var(--marquee-color-4)', 'var(--marquee-color-5)'];
+                const parts = (t('footer.marquee') || '').split('•').map(s => s.trim()).filter(Boolean);
+                return (
+                  <span key={i} className="marquee-item">
+                    {parts.map((word, j) => (
+                      <span key={j}>
+                        <span style={{ color: COLORS[j % COLORS.length] }}>{word}</span>
+                        {j < parts.length - 1 && <span style={{ color: 'var(--text-secondary)', margin: '0 8px' }}>•</span>}
+                      </span>
+                    ))}
+                    <span style={{ color: 'var(--text-secondary)', margin: '0 8px' }}>•</span>
+                  </span>
+                );
+              })}
             </div>
           </div>
         </div>
