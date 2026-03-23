@@ -216,7 +216,7 @@ export default function QuickMagicInput({ onTasksCreated }) {
   return (
     <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
       {/* Magic text area with highlight overlay */}
-      <div style={{ position: 'relative', marginBottom: 8, flexShrink: 0 }}>
+      <div style={{ position: 'relative', marginBottom: 8, flexShrink: 0, maxHeight: 150, overflow: 'hidden' }}>
         <div
           aria-hidden style={{
             position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, padding: '8px 10px',
@@ -235,7 +235,7 @@ export default function QuickMagicInput({ onTasksCreated }) {
             border: '2px solid var(--border-color)', borderRadius: 2,
             background: rawText ? 'transparent' : 'var(--bg-card)',
             color: rawText ? 'transparent' : 'var(--text-primary)',
-            caretColor: 'var(--text-primary)', resize: 'vertical', boxSizing: 'border-box',
+            caretColor: 'var(--text-primary)', resize: 'none', boxSizing: 'border-box', maxHeight: 150, overflowY: 'auto',
             lineHeight: '1.5', position: 'relative', zIndex: 1,
           }}
           onKeyDown={e => {
