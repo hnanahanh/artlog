@@ -238,7 +238,30 @@ export default function QuickMagicInput({ onTasksCreated }) {
             caretColor: 'var(--text-primary)', resize: 'vertical', boxSizing: 'border-box',
             lineHeight: '1.5', position: 'relative', zIndex: 1,
           }}
-          onKeyDown={e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); commitRawText(); } }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); commitRawText(); return; }
+            if (e.key === 'Enter' && !e.shiftKey) {
+              /* Parse completed lines on Enter */
+              const val = e.target.value;
+              const lines = val.split('\n');
+              if (lines.length >= 2) {
+                const lastLine = lines[lines.length - 1].trim();
+                if (lastLine) {
+                  /* Keep first line as context if it's "Project - Type" */
+                  const ctxMatch = lines[0].match(/^(.+?)\s*[-–]\s*(.+)$/);
+                  let project = '', type = '';
+                  if (ctxMatch && !lines[0].match(/\d+[dh]\s*$/i)) {
+                    project = ctxMatch[1].trim(); type = ctxMatch[2].trim();
+                  }
+                  const m = lastLine.match(/^(.+?)\s+(\d+(?:\.\d+)?)\s*(d|h)\s*$/i);
+                  const newTask = m
+                    ? { ...emptyRow(project, type, rules), name: m[1].trim(), estTime: parseFloat(m[2]), estUnit: m[3].toLowerCase() }
+                    : { ...emptyRow(project, type, rules), name: lastLine };
+                  setTasks(prev => [...prev.filter(t => t.name.trim()), newTask, emptyRow(project, type, rules)]);
+                }
+              }
+            }
+          }}
         />
       </div>
       {/* Live preview of parsed tasks */}
