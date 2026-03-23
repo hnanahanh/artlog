@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Button, Flex, Space, Popconfirm, Typography } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
@@ -25,7 +25,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
         project: task.project || '', type: task.type || '',
       });
       const edits = {};
-      task.feedbacks?.forEach(fb => { edits[fb.id] = { content: fb.content, createdAt: fb.createdAt }; });
+      task.feedbacks?.forEach(fb => { edits[fb.id] = { content: fb.content }; });
       setFbEdits(edits);
     }
   }, [task]);
@@ -52,83 +52,8 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
     const edit = fbEdits[fbId];
     const original = task.feedbacks?.find(f => f.id === fbId);
     if (!edit || !original) return;
-    const data = {};
-    if (edit.content?.trim() && edit.content !== original.content) data.content = edit.content.trim();
-    if (edit.startDate && edit.startDate !== original.startDate) data.startDate = edit.startDate;
-    if (edit.endDate && edit.endDate !== original.endDate) data.endDate = edit.endDate;
-    if (Object.keys(data).length) onUpdateFeedback?.(realTaskId, fbId, data);
-  };
-
-  // Build ranges array for multi-range picker (task + feedbacks)
-  const dateRanges = useMemo(() => {
-    if (!hasFeedbacks || !form.startDate) return null;
-    const ranges = [{
-      key: 'task',
-      label: 'Task',
-      value: form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null,
-    }];
-    task.feedbacks.forEach((fb, i) => {
-      const s = fbEdits[fb.id]?.startDate ?? fb.startDate ?? fb.createdAt;
-      const e = fbEdits[fb.id]?.endDate ?? fb.endDate ?? fb.createdAt;
-      ranges.push({
-        key: `fb-${fb.id}`,
-        label: `FB ${i + 1}`,
-        value: [dayjs(s), dayjs(e)],
-      });
-    });
-    return ranges;
-  }, [hasFeedbacks, form.startDate, form.dueDate, task.feedbacks, fbEdits]);
-
-  // Handle multi-range change with chain cascade
-  const handleRangeChange = (key, dates) => {
-    if (!dates?.[0] || !dates?.[1]) return;
-    const start = dates[0].format('YYYY-MM-DD');
-    const end = dates[1].format('YYYY-MM-DD');
-
-    if (key === 'task') {
-      setForm(f => ({ ...f, startDate: start, dueDate: end }));
-      // Chain: task.dueDate → FB1.startDate
-      const firstFb = task.feedbacks?.[0];
-      if (firstFb) {
-        setFbEdits(prev => ({ ...prev, [firstFb.id]: { ...prev[firstFb.id], startDate: end } }));
-        onUpdateFeedback?.(realTaskId, firstFb.id, { startDate: end });
-      }
-    } else {
-      // Feedback range changed
-      const fbId = key.replace('fb-', '');
-      setFbEdits(prev => ({
-        ...prev,
-        [fbId]: { ...prev[fbId], startDate: start, endDate: end },
-      }));
-
-      const fbIdx = task.feedbacks?.findIndex(f => f.id === fbId);
-      if (fbIdx === -1) return;
-
-      // Chain backward: if first feedback, sync task.dueDate = fb.startDate
-      if (fbIdx === 0) {
-        setForm(f => ({ ...f, dueDate: start }));
-      } else {
-        // Chain backward: prev feedback endDate = this feedback startDate
-        const prevFb = task.feedbacks[fbIdx - 1];
-        if (prevFb) {
-          setFbEdits(prev => ({ ...prev, [prevFb.id]: { ...prev[prevFb.id], endDate: start } }));
-          onUpdateFeedback?.(realTaskId, prevFb.id, { endDate: start });
-        }
-      }
-
-      // Chain forward: next feedback startDate = this feedback endDate
-      const nextFb = task.feedbacks?.[fbIdx + 1];
-      if (nextFb) {
-        setFbEdits(prev => ({ ...prev, [nextFb.id]: { ...prev[nextFb.id], startDate: end } }));
-        onUpdateFeedback?.(realTaskId, nextFb.id, { startDate: end });
-      }
-
-      // Persist this feedback's dates
-      const fb = task.feedbacks[fbIdx];
-      const data = {};
-      if (start !== fb.startDate) data.startDate = start;
-      if (end !== (fb.endDate ?? fb.createdAt?.slice(0, 10))) data.endDate = end;
-      if (Object.keys(data).length) onUpdateFeedback?.(realTaskId, fbId, data);
+    if (edit.content?.trim() && edit.content !== original.content) {
+      onUpdateFeedback?.(realTaskId, fbId, { content: edit.content.trim() });
     }
   };
 
@@ -248,23 +173,15 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
           </div>
           <div style={{ flex: 2 }}>
             <Text style={neoLabel}>Dates</Text>
-            {dateRanges ? (
-              <NeoRangePicker
-                style={{ width: '100%' }}
-                ranges={dateRanges}
-                onRangeChange={handleRangeChange}
-              />
-            ) : (
-              <NeoRangePicker
-                style={{ width: '100%' }}
-                value={form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null}
-                onChange={dates => {
-                  if (dates?.[0] && dates?.[1]) {
-                    setForm(f => ({ ...f, startDate: dates[0].format('YYYY-MM-DD'), dueDate: dates[1].format('YYYY-MM-DD') }));
-                  }
-                }}
-              />
-            )}
+            <NeoRangePicker
+              style={{ width: '100%' }}
+              value={form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null}
+              onChange={dates => {
+                if (dates?.[0] && dates?.[1]) {
+                  setForm(f => ({ ...f, startDate: dates[0].format('YYYY-MM-DD'), dueDate: dates[1].format('YYYY-MM-DD') }));
+                }
+              }}
+            />
           </div>
         </Flex>
 

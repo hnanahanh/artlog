@@ -54,11 +54,6 @@ export default function KanbanTaskCard({ task, index, onOpenEditModal }) {
               <Text type={overdue ? 'danger' : 'secondary'} style={{ fontSize: 11, fontWeight: 600 }}>
                 <ClockCircleOutlined /> {task.startDate?.slice(5)} → {task.dueDate?.slice(5)}
               </Text>
-              {latestFb && (
-                <Text style={{ color: 'var(--feedback-color)', fontSize: 11, fontWeight: 600 }}>
-                  fb: {latestFb.startDate?.slice(5)} → {(latestFb.endDate ?? latestFb.createdAt)?.slice(5, 10)}
-                </Text>
-              )}
             </Flex>
             {/* Row 3: Tags (project + type) */}
             {(task.project || task.type) && (

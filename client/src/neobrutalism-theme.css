@@ -11,7 +11,7 @@
   --border-color: #000000;
   --shadow-color: #000000;
   --accent-color: #a88bec;
-  --accent-active: #ccb9f4;
+  --accent-active: #d6ecb0;
   --danger-color: #e03e3e;
   --danger-bg: #ff5e5e;
   --danger-text: #b60000;
@@ -31,7 +31,7 @@
   --nav-active-bg: #796ed8;
   --nav-active-text: #fff;
   --btn-add-bg: #ffdc16;
-  --tab-active-bg: #c8c2ff;
+  --tab-active-bg: #dbd8d2;
   /* Chart slice colors */
   --chart-color-1: #c47dff;
   --chart-color-2: #ffdc51;
@@ -78,16 +78,16 @@
   --sidebar-bg: #6b4fa8;
   --feedback-color: #a88de0;
   --highlight-duration: #73d13d;
-  --col-todo-header: #8a8a20;
+  --col-todo-header:#ffdc51;
   --col-todo-body: #2a2a1a;
   --col-todo-card: #2a2a1e;
   --col-progress-header: #3a6a2a;
   --col-progress-body: #1a2a1a;
   --col-progress-card: #1e2a1e;
   --col-done-header: #2a8a2a;
-  --col-done-body: #1a2a1a;
-  --col-done-card: #1a2a1a;
-  --nav-active-bg: #444;
+  --col-done-body: #577b57;
+  --col-done-card: #6d7d6d;
+  --nav-active-bg: #a78d8d;
   --nav-active-text: #fff;
   --btn-add-bg: #6b4fa8;
   --tab-active-bg: #444;
@@ -487,7 +487,9 @@ body {
   align-items: center; justify-content: center;
 }
 /* Tooltip wrapper inside header must stretch full height */
-.app-header-bar > span { display: flex !important; height: 100%; align-items: stretch; }
+/* Tooltip spans (wrapping action buttons) must stretch full height */
+.app-header-bar > span { display: flex !important; align-self: stretch !important; }
+.app-header-bar > span > .action-btn { height: 100% !important; }
 
 /* === Responsive Mobile === */
 /* Desktop-only elements — hidden on mobile */
@@ -508,11 +510,19 @@ body {
   .app-sidebar { display: none !important; }
 
   /* Full screen on mobile — no outer padding, border, shadow, no white gap */
-  .app-outer-layout { padding: 0 !important; background-color: var(--bg-primary) !important; }
+  .app-outer-layout, .ant-layout { padding: 0 !important; margin: 0 !important; background-color: var(--bg-primary) !important; width: 100vw !important; max-width: 100vw !important; overflow-x: hidden !important; }
+  .app-outer-wrapper { border: none !important; border-radius: 0 !important; box-shadow: none !important; margin: 0 !important; width: 100% !important; }
+  body { background-color: var(--bg-primary) !important; margin: 0 !important; padding: 0 !important; }
+  #root { width: 100% !important; max-width: 100vw !important; overflow-x: hidden !important; }
   .app-outer-wrapper {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+  }
+  /* Prevent horizontal scroll on mobile */
+  html, body, #root, .app-outer-layout, .app-outer-wrapper, .app-content {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
   }
 
   /* Disable hover on static boxes (keep for interactive: buttons, task cards) */
@@ -521,11 +531,15 @@ body {
     box-shadow: 4px 4px 0px var(--shadow-color) !important;
   }
 
+  /* Splash full screen on mobile */
+  .splash-overlay { position: fixed !important; z-index: 9999 !important; }
+
   /* Fixed header on mobile, only content scrolls */
   .app-header-bar { min-height: 48px !important; flex-shrink: 0; position: fixed; top: 0; left: 0; right: 0; z-index: 20; }
   .app-header-bar .nav-btn { padding: 0 12px !important; font-size: 14px !important; }
+  .app-header-bar .action-btn:not(.desktop-only) { display: flex !important; align-items: center !important; justify-content: center !important; }
   /* Tooltip wrapper must also stretch */
-  .app-header-bar > span { display: flex; }
+  .app-header-bar > span { display: flex; align-items: stretch; }
   /* Reduce content padding + offset for fixed header */
   .app-content { padding: 8px !important; gap: 8px !important; padding-top: 56px !important; }
 

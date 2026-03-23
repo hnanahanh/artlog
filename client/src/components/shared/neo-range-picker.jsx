@@ -16,13 +16,14 @@ const RANGE_COLORS = [
 
 /* ── Shared CSS ── */
 const NEO_CSS = `
-.neo-rdp .rdp-root { --rdp-accent-color: var(--accent-color, #ff6b35); --rdp-accent-background-color: rgba(255,107,53,0.15); position: relative; }
+.neo-rdp .rdp-root, .rdp-root.neo-rdp { --rdp-accent-color: var(--accent-color, #ff6b35); --rdp-accent-background-color: rgba(255,107,53,0.15); position: relative; width: 100% !important; max-width: 100% !important; display: block !important; }
 .neo-rdp { background: var(--bg-card); font-family: 'JetBrains Mono'; }
-.neo-rdp .rdp-months, .neo-rdp .rdp-root .rdp-months { display: flex !important; flex-direction: column !important; gap: 0 !important; max-height: 300px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; position: relative; }
+.neo-rdp, .neo-rdp .rdp-root { max-width: 100% !important; overflow: hidden !important; }
+.neo-rdp .rdp-months, .neo-rdp .rdp-root .rdp-months { display: flex !important; flex-direction: column !important; flex-wrap: nowrap !important; gap: 0 !important; max-height: 300px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; position: relative; width: 100% !important; }
 .neo-rdp .rdp-months::-webkit-scrollbar { width: 6px; }
 .neo-rdp .rdp-months::-webkit-scrollbar-track { background: var(--bg-secondary); }
 .neo-rdp .rdp-months::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0; }
-.neo-rdp .rdp-month { flex-shrink: 0; }
+.neo-rdp .rdp-month { flex-shrink: 0; width: 100% !important; }
 .neo-rdp .rdp-month + .rdp-month { border-top: 2px solid var(--border-color); }
 .neo-rdp .rdp-nav { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; pointer-events: none; z-index: 2; height: 40px; padding: 0 6px; }
 .neo-rdp .rdp-chevron { fill: var(--text-primary); }
@@ -50,12 +51,12 @@ ${RANGE_COLORS.map((c, i) => `
 `).join('')}
 
 /* Header */
-.neo-rdp-header { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-bottom: 2px solid var(--border-color); max-height: 120px; overflow-y: auto; }
+.neo-rdp-header { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-bottom: 2px solid var(--border-color); max-height: 120px; overflow-y: auto; overflow-x: hidden; box-sizing: border-box; width: 100%; }
 .neo-rdp-header::-webkit-scrollbar { width: 6px; }
 .neo-rdp-header::-webkit-scrollbar-track { background: var(--bg-secondary); border-left: 2px solid var(--border-color); }
 .neo-rdp-header::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0; }
 .neo-rdp-row { display: flex; align-items: center; gap: 8px; }
-.neo-rdp-field { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.neo-rdp-field { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .neo-rdp-field label { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); }
 .neo-rdp-field input {
   width: 100%; padding: 4px 6px; font-size: 12px; font-weight: 600;
@@ -546,7 +547,7 @@ export default function NeoRangePicker({
             boxShadow: '6px 6px 0 var(--shadow-color)',
             background: 'var(--bg-card)', overflow: 'hidden',
             display: 'flex', flexDirection: 'column',
-            maxHeight: 'calc(100vh - 20px)',
+            maxHeight: 'calc(100vh - 20px)', width: 320,
           }}
         >
           {/* ── HEADER ── */}

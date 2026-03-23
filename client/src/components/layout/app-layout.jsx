@@ -86,11 +86,9 @@ export default function AppLayout({ children }) {
         transition: 'border-color 0.3s',
       }}>
         {/* Purple sidebar — full height, left */}
-        <div className="app-sidebar" style={SIDEBAR_STYLE}>
+        <div className="app-sidebar" style={{ ...SIDEBAR_STYLE, cursor: 'pointer' }} onClick={openSplash} title="About">
           <span
-            style={{ ...SIDEBAR_TEXT, cursor: 'pointer' }}
-            onClick={openSplash}
-            title="About"
+            style={SIDEBAR_TEXT}
           >
             {sidebarTitle}
           </span>
