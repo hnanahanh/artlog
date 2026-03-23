@@ -3,9 +3,9 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 
 /* Trigger button style — uses .neo-btn class for border/shadow/hover */
 const triggerStyle = (open, active) => ({
-  padding: '3px 8px', fontSize: 13, fontWeight: active ? 900 : 600,
-  background: active ? '#222' : 'var(--bg-card)',
-  color: active ? '#fff' : 'var(--text-primary)',
+  padding: '8px 24px', fontSize: 14, fontWeight: active ? 900 : 700,
+  background: active ? 'var(--nav-active-bg)' : 'var(--bg-card)',
+  color: active ? 'var(--nav-active-text)' : 'var(--text-primary)',
   whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4,
   transform: open ? 'translate(3px,3px)' : 'none',
   boxShadow: open ? 'none' : undefined,

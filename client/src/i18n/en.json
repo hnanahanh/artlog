@@ -61,12 +61,12 @@
   "kpi.game_weight": "KPI %",
   "common.add_task": "Add Task",
   "magic.drawer_title": "Quick Task",
-  "magic.keyboard_hint": "↵ new row · ⌫ remove empty · Shift+Del remove · ← → ↑ ↓ move · Tab next",
-  "footer.marquee": "Special thanks to  •  Daisy Han  •  TaiJoke  •  AnNT11  •  KhaiTD  •  Suzu  • TrungLM4 • ",
+  "magic.keyboard_hint": "Enter new row · Del remove empty · ← → ↑ ↓ move ·",
+  "footer.marquee": "Special thanks to  •   Daisy Han   •   TaiJoke   •   AnNT11   •   KhaiTD   •   Suzu   •   TrungLM4   • ",
   "welcome.greeting": "Welcome back! 🎨",
   "welcome.subtitle": "Ready to grind?",
-  "overdue.title": "Overdue tasks alert! 💀",
-  "overdue.message": "{count} task(s) waiting — don't let them rot!",
+  "overdue.title": "Overdue tasks alert!",
+  "overdue.message": "{count} task(s) waiting!",
   "splash.quote": "Draw, draw more, draw forever",
   "splash.subtitle": "— said a dedicated art slave"
 }

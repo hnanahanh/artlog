@@ -35,7 +35,7 @@ const NEO_TABS_CSS = `
 }
 .neo-tabs .ant-tabs-tab:hover { background: rgba(0,0,0,0.08) !important; }
 .neo-tabs .ant-tabs-tab-active { background: var(--accent-active) !important; }
-.neo-tabs .ant-tabs-tab-active .ant-tabs-tab-btn { color: #222 !important; }
+.neo-tabs .ant-tabs-tab-active .ant-tabs-tab-btn { color: var(--text-primary) !important; }
 .neo-tabs .ant-tabs-content { background: var(--bg-card) !important; }
 .neo-tabs .ant-tabs-tabpane { padding: 12px 16px; }
 .neo-tabs .ant-tabs-nav-wrap { flex: 1 !important; }

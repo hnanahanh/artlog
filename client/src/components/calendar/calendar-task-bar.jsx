@@ -37,7 +37,7 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
   const isFb = task._isFeedbackBar;
   const style = getTaskBarStyle(task, todayStr);
   const accentColor = isFb ? 'var(--feedback-color)' : style.border;
-  const bgColor = isFb ? '#d3adf7' : style.bg;
+  const bgColor = isFb ? 'var(--accent-active)' : style.bg;
 
   const handleDelete = () => {
     if (isFb) {

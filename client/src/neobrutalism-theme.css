@@ -55,51 +55,55 @@
   --handle-color: #444444;
   --magic-title-bg: #FDE047;
   --preview-accent: #a855f7;
-  --footer-bg: #c6d0a5;
+  --footer-bg: #bfcfa1;
+  --overdue-btn-bg: #b00020;
+  --overdue-panel-bg: #ffffff;
 }
 
 [data-theme="dark"] {
-  --bg-outer: #000000;
-  --bg-primary: #141414;
-  --bg-secondary: #1e1e1e;
-  --bg-card: #242424;
-  --bg-header: #2a2a2a;
-  --bg-app-header: #3a6a2a;
-  --text-primary: #e0e0e0;
-  --text-secondary: #999999;
-  --border-color: #555555;
-  --shadow-color: #111111;
-  --accent-color: #a88de0;
-  --accent-active: #c4b0f0;
+  --bg-outer: #0a0a0a;
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #222240;
+  --bg-card: #1e1e3a;
+  --bg-header: #2a2a4a;
+  --bg-app-header: #4a3f8a;
+  --text-primary: #e8e8f0;
+  --text-secondary: #a0a0b8;
+  --border-color: #4a4a6a;
+  --shadow-color: #000000;
+  --accent-color: #b49aff;
+  --accent-active: #d4c4ff;
   --danger-color: #ff6b6b;
-  --danger-bg: #5a2020;
-  --danger-text: #ff8a8a;
-  --grid-line-color: rgba(255, 255, 255, 0.05);
-  --sidebar-bg: #6b4fa8;
-  --feedback-color: #a88de0;
+  --danger-bg: #4a1a2a;
+  --danger-text: #ff9a9a;
+  --grid-line-color: rgba(180, 154, 255, 0.06);
+  --sidebar-bg: #3d2d7a;
+  --feedback-color: #b49aff;
   --highlight-duration: #73d13d;
-  --col-todo-header:#ffdc51;
-  --col-todo-body: #2a2a1a;
-  --col-todo-card: #2a2a1e;
-  --col-progress-header: #3a6a2a;
-  --col-progress-body: #1a2a1a;
-  --col-progress-card: #1e2a1e;
-  --col-done-header: #2a8a2a;
-  --col-done-body: #577b57;
-  --col-done-card: #6d7d6d;
-  --nav-active-bg: #a78d8d;
+  --col-todo-header: #c4a840;
+  --col-todo-body: #493a09;
+  --col-todo-card: #4a4228;
+  --col-progress-header: #5a9a5a;
+  --col-progress-body: #203405;
+  --col-progress-card: #344034;
+  --col-done-header: #5f9872;
+  --col-done-body: #0a3634;
+  --col-done-card: #6b746f;
+  --nav-active-bg: #5a4fa0;
   --nav-active-text: #fff;
-  --btn-add-bg: #6b4fa8;
-  --tab-active-bg: #444;
+  --btn-add-bg: #5a4a90;
+  --tab-active-bg: #3a3a5a;
   /* Semantic utility colors — dark overrides */
-  --text-muted: #666666;
+  --text-muted: #7a7a90;
   --text-on-accent: #f0f0f0;
-  --bg-warm: #1e1e18;
+  --bg-warm: #1a1a28;
   --logo-color: #f9e764;
-  --handle-color: #888888;
-  --magic-title-bg: #5a4a00;
+  --handle-color: #8888a0;
+  --magic-title-bg: #4a3a20;
   --preview-accent: #8b5cf6;
-  --footer-bg: #2a3a2a;
+  --footer-bg: #1a2a1e;
+  --overdue-btn-bg: #8b0018;
+  --overdue-panel-bg: var(--bg-card);
 }
 
 /* === Neobrutalism theme overrides for Ant Design === */
@@ -110,6 +114,13 @@
   box-shadow: 4px 4px 0px var(--shadow-color) !important;
   transition: box-shadow 0.15s, transform 0.15s;
 }
+.ant-card-head-title, .ant-card-body, .ant-card-head {
+  color: var(--text-primary) !important;
+}
+/* Force all Ant Typography to follow theme */
+.ant-typography { color: var(--text-primary) !important; }
+.ant-typography.ant-typography-secondary { color: var(--text-secondary) !important; }
+.ant-typography.ant-typography-danger { color: var(--danger-text) !important; }
 .ant-card:hover {
   box-shadow: none !important;
 }
@@ -133,15 +144,10 @@
   box-shadow: none !important;
 }
 
-/* Overdue notification panel hover */
-.overdue-noti:hover {
-  transform: translateX(-2px) translateY(-2px) !important;
-  filter: brightness(1.05);
-}
-.overdue-noti button:hover {
+/* Overdue notification — no hover effects */
+.overdue-noti:hover, .overdue-noti button:hover {
   transform: none !important;
-  box-shadow: none !important;
-  background: inherit !important;
+  filter: none !important;
 }
 
 /* Buttons: unified neo style for all buttons */
@@ -283,6 +289,9 @@ button.neo-btn:active {
   transform: translate(2px, 2px) !important;
   box-shadow: none !important;
 }
+/* Block background scroll when modal open */
+body.ant-scrolling-effect .app-content,
+body.ant-scrolling-effect .app-outer-wrapper { overflow: hidden !important; }
 /* Neo scrollbar inside modal body */
 .ant-modal-body::-webkit-scrollbar { width: 8px; }
 .ant-modal-body::-webkit-scrollbar-track { background: var(--bg-secondary); border-left: 2px solid var(--border-color); }
@@ -344,7 +353,7 @@ button.neo-btn:active {
 /* Icons: bold stroke */
 .anticon svg {
   stroke: currentColor;
-  stroke-width: 60;
+  stroke-width: 30;
   paint-order: stroke fill;
 }
 
@@ -358,6 +367,10 @@ button.neo-btn:active {
 .ant-table {
   border: none !important;
 }
+/* Remove extra border on rowSpan cells */
+.ant-table-cell[rowspan] { border-bottom: none !important; }
+.ant-table-cell, .ant-table-thead > tr > th { color: var(--text-primary) !important; background-color: var(--bg-header) !important; }
+.ant-table-tbody > tr > td { color: var(--text-primary) !important; background-color: var(--bg-card) !important; }
 
 /* Dark mode: Ant Design component overrides */
 [data-theme="dark"] .ant-card,
@@ -524,6 +537,13 @@ body {
     overflow-x: hidden !important;
     max-width: 100vw !important;
   }
+  /* Disable hover effects on kanban columns and cards on mobile */
+  .ant-card:hover { transform: none !important; box-shadow: 4px 4px 0px var(--shadow-color) !important; }
+  /* Improve touch drag targets on mobile */
+  .calendar-task-bar { touch-action: none; min-height: 28px; }
+  .calendar-task-bar .ant-card-body { padding: 4px 8px !important; min-height: 24px; }
+  /* Resize handles bigger on touch */
+  .calendar-task-bar .resize-handle { width: 12px !important; min-width: 12px !important; }
 
   /* Disable hover on static boxes (keep for interactive: buttons, task cards) */
   .neo-box:hover {
@@ -541,7 +561,7 @@ body {
   /* Tooltip wrapper must also stretch */
   .app-header-bar > span { display: flex; align-items: stretch; }
   /* Reduce content padding + offset for fixed header */
-  .app-content { padding: 8px !important; gap: 8px !important; padding-top: 56px !important; }
+  .app-content { padding: 8px !important; gap: 8px !important; padding-top: 56px !important; padding-bottom: 80px !important; }
 
   /* Settings modal: full width on mobile */
   .ant-modal { max-width: calc(100vw - 16px) !important; margin: 8px auto !important; }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Modal, Card, Form, Checkbox, Input, Slider, Select, Button, message, Space, Tag, Divider } from 'antd';
-import { SaveOutlined, ReloadOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { SaveOutlined, ReloadOutlined, DeleteOutlined, PlusOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
 import { useI18n } from '../../i18n/i18n-config.jsx';
 import { fetchRules, updateRules } from '../../api/task-api-client.js';
 
@@ -81,18 +81,18 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
       styles={{
         content: { border: '3px solid var(--border-color)', boxShadow: '6px 6px 0px var(--shadow-color)', borderRadius: 2, padding: 0 },
         header: { display: 'none' },
-        body: { background: 'var(--bg-card)', padding: 0, maxHeight: '80vh', overflowY: 'auto', overflowX: 'hidden', fontFamily: "'JetBrains Mono'" },
+        body: { background: 'var(--bg-card)', padding: 0, maxHeight: '70vh', overflow: 'hidden', fontFamily: "'JetBrains Mono'", display: 'flex', flexDirection: 'column' },
         footer: { background: 'var(--bg-card)', borderTop: '2px solid var(--border-color)', padding: '12px 20px' },
       }}
     >
-      {/* Title row — integrated header like StatCard */}
+      {/* Title row — fixed header */}
       <div style={{
         background: 'var(--bg-header)', padding: '10px 20px',
         borderBottom: '2px solid var(--border-color)',
         textAlign: 'center', fontFamily: "'JetBrains Mono'",
         fontWeight: 900, fontSize: 16, color: 'var(--text-primary)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        position: 'sticky', top: 0, zIndex: 10,
+        flexShrink: 0, position: 'relative',
       }}>
         {t('nav.settings')}
         <button className="neo-btn" onClick={onClose} style={{
@@ -104,27 +104,29 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
         }}>✕</button>
       </div>
 
-      {/* Language & Theme toggles */}
-      <div style={{ padding: 0, position: 'sticky', top: 42, zIndex: 10, background: 'var(--bg-card)' }}>
+      {/* Language & Theme toggles — fixed below title */}
+      <div style={{ padding: 0, flexShrink: 0, background: 'var(--bg-card)' }}>
       {toggleLang && toggleTheme && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '10px 16px', borderBottom: '2px solid var(--border-color)' }}>
           <button className="neo-btn" onClick={toggleLang} style={{
             padding: '8px 12px', fontWeight: 800, fontSize: 13,
             background: 'var(--bg-card)', cursor: 'pointer',
           }}>
-            {lang === 'vi' ? '🇬🇧 English' : '🇻🇳 Tiếng Việt'}
+            <span style={{ fontWeight: 900, fontSize: 13 }}>{lang === 'vi' ? 'EN' : 'VI'}</span> {lang === 'vi' ? 'English' : 'Tiếng Việt'}
           </button>
           <button className="neo-btn" onClick={toggleTheme} style={{
             padding: '8px 12px', fontWeight: 800, fontSize: 13,
             background: 'var(--bg-card)', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
           }}>
-            {isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}
+            {isDark ? <SunOutlined /> : <MoonOutlined />} {isDark ? 'Light Mode' : 'Dark Mode'}
           </button>
         </div>
       )}
 
       {rules && (
-        <Space direction="vertical" size={8} style={{ width: '100%', padding: '12px 16px' }}>
+        <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin' }}>
+        <Space direction="vertical" size={8} style={{ width: '100%', padding: '12px 16px', boxSizing: 'border-box' }}>
           {/* Ngày làm việc */}
           <Card title={<span style={{ fontFamily: "'JetBrains Mono'", fontWeight: 900 }}>Ngày làm việc</span>} size="small">
             <Checkbox.Group value={rules.workingDays}
@@ -218,6 +220,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
             </Form.Item>
           </Card>
         </Space>
+        </div>
       )}
       </div>
     </Modal>

@@ -2,14 +2,12 @@ import { useEffect, useState, useCallback } from 'react';
 import { Typography, Empty, Flex } from 'antd';
 import NeoRangePicker from '../components/shared/neo-range-picker.jsx';
 import YearCombobox from '../components/shared/year-combobox.jsx';
-import { BarChartOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import { fetchKPI } from '../api/task-api-client.js';
 import { useI18n } from '../i18n/i18n-config.jsx';
 import KpiDashboard from '../components/kpi/kpi-dashboard.jsx';
 import AppHeader from '../components/layout/app-header.jsx';
 
-const { Title } = Typography;
 
 export default function KpiPage() {
   const { t } = useI18n();
@@ -47,10 +45,6 @@ export default function KpiPage() {
     <div>
       <div style={{ padding: 20 }}>
         <Flex align="center" justify="space-between" gap={12} wrap="wrap" style={{ marginBottom: 20 }}>
-          <Title level={4} style={{ margin: 0, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', color: 'var(--text-primary)', fontFamily: "'JetBrains Mono'" }}>
-            <BarChartOutlined /> {t('kpi.title')}
-          </Title>
-
           <Flex gap={8} style={{ flexShrink: 0 }}>
             <YearCombobox
               value={year.year()}

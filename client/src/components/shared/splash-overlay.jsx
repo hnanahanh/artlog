@@ -2,15 +2,15 @@ import { useEffect, useRef } from 'react';
 import { useI18n } from '../../i18n/i18n-config';
 
 /* Paint bucket SVG — inline, ~80px, yellow fill + black stroke */
-const PaintBucketIcon = () => (
+/* Palette (bảng vẽ) SVG icon — white fill + black stroke */
+const PaletteIcon = () => (
   <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect x="10" y="8" width="36" height="10" rx="2" fill="#f9e764" stroke="#000" strokeWidth="3"/>
-    <rect x="14" y="16" width="28" height="34" rx="2" fill="#f9e764" stroke="#000" strokeWidth="3"/>
-    <path d="M14 50 L16 62 H32 L34 50 Z" fill="#f9e764" stroke="#000" strokeWidth="3" strokeLinejoin="round"/>
-    <circle cx="61" cy="58" r="12" fill="#f9e764" stroke="#000" strokeWidth="3"/>
-    <path d="M61 46 L53 34" stroke="#000" strokeWidth="3" strokeLinecap="round"/>
-    <rect x="20" y="22" width="8" height="3" rx="1" fill="#000" opacity="0.3"/>
-    <rect x="20" y="29" width="8" height="3" rx="1" fill="#000" opacity="0.3"/>
+    <path d="M40 8C22.3 8 8 22.3 8 40c0 17.7 14.3 32 32 32 3 0 5.4-2.4 5.4-5.4 0-1.4-.5-2.6-1.4-3.6-.8-.9-1.3-2.1-1.3-3.6 0-3 2.4-5.4 5.4-5.4H54c9.9 0 18-8.1 18-18C72 20.2 58.2 8 40 8z"
+      fill="#fff" stroke="#000" strokeWidth="3"/>
+    <circle cx="24" cy="34" r="5" fill="#c47dff" stroke="#000" strokeWidth="2"/>
+    <circle cx="36" cy="22" r="5" fill="#52c41a" stroke="#000" strokeWidth="2"/>
+    <circle cx="52" cy="24" r="5" fill="#d4a800" stroke="#000" strokeWidth="2"/>
+    <circle cx="58" cy="40" r="5" fill="#ff4d4f" stroke="#000" strokeWidth="2"/>
   </svg>
 );
 
@@ -66,14 +66,14 @@ export default function SplashOverlay({ open, onClose, clickOrigin }) {
       }}
     >
       <div className="splash-content" style={{ animation: 'splash-content-in 0.3s 0.55s ease both', marginBottom: 8 }}>
-        <PaintBucketIcon />
+        <PaletteIcon />
       </div>
       <div className="splash-content" style={{ animation: 'splash-content-in 0.3s 0.6s ease both', textAlign: 'center' }}>
         <div style={{
           fontFamily: 'JetBrains Mono, monospace',
           fontWeight: 900,
           fontSize: 'clamp(22px, 5vw, 42px)',
-          color: '#f9e764',
+          color: '#ffffff',
           WebkitTextStroke: '2px #000',
           paintOrder: 'stroke fill',
           textShadow: '4px 4px 0 #000',
@@ -82,24 +82,13 @@ export default function SplashOverlay({ open, onClose, clickOrigin }) {
         }}>
           {t('splash.quote')}
         </div>
-        <div style={{
-          marginTop: 12,
-          fontFamily: 'JetBrains Mono, monospace',
-          fontWeight: 700,
-          fontSize: 'clamp(13px, 2.5vw, 20px)',
-          color: '#f9e764',
-          opacity: 0.85,
-          letterSpacing: 1,
-        }}>
-          {t('splash.subtitle')}
-        </div>
       </div>
       <div className="splash-content" style={{
         animation: 'splash-content-in 0.3s 0.65s ease both',
-        marginTop: 16,
+        position: 'absolute', bottom: 24,
         fontFamily: 'JetBrains Mono, monospace',
-        fontSize: 12,
-        color: 'rgba(249,231,100,0.5)',
+        fontSize: 13, fontWeight: 900,
+        color: '#ffffff',
         letterSpacing: 2,
       }}>
         made by AnhHN2

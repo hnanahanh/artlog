@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useI18n } from '../../i18n/i18n-config.jsx';
 
-/* SVG skull icon */
+/* Simple skull icon */
 const SkullIcon = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--danger-text)" style={{ flexShrink: 0 }}>
-    <path d="M12 2C6.48 2 2 6.48 2 12c0 3.04 1.36 5.76 3.5 7.59V22h3v-2h3v2h3v-2h3v2h3v-2.41C20.64 17.76 22 15.04 22 12c0-5.52-4.48-10-10-10zM8.5 14c-.83 0-1.5-.67-1.5-1.5S7.67 11 8.5 11s1.5.67 1.5 1.5S9.33 14 8.5 14zm7 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+    <circle cx="9" cy="12" r="1" fill="currentColor"/>
+    <circle cx="15" cy="12" r="1" fill="currentColor"/>
+    <path d="M8 20v-4a8 8 0 0 1 0-12h8a8 8 0 0 1 0 12v4"/>
+    <path d="M12 20v-4"/>
   </svg>
 );
 
@@ -29,6 +32,8 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
   if (overdueCount <= 0) return null;
 
   const handleContentClick = () => {
+    setExpanded(false);
+    setDismissed(true);
     if (onNavigate) onNavigate();
   };
 
@@ -39,25 +44,25 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
       transition: initialized ? 'transform 0.3s ease' : 'none',
       display: 'flex', alignItems: 'stretch',
       fontFamily: "'JetBrains Mono'",
-      border: '3px solid var(--border-color)',
+      border: '3px solid var(--danger-color)',
       borderRadius: 4,
-      boxShadow: '4px 4px 0px var(--shadow-color)',
-      background: 'var(--danger-bg)',
+      boxShadow: '4px 4px 0px var(--danger-color)',
+      background: 'var(--overdue-panel-bg)',
       cursor: 'pointer',
       overflow: 'hidden',
     }}>
       {/* Skull tab */}
       <button
-        onClick={() => { setExpanded(e => !e); if (expanded) setDismissed(true); }}
+        onClick={(e) => { e.stopPropagation(); setExpanded(prev => { if (prev) setDismissed(true); return !prev; }); }}
         style={{
-          width: 36, border: 'none',
-          borderRight: expanded ? '2px solid var(--border-color)' : 'none',
+          width: 48, border: 'none',
+          borderRight: expanded ? '2px solid var(--danger-color)' : 'none',
           borderRadius: 0,
-          background: 'transparent', cursor: 'pointer',
+          background: 'var(--overdue-btn-bg)', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 20, padding: 0, flexShrink: 0,
+          fontSize: 48, padding: 4, flexShrink: 0, color: '#fff',
         }}
-      ><SkullIcon /></button>
+      ><SkullIcon size={40} /></button>
 
       {/* Content panel — click to navigate */}
       <div
@@ -69,10 +74,10 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
           cursor: 'pointer',
         }}
       >
-        <div style={{ fontWeight: 900, fontSize: 13, color: 'var(--danger-text)', marginBottom: 4 }}>
+        <div style={{ fontWeight: 900, fontSize: 15, color: 'var(--danger-text)', marginBottom: 4 }}>
           {t('overdue.title')}
         </div>
-        <div style={{ fontSize: 12, color: 'var(--danger-text)', opacity: 0.9, textDecoration: 'underline', textUnderlineOffset: 2 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--danger-text)' }}>
           {(t('overdue.message') || '').replace('{count}', overdueCount)}
         </div>
       </div>

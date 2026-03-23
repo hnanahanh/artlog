@@ -199,7 +199,7 @@ export default function NeoTabs({ defaultValue, items = [], extra, defaultVisibl
                       padding: '8px 16px', border: 'none',
                       background: active === item.value ? 'var(--tab-active-bg)' : 'transparent',
                       fontWeight: 700, fontSize: 13, fontFamily: "'JetBrains Mono'",
-                      color: active === item.value ? '#222' : 'var(--text-primary)',
+                      color: 'var(--text-primary)',
                       cursor: 'pointer',
                       borderBottom: '2px solid var(--border-color)',
                     }}

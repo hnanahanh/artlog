@@ -526,9 +526,9 @@ export default function NeoRangePicker({
         className="neo-btn"
         ref={triggerRef} onClick={openPicker} type="button"
         style={{
-          width: '100%', padding: '3px 8px', fontSize: 13, fontWeight: active ? 900 : 600,
-          background: active ? '#222' : 'var(--bg-card)',
-          color: active ? '#fff' : ((isMultiRange ? ranges?.[0]?.value?.[0] : startDate) ? 'var(--text-primary)' : 'var(--text-secondary)'),
+          width: '100%', padding: '8px 24px', fontSize: 14, fontWeight: active ? 900 : 700,
+          background: active ? 'var(--nav-active-bg)' : 'var(--bg-card)',
+          color: active ? 'var(--nav-active-text)' : ((isMultiRange ? ranges?.[0]?.value?.[0] : startDate) ? 'var(--text-primary)' : 'var(--text-secondary)'),
           whiteSpace: 'nowrap',
           transform: open ? 'translate(3px,3px)' : 'none',
           boxShadow: open ? 'none' : undefined,

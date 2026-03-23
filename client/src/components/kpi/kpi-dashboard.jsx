@@ -44,7 +44,7 @@ function DonutChart({ data, title }) {
   }));
 
   return (
-    <div style={{ background: 'var(--bg-card)', padding: 12, overflow: 'visible' }}>
+    <div style={{ background: 'var(--bg-card)', padding: 12, overflow: 'visible', height: '100%', boxSizing: 'border-box' }}>
       <Text strong style={{
         fontSize: 13, color: 'var(--text-primary)', display: 'block',
         marginBottom: 4, fontWeight: 900,
