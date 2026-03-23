@@ -18,7 +18,7 @@ const RANGE_COLORS = [
 const NEO_CSS = `
 .neo-rdp .rdp-root { --rdp-accent-color: var(--accent-color, #ff6b35); --rdp-accent-background-color: rgba(255,107,53,0.15); position: relative; }
 .neo-rdp { background: var(--bg-card); font-family: 'JetBrains Mono'; }
-.neo-rdp .rdp-months { display: flex !important; flex-direction: column !important; gap: 0 !important; max-height: 300px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; position: relative; }
+.neo-rdp .rdp-months, .neo-rdp .rdp-root .rdp-months { display: flex !important; flex-direction: column !important; gap: 0 !important; max-height: 300px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; position: relative; }
 .neo-rdp .rdp-months::-webkit-scrollbar { width: 6px; }
 .neo-rdp .rdp-months::-webkit-scrollbar-track { background: var(--bg-secondary); }
 .neo-rdp .rdp-months::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 0; }

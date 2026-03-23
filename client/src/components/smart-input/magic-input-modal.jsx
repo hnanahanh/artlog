@@ -14,11 +14,11 @@ export default function MagicInputModal({ open, onClose, onTasksCreated }) {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '8px',
-    backgroundColor: '#FDE047', // Màu vàng đặc trưng
+    backgroundColor: 'var(--magic-title-bg)', // Màu vàng đặc trưng
     padding: '8px 16px',
-    border: '3px solid #000',
+    border: '3px solid var(--border-color)',
     borderRadius: '8px',
-    boxShadow: '4px 4px 0px #000',
+    boxShadow: '4px 4px 0px var(--shadow-color)',
     marginBottom: '20px',
     fontWeight: '900',
     fontSize: '18px',
@@ -50,9 +50,9 @@ export default function MagicInputModal({ open, onClose, onTasksCreated }) {
         style={{ 
           fontFamily: "'JetBrains Mono'", 
           marginBottom: 16,
-          border: '3px solid #000',
+          border: '3px solid var(--border-color)',
           borderRadius: '8px',
-          boxShadow: '4px 4px 0px #000'
+          boxShadow: '4px 4px 0px var(--shadow-color)'
         }}
       />
 
@@ -61,7 +61,7 @@ export default function MagicInputModal({ open, onClose, onTasksCreated }) {
       {parsed && parsedTasks.length > 0 && (
         <>
           {/* Tiêu đề cho phần Preview cũng theo style này nếu muốn */}
-          <div style={{ ...kanbanTitleStyle, backgroundColor: '#a855f7', color: '#fff', fontSize: '14px', padding: '4px 12px' }}>
+          <div style={{ ...kanbanTitleStyle, backgroundColor: 'var(--preview-accent)', color: 'var(--nav-active-text)', fontSize: '14px', padding: '4px 12px' }}>
             PREVIEW TASKS
           </div>
 

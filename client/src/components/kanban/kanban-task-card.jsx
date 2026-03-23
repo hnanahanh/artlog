@@ -1,88 +1,16 @@
-import { useState, useMemo } from 'react';
-import { Card, Typography, Flex, Button, Popconfirm, Input, Select, Space, Tag } from 'antd';
-import NeoRangePicker from '../shared/neo-range-picker.jsx';
+import { useState } from 'react';
+import { Card, Typography, Flex, Tag } from 'antd';
 import { Draggable } from '@hello-pangea/dnd';
-import {
-  ClockCircleOutlined, DeleteOutlined,
-  CheckOutlined, CloseOutlined,
-} from '@ant-design/icons';
-import dayjs from 'dayjs';
+import { ClockCircleOutlined } from '@ant-design/icons';
 import { isOverdue } from '../../processors/task-processor.js';
 
 const { Text } = Typography;
 
-export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, t }) {
-  const [editing, setEditing] = useState(false);
+export default function KanbanTaskCard({ task, index, onOpenEditModal }) {
   const [hovered, setHovered] = useState(false);
-  const [form, setForm] = useState({});
-  const [fbEdits, setFbEdits] = useState({});
   const overdue = isOverdue(task);
-  /* Card bg: very light tint of status color */
   const statusBg = { todo: 'var(--col-todo-card)', in_progress: 'var(--col-progress-card)', done: 'var(--col-done-card)' }[task.status] || 'var(--bg-card)';
   const latestFb = task.feedbacks?.at(-1);
-  const hasFeedbacks = task.feedbacks?.length > 0;
-
-  const startEdit = (e) => {
-    e?.stopPropagation();
-    setForm({
-      name: task.name, estTime: task.estTime, estUnit: task.estUnit,
-      startDate: task.startDate, dueDate: task.dueDate, status: task.status,
-    });
-    const edits = {};
-    task.feedbacks?.forEach(fb => { edits[fb.id] = { content: fb.content, startDate: fb.startDate, endDate: fb.endDate }; });
-    setFbEdits(edits);
-    setEditing(true);
-  };
-
-  const handleSave = () => {
-    onEdit?.(task.id, form);
-    task.feedbacks?.forEach(fb => {
-      const edit = fbEdits[fb.id];
-      if (edit && (edit.content !== fb.content || edit.startDate !== fb.startDate || edit.endDate !== fb.endDate)) {
-        onUpdateFeedback?.(task.id, fb.id, { content: edit.content, startDate: edit.startDate, endDate: edit.endDate });
-      }
-    });
-    setEditing(false);
-  };
-
-  // Build multi-range for merged picker (task + feedbacks)
-  const dateRanges = useMemo(() => {
-    if (!hasFeedbacks || !form.startDate) return null;
-    const ranges = [{
-      key: 'task', label: 'Task',
-      value: form.startDate ? [dayjs(form.startDate), dayjs(form.dueDate)] : null,
-    }];
-    task.feedbacks.forEach((fb, i) => {
-      const s = fbEdits[fb.id]?.startDate ?? fb.startDate ?? task.dueDate;
-      const e = fbEdits[fb.id]?.endDate ?? fb.endDate ?? fb.createdAt;
-      ranges.push({ key: `fb-${fb.id}`, label: `FB ${i + 1}`, value: [dayjs(s), dayjs(e)] });
-    });
-    return ranges;
-  }, [hasFeedbacks, form.startDate, form.dueDate, task.feedbacks, task.dueDate, fbEdits]);
-
-  // Multi-range change with chain cascade
-  const handleRangeChange = (key, dates) => {
-    if (!dates?.[0] || !dates?.[1]) return;
-    const start = dates[0].format('YYYY-MM-DD');
-    const end = dates[1].format('YYYY-MM-DD');
-
-    if (key === 'task') {
-      setForm(f => ({ ...f, startDate: start, dueDate: end }));
-      const firstFb = task.feedbacks?.[0];
-      if (firstFb) setFbEdits(prev => ({ ...prev, [firstFb.id]: { ...prev[firstFb.id], startDate: end } }));
-    } else {
-      const fbId = key.replace('fb-', '');
-      setFbEdits(prev => ({ ...prev, [fbId]: { ...prev[fbId], startDate: start, endDate: end } }));
-      const fbIdx = task.feedbacks?.findIndex(f => f.id === fbId);
-      if (fbIdx === 0) setForm(f => ({ ...f, dueDate: start }));
-      else if (fbIdx > 0) {
-        const prevFb = task.feedbacks[fbIdx - 1];
-        if (prevFb) setFbEdits(prev => ({ ...prev, [prevFb.id]: { ...prev[prevFb.id], endDate: start } }));
-      }
-      const nextFb = task.feedbacks?.[fbIdx + 1];
-      if (nextFb) setFbEdits(prev => ({ ...prev, [nextFb.id]: { ...prev[nextFb.id], startDate: end } }));
-    }
-  };
 
   return (
     <Draggable draggableId={task.id} index={index}>
@@ -109,93 +37,43 @@ export default function KanbanTaskCard({ task, index, onEdit, onDelete, onDelete
               cursor: 'grab',
             }}
             styles={{ body: { padding: '6px 8px' } }}
-            onClick={() => { if (!editing) startEdit(); }}
+            onClick={() => onOpenEditModal?.(task)}
           >
-            {editing ? (
-              /* Inline edit form */
-              <Space direction="vertical" size={4} style={{ width: '100%' }} onMouseDown={e => e.stopPropagation()}>
-                <Input size="small" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
-                <Flex gap={4} wrap="wrap">
-                  <Input size="small" style={{ width: 55 }} value={`${form.estTime}${form.estUnit}`}
-                    onChange={e => {
-                      const m = e.target.value.match(/^(\d+(?:\.\d+)?)\s*(d|h)?$/i);
-                      if (m) setForm(f => ({ ...f, estTime: parseFloat(m[1]), ...(m[2] ? { estUnit: m[2].toLowerCase() } : {}) }));
-                    }} />
-                  {/* Merged date picker: task + feedbacks on one calendar */}
-                  {dateRanges ? (
-                    <NeoRangePicker style={{ width: 200 }}
-                      ranges={dateRanges}
-                      onRangeChange={handleRangeChange} />
-                  ) : (
-                    <NeoRangePicker style={{ width: 200 }}
-                      value={[dayjs(form.startDate), dayjs(form.dueDate)]}
-                      onChange={dates => {
-                        if (dates?.[0] && dates?.[1]) {
-                          setForm(f => ({ ...f, startDate: dates[0].format('YYYY-MM-DD'), dueDate: dates[1].format('YYYY-MM-DD') }));
-                        }
-                      }} />
-                  )}
-                </Flex>
-                {/* Feedback content inputs (dates merged into calendar above) */}
-                {hasFeedbacks && (
-                  <div style={{ borderTop: '1px dashed var(--border-color)', paddingTop: 4, marginTop: 2 }}>
-                    {task.feedbacks.map(fb => (
-                      <Flex key={fb.id} gap={4} align="center" style={{ marginBottom: 3 }}>
-                        <Input size="small" style={{ flex: 1 }}
-                          value={fbEdits[fb.id]?.content ?? fb.content}
-                          onChange={e => setFbEdits(prev => ({
-                            ...prev, [fb.id]: { ...prev[fb.id], content: e.target.value },
-                          }))} />
-                        <Popconfirm title={t?.('common.delete') || 'Delete?'}
-                          onConfirm={() => onDeleteFeedback?.(task.id, fb.id)}
-                          okText="OK" cancelText={t?.('common.cancel') || 'Cancel'}>
-                          <Button size="small" danger icon={<DeleteOutlined />} style={{ flexShrink: 0, width: 24, height: 24, padding: 0 }} />
-                        </Popconfirm>
-                      </Flex>
-                    ))}
-                  </div>
+            {/* Row 1: Task name */}
+            <Text strong style={{
+              fontSize: 13, color: overdue ? 'var(--danger-text)' : 'var(--text-primary)',
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block',
+            }}>
+              {task.name}
+              {latestFb && (
+                <span style={{ color: 'var(--feedback-color)', fontWeight: 600 }}> +{latestFb.content}</span>
+              )}
+            </Text>
+            {/* Row 2: Dates */}
+            <Flex align="center" gap={6} style={{ marginTop: 4 }}>
+              <Text type={overdue ? 'danger' : 'secondary'} style={{ fontSize: 11, fontWeight: 600 }}>
+                <ClockCircleOutlined /> {task.startDate?.slice(5)} → {task.dueDate?.slice(5)}
+              </Text>
+              {latestFb && (
+                <Text style={{ color: 'var(--feedback-color)', fontSize: 11, fontWeight: 600 }}>
+                  fb: {latestFb.startDate?.slice(5)} → {(latestFb.endDate ?? latestFb.createdAt)?.slice(5, 10)}
+                </Text>
+              )}
+            </Flex>
+            {/* Row 3: Tags (game + project) */}
+            {(task.game || task.project) && (
+              <Flex align="center" gap={4} wrap="wrap" style={{ marginTop: 4 }}>
+                {task.game && (
+                  <Tag style={{ fontSize: 10, lineHeight: '16px', padding: '0 4px', margin: 0, border: '1px solid var(--border-color)', background: 'var(--accent-active)', color: 'var(--text-primary)' }}>
+                    {task.game}
+                  </Tag>
                 )}
-                <Flex gap={4} justify="space-between" style={{ width: '100%' }}>
-                  <Popconfirm title="Delete?" onConfirm={() => onDelete?.(task.id)} okText="OK" cancelText="Cancel">
-                    <Button size="small" danger icon={<DeleteOutlined />} />
-                  </Popconfirm>
-                  <Space size={4}>
-                    <Button size="small" type="primary" icon={<CheckOutlined />} onClick={handleSave} />
-                    <Button size="small" icon={<CloseOutlined />} onClick={() => setEditing(false)} />
-                  </Space>
-                </Flex>
-              </Space>
-            ) : (
-              /* Compact display: Title + Date MM/DD + Project Tag */
-              <>
-                <Flex justify="space-between" align="start">
-                  <Text strong style={{
-                    fontSize: 13, color: overdue ? 'var(--danger-text)' : 'var(--text-primary)',
-                    flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-                  }}>
-                    {task.name}
-                    {latestFb && (
-                      <span style={{ color: 'var(--feedback-color)', fontWeight: 600 }}> +{latestFb.content}</span>
-                    )}
-                  </Text>
-{/* Click card to edit */}
-                </Flex>
-                <Flex align="center" gap={6} style={{ marginTop: 2 }}>
-                  <Text type={overdue ? 'danger' : 'secondary'} style={{ fontSize: 11, fontWeight: 600 }}>
-                    <ClockCircleOutlined /> {task.dueDate?.slice(5)}
-                  </Text>
-                  {latestFb && (
-                    <Text style={{ color: 'var(--feedback-color)', fontSize: 11, fontWeight: 600 }}>
-                      {latestFb.startDate?.slice(5)} → {(latestFb.endDate ?? latestFb.createdAt)?.slice(5, 10)}
-                    </Text>
-                  )}
-                  {task.project && (
-                    <Tag style={{ fontSize: 10, lineHeight: '16px', padding: '0 4px', margin: 0, border: '1px solid var(--border-color)' }}>
-                      {task.project}
-                    </Tag>
-                  )}
-                </Flex>
-              </>
+                {task.project && (
+                  <Tag style={{ fontSize: 10, lineHeight: '16px', padding: '0 4px', margin: 0, border: '1px solid var(--border-color)', background: 'var(--col-progress-card)', color: 'var(--text-primary)' }}>
+                    {task.project}
+                  </Tag>
+                )}
+              </Flex>
             )}
           </Card>
         </div>

@@ -66,5 +66,7 @@
   "welcome.greeting": "Chào mừng trở lại! 🎨",
   "welcome.subtitle": "Sẵn sàng cày chưa?",
   "overdue.title": "Task quá hạn rồi kìa! 💀",
-  "overdue.message": "{count} task đang chờ xử lý, đừng để chúng chết mòn!"
+  "overdue.message": "{count} task đang chờ xử lý, đừng để chúng chết mòn!",
+  "splash.quote": "Vẽ, vẽ nữa, vẽ mãi",
+  "splash.subtitle": "— một hoạ nô cho hay"
 }

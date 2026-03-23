@@ -72,7 +72,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
         <Space>
           <Button icon={<ReloadOutlined />} onClick={loadRules}>Reset</Button>
           <Button icon={<SaveOutlined />} loading={loading} onClick={handleSave}
-            style={{ background: 'var(--btn-add-bg)', color: '#222', fontWeight: 900 }}>
+            style={{ background: 'var(--btn-add-bg)', color: 'var(--text-on-accent)', fontWeight: 900 }}>
             {t('common.save')}
           </Button>
         </Space>
@@ -129,7 +129,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
           <Card title={<span style={{ fontFamily: "'JetBrains Mono'", fontWeight: 900 }}>Ngày làm việc</span>} size="small">
             <Checkbox.Group value={rules.workingDays}
               onChange={v => setRules(r => ({ ...r, workingDays: v }))} options={ALL_DAYS} />
-            <div style={{ marginTop: 8, fontSize: 12, color: '#8c8c8c' }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
               Chọn ngày làm việc để tính deadline tự động
             </div>
           </Card>
@@ -150,7 +150,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
             <div><span style={{ fontSize: 13 }}>Ngưỡng tương đồng: </span><strong>{rules.similarityThreshold}</strong></div>
             <Slider min={0.1} max={1} step={0.05} value={rules.similarityThreshold}
               onChange={v => setRules(r => ({ ...r, similarityThreshold: v }))} style={{ maxWidth: 300 }} />
-            <div style={{ fontSize: 12, color: '#8c8c8c' }}>Thấp = dễ match feedback với task, Cao = cần chính xác hơn</div>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Thấp = dễ match feedback với task, Cao = cần chính xác hơn</div>
           </Card>
 
           {/* Magic Input */}
@@ -173,7 +173,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
                 onChange={e => setRules(r => ({ ...r, magicPlaceholder: e.target.value }))}
                 placeholder="Để trống = dùng mặc định" />
             </Form.Item>
-            <div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
               Cú pháp: Dòng context (Project{rules.contextSeparator ?? ' - '}Type), dòng task (TênTask {rules.defaultEstTime ?? 1}{rules.defaultEstUnit ?? 'd'})
             </div>
           </Card>
@@ -208,7 +208,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
                 onChange={e => setNewRule(r => ({ ...r, boost: parseInt(e.target.value) || 0 }))} placeholder="boost" />
               <Button size="small" icon={<PlusOutlined />} onClick={addPriorityRule}>Thêm</Button>
             </Space>
-            <div style={{ fontSize: 12, color: '#8c8c8c', marginTop: 8 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
               Boost âm = ưu tiên cao hơn. VD: project chứa "pusoy" → boost -100
             </div>
             <Divider style={{ margin: '12px 0' }} />

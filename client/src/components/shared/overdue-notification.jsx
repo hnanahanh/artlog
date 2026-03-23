@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { useI18n } from '../../i18n/i18n-config.jsx';
 
 /* SVG skull icon */
@@ -33,29 +32,30 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
     if (onNavigate) onNavigate();
   };
 
-  return createPortal(
-    <div style={{
-      position: 'fixed', bottom: 70, right: 4, zIndex: 999,
+  return (
+    <div className="overdue-noti" style={{
+      position: 'absolute', bottom: 70, right: 4, zIndex: 30,
       transform: expanded ? 'translateX(0)' : 'translateX(calc(100% - 36px))',
       transition: initialized ? 'transform 0.3s ease' : 'none',
       display: 'flex', alignItems: 'stretch',
       fontFamily: "'JetBrains Mono'",
+      border: '3px solid var(--border-color)',
+      borderRadius: 4,
+      boxShadow: '4px 4px 0px var(--shadow-color)',
+      background: 'var(--danger-bg)',
+      cursor: 'pointer',
+      overflow: 'hidden',
     }}>
       {/* Skull tab */}
       <button
         onClick={() => { setExpanded(e => !e); if (expanded) setDismissed(true); }}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
         style={{
-          width: 36, border: '3px solid var(--border-color)',
-          borderRight: expanded ? 'none' : '3px solid var(--border-color)',
-          borderRadius: '4px 0 0 4px',
-          background: 'var(--danger-bg)', cursor: 'pointer',
+          width: 36, border: 'none',
+          borderRight: expanded ? '2px solid var(--border-color)' : 'none',
+          borderRadius: 0,
+          background: 'transparent', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 20, padding: 0, flexShrink: 0,
-          boxShadow: '0 4px 0px var(--shadow-color)',
-          transform: hovered ? 'scale(1.1)' : 'none',
-          transition: 'transform 0.15s ease',
         }}
       ><SkullIcon /></button>
 
@@ -63,10 +63,8 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
       <div
         onClick={handleContentClick}
         style={{
-          border: '3px solid var(--border-color)', borderLeft: 'none',
-          borderRadius: '0 4px 4px 0',
-          boxShadow: '0 4px 0px var(--shadow-color)',
-          background: 'var(--danger-bg)', padding: '10px 14px',
+          border: 'none', borderRadius: 0,
+          background: 'transparent', padding: '10px 14px',
           maxWidth: 280, minWidth: 200,
           cursor: 'pointer',
         }}
@@ -78,7 +76,6 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
           {(t('overdue.message') || '').replace('{count}', overdueCount)}
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }

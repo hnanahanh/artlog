@@ -39,18 +39,18 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
       display: 'grid',
       gridTemplateColumns: 'repeat(7, 1fr)', // Sun–Sat
       width: '100%',
-      border: '2px solid #222', 
-      borderRadius: 4, 
-      overflow: 'hidden', 
-      boxShadow: '4px 4px 0px #222',
-      background: '#fffdf7'
+      border: '2px solid var(--border-color)',
+      borderRadius: 4,
+      overflow: 'hidden',
+      boxShadow: '4px 4px 0px var(--shadow-color)',
+      background: 'var(--bg-warm)'
     }}>
       {/* 0. Navigation bar spanning all columns */}
       {navBar && (
         <div style={{
           gridColumn: '1 / -1',
           padding: '10px 12px',
-          borderBottom: '2px solid #222',
+          borderBottom: '2px solid var(--border-color)',
           background: 'var(--bg-header, #f5f0e8)',
           textAlign: 'center',
         }}>
@@ -110,10 +110,10 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                 minHeight: '120px',
                 background: isDragOver ? 'rgba(22,119,255,0.10)' : !isCurrentMonth ? 'var(--bg-secondary)' : isWeekend ? 'var(--bg-secondary)' : 'transparent',
                 borderRight: dayIdx < 6 ? `1px solid ${isWeekend ? 'var(--bg-secondary)' : 'var(--border-color)'}` : 'none',
-                borderBottom: weekIdx < weeks.length - 1 ? '1px solid #222' : 'none',
+                borderBottom: weekIdx < weeks.length - 1 ? '1px solid var(--border-color)' : 'none',
                 display: 'flex',
                 flexDirection: 'column',
-                outline: isDragOver ? '2px dashed #1677ff' : 'none',
+                outline: isDragOver ? '2px dashed var(--accent-color)' : 'none',
                 outlineOffset: '-2px',
                 transition: 'background 0.1s',
                 position: 'relative',

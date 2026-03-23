@@ -151,7 +151,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
           ) : <span />}
           <Space>
             <Button onClick={onClose} style={{ height: 32 }}>Cancel</Button>
-            <Button type="primary" onClick={handleSave} style={{ height: 32, background: 'var(--accent-color)', color: '#222' }}>Save</Button>
+            <Button type="primary" onClick={handleSave} style={{ height: 32, background: 'var(--accent-color)', color: 'var(--text-on-accent)' }}>Save</Button>
           </Space>
         </Flex>
       }

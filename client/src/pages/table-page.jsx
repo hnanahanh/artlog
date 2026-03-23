@@ -49,7 +49,7 @@ export default function TablePage({ refreshKey }) {
   };
 
   return (
-    <div style={{ background: '#fff', borderRadius: 8, padding: 16, border: '1px solid #f0f0f0' }}>
+    <div style={{ background: 'var(--bg-card)', borderRadius: 8, padding: 16, border: '1px solid var(--bg-secondary)' }}>
       <TaskTableView tasks={tasks} onEdit={handleEdit} onDelete={handleDelete}
         onDeleteFeedback={handleDeleteFeedback} onUpdateFeedback={handleUpdateFeedback} />
     </div>

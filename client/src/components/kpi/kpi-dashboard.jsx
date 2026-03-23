@@ -7,13 +7,15 @@ import { getKPICsvUrl } from '../../api/task-api-client.js';
 
 const { Text } = Typography;
 
-/* Fallback chart colors — actual values read from CSS vars at render time */
-const CHART_FALLBACK = ['#c47dff', '#faad14', '#1677ff', '#52c41a', '#ff4d4f', '#13c2c2', '#eb2f96', '#8c8c8c'];
+/* Read chart colors from CSS variables — always fresh */
 function getChartColors() {
   try {
     const s = getComputedStyle(document.documentElement);
-    return Array.from({ length: 8 }, (_, i) => s.getPropertyValue(`--chart-color-${i + 1}`).trim() || CHART_FALLBACK[i]);
-  } catch { return CHART_FALLBACK; }
+    return Array.from({ length: 8 }, (_, i) => {
+      const v = s.getPropertyValue(`--chart-color-${i + 1}`).trim();
+      return v || '#8c8c8c';
+    });
+  } catch { return Array(8).fill('#8c8c8c'); }
 }
 
 /* Stat card styled like kanban column header */
@@ -33,7 +35,7 @@ function StatCard({ label, value, headerBg }) {
 
 /* Recharts Donut chart with center label */
 function DonutChart({ data, title }) {
-  const CHART_COLORS = useMemo(getChartColors, []);
+  const CHART_COLORS = getChartColors();
   const total = useMemo(() => data.reduce((s, d) => s + d.value, 0), [data]);
   if (total === 0) return <Text type="secondary">—</Text>;
 
@@ -222,7 +224,7 @@ export default function KpiDashboard({ data, from, to }) {
           <a href={getKPICsvUrl(from, to)} download>
             <button className="neo-btn" style={{
               padding: '6px 14px', fontSize: 13, fontWeight: 900,
-              color: '#222', background: 'var(--btn-add-bg)',
+              color: 'var(--text-on-accent)', background: 'var(--btn-add-bg)',
               display: 'flex', alignItems: 'center', gap: 6,
               whiteSpace: 'nowrap',
             }}>

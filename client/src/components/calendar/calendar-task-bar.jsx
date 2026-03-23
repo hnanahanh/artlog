@@ -14,7 +14,7 @@ const HANDLE_STYLE = {
 
 const HANDLE_INDICATOR = {
   position: 'absolute', top: '50%', transform: 'translateY(-50%)',
-  width: 3, height: 16, borderRadius: 2, background: '#555',
+  width: 3, height: 16, borderRadius: 2, background: 'var(--handle-color)',
   boxShadow: '0 0 0 1px rgba(255,255,255,0.5)',
 };
 
@@ -156,7 +156,7 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
           }}>
             <Text style={{
               fontSize: 12, fontWeight: 700,
-              color: '#222222',
+              color: 'var(--text-on-accent)',
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
               flex: 1, minWidth: 0,
             }}>

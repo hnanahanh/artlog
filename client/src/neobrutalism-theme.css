@@ -1,11 +1,11 @@
 /* === CSS Variables for Theme === */
 :root {
   --bg-outer: #ffffff;
-  --bg-primary: #f7f5ed;
-  --bg-secondary: #eae8e4;
+  --bg-primary: #fff8f0;
+  --bg-secondary: #f4ede0;
   --bg-card: #ffffff;
   --bg-header: #dbd8d2;
-  --bg-app-header: #918cdf;
+  --bg-app-header: #beb2e7;
   --text-primary: #000000;
   --text-secondary: #74675a;
   --border-color: #000000;
@@ -14,9 +14,9 @@
   --accent-active: #ccb9f4;
   --danger-color: #e03e3e;
   --danger-bg: #ff5e5e;
-  --danger-text: #ffffff;
-  --grid-line-color: rgba(0, 0, 0, 0.05);
-  --sidebar-bg: #735993;
+  --danger-text: #b60000;
+  --grid-line-color: rgba(0, 0, 0, 0.1);
+  --sidebar-bg: #796ed8;
   --feedback-color: #444aff;
   --highlight-duration: #2EB52E;
   --col-todo-header: #ffdc51;
@@ -24,20 +24,20 @@
   --col-todo-card: #fefdf0;
   --col-progress-header: #b9df6f;
   --col-progress-body: #ecfbbb;
-  --col-progress-card: #f6fce8;
-  --col-done-header: #7fda8a;
-  --col-done-body: #d4f2c7;
-  --col-done-card: #f0fae8;
-  --nav-active-bg: #222;
+  --col-progress-card: #fdfff0;
+  --col-done-header: #7fdaaa;
+  --col-done-body: #c7f2cd;
+  --col-done-card: #f2fff7;
+  --nav-active-bg: #796ed8;
   --nav-active-text: #fff;
   --btn-add-bg: #ffdc16;
   --tab-active-bg: #c8c2ff;
   /* Chart slice colors */
   --chart-color-1: #c47dff;
-  --chart-color-2: #faad14;
-  --chart-color-3: #1677ff;
-  --chart-color-4: #52c41a;
-  --chart-color-5: #ff4d4f;
+  --chart-color-2: #ffdc51;
+  --chart-color-3: #fdb4f7;
+  --chart-color-4: #b9df6f;
+  --chart-color-5: #7fdaaa;
   --chart-color-6: #13c2c2;
   --chart-color-7: #eb2f96;
   --chart-color-8: #8c8c8c;
@@ -47,6 +47,15 @@
   --marquee-color-3: #1677ff;
   --marquee-color-4: #a88bec;
   --marquee-color-5: #52c41a;
+  /* Semantic utility colors */
+  --text-muted: #8c8c8c;
+  --text-on-accent: #222222;
+  --bg-warm: #fffdf7;
+  --logo-color: #ffeb57;
+  --handle-color: #444444;
+  --magic-title-bg: #FDE047;
+  --preview-accent: #a855f7;
+  --footer-bg: #c6d0a5;
 }
 
 [data-theme="dark"] {
@@ -82,6 +91,15 @@
   --nav-active-text: #fff;
   --btn-add-bg: #6b4fa8;
   --tab-active-bg: #444;
+  /* Semantic utility colors — dark overrides */
+  --text-muted: #666666;
+  --text-on-accent: #f0f0f0;
+  --bg-warm: #1e1e18;
+  --logo-color: #f9e764;
+  --handle-color: #888888;
+  --magic-title-bg: #5a4a00;
+  --preview-accent: #8b5cf6;
+  --footer-bg: #2a3a2a;
 }
 
 /* === Neobrutalism theme overrides for Ant Design === */
@@ -113,6 +131,17 @@
 }
 .neo-box:hover {
   box-shadow: none !important;
+}
+
+/* Overdue notification panel hover */
+.overdue-noti:hover {
+  transform: translateX(-2px) translateY(-2px) !important;
+  filter: brightness(1.05);
+}
+.overdue-noti button:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  background: inherit !important;
 }
 
 /* Buttons: unified neo style for all buttons */
@@ -410,6 +439,21 @@ body {
 :root [class*=" ant-"] {
   font-family: 'JetBrains Mono', sans-serif !important;
 }
+
+/* === Splash overlay animations === */
+@keyframes splash-fill {
+  from { clip-path: circle(0% at var(--cx) var(--cy)); }
+  to   { clip-path: circle(150% at var(--cx) var(--cy)); }
+}
+@keyframes splash-close {
+  from { clip-path: circle(150% at var(--cx) var(--cy)); }
+  to   { clip-path: circle(0% at var(--cx) var(--cy)); }
+}
+@keyframes splash-content-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.splash-content { opacity: 0; }
 
 /* === Logo shake animation === */
 @keyframes neo-shake {

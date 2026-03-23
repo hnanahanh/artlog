@@ -66,5 +66,7 @@
   "welcome.greeting": "Welcome back! 🎨",
   "welcome.subtitle": "Ready to grind?",
   "overdue.title": "Overdue tasks alert! 💀",
-  "overdue.message": "{count} task(s) waiting — don't let them rot!"
+  "overdue.message": "{count} task(s) waiting — don't let them rot!",
+  "splash.quote": "Draw, draw more, draw forever",
+  "splash.subtitle": "— said a dedicated art slave"
 }

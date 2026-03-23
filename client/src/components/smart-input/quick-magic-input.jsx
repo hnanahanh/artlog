@@ -248,7 +248,7 @@ export default function QuickMagicInput({ onTasksCreated }) {
         <div style={{ display: 'flex', gap: 6 }}>
           {selected.size > 0 && (
             <button className="neo-btn" onClick={removeSelected}
-              style={{ padding: '4px 10px', fontSize: 11, fontWeight: 700, background: 'var(--danger-bg)', color: '#fff' }}>
+              style={{ padding: '4px 10px', fontSize: 11, fontWeight: 700, background: 'var(--danger-bg)', color: 'var(--nav-active-text)' }}>
               <DeleteOutlined style={{ fontSize: 10 }} /> {selected.size}
             </button>
           )}
@@ -258,7 +258,7 @@ export default function QuickMagicInput({ onTasksCreated }) {
             {tasks.filter(t => t.name.trim()).length} task(s)
           </Text>
           <button className="neo-btn" onClick={handleSave} disabled={loading}
-            style={{ background: 'var(--btn-add-bg)', color: '#222', fontWeight: 900, padding: '8px 20px', fontSize: 13 }}>
+            style={{ background: 'var(--btn-add-bg)', color: 'var(--text-on-accent)', fontWeight: 900, padding: '8px 20px', fontSize: 13 }}>
             {loading ? '...' : t('magic.save')}
           </button>
         </div>

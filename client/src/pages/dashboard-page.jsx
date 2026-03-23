@@ -227,7 +227,7 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
       onClick={() => setAddOpen(true)}
       style={{
         padding: '8px 16px', fontSize: 13, fontWeight: 900,
-        color: '#222', background: 'var(--btn-add-bg)',
+        color: 'var(--text-on-accent)', background: 'var(--btn-add-bg)',
         display: 'flex', alignItems: 'center', gap: 6,
         whiteSpace: 'nowrap',
       }}

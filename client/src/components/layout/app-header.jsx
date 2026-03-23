@@ -49,14 +49,14 @@ const LOGO_LETTER = {
   fontWeight: 700,
   fontStyle: 'italic',
   fontSize: 28,
-  color: '#f9e764',
+  color: 'var(--logo-color)',
   display: 'inline-block',
   lineHeight: 1,
   position: 'relative',
   zIndex: 1,
 };
 
-export default function AppHeader() {
+export default function AppHeader({ onSplashOpen }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { t, lang, toggleLang } = useI18n();
@@ -96,6 +96,7 @@ export default function AppHeader() {
           {/* Logo with right border — shake on letter hover only */}
           <div
             style={{ ...LOGO_STYLE, borderRight: '3px solid var(--border-color)', borderRadius: 0, margin: 0, width: HEADER_HEIGHT, height: '100%', flexShrink: 0 }}
+            onClick={onSplashOpen}
           >
             <span className="neo-logo-letter" data-letter="A" style={LOGO_LETTER}>A</span>
           </div>

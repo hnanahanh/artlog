@@ -12,7 +12,7 @@ const PRIORITY_COLORS = { high: 'red', medium: 'orange', low: 'default' };
 const PRIORITY_OPTIONS = ['high', 'medium', 'low'];
 
 // Neo-brutalism dropdown style for Select/DatePicker popups
-const neoDropdownStyle = { border: '2px solid #222', borderRadius: 4, background: '#fffdf7' };
+const neoDropdownStyle = { border: '2px solid var(--border-color)', borderRadius: 4, background: 'var(--bg-warm)' };
 
 // Neo-brutalism CSS for table
 const NEO_TABLE_CSS = `
@@ -207,7 +207,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
             {record.name}
             {latestFb && (
               <>
-                <span style={{ color: '#8c8c8c', margin: '0 4px', fontWeight: 400 }}>+</span>
+                <span style={{ color: 'var(--text-muted)', margin: '0 4px', fontWeight: 400 }}>+</span>
                 <span style={{ color: 'var(--feedback-color)' }}>{latestFb.content}</span>
               </>
             )}
@@ -380,7 +380,7 @@ export default function TaskTableView({ tasks, onEdit, onDelete, onDeleteFeedbac
       {selectedRowKeys.length > 0 && (
         <Flex align="center" gap={12} style={{
           padding: '8px 16px', marginBottom: 8,
-          background: '#fffdf7', border: '2px solid #222', boxShadow: '4px 4px 0px #222',
+          background: 'var(--bg-warm)', border: '2px solid var(--border-color)', boxShadow: '4px 4px 0px var(--shadow-color)',
         }}>
           <Text strong>{t('common.selected') || 'Đã chọn'} {selectedRowKeys.length} task</Text>
           <Popconfirm title={`${t('common.delete') || 'Xóa'} ${selectedRowKeys.length} task?`}
