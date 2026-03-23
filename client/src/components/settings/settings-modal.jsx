@@ -77,9 +77,9 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
           </Button>
         </Space>
       }
+      classNames={{ wrapper: 'neo-modal-wrapper', body: 'neo-modal-body-settings' }}
       styles={{
-        wrapper: { padding: 0 },
-        content: { padding: 0, borderRadius: 2 },
+        content: { border: '3px solid var(--border-color)', boxShadow: '6px 6px 0px var(--shadow-color)', borderRadius: 2, padding: 0 },
         header: { display: 'none' },
         body: { background: 'var(--bg-card)', padding: 0, maxHeight: '80vh', overflowY: 'auto', overflowX: 'hidden', fontFamily: "'JetBrains Mono'" },
         footer: { background: 'var(--bg-card)', borderTop: '2px solid var(--border-color)', padding: '12px 20px' },
@@ -92,7 +92,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
         textAlign: 'center', fontFamily: "'JetBrains Mono'",
         fontWeight: 900, fontSize: 16, color: 'var(--text-primary)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        position: 'relative',
+        position: 'sticky', top: 0, zIndex: 10,
       }}>
         {t('nav.settings')}
         <button className="neo-btn" onClick={onClose} style={{
@@ -105,22 +105,21 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
       </div>
 
       {/* Language & Theme toggles */}
-      <div style={{ padding: 0, marginTop: 8 }}>
+      <div style={{ padding: 0, position: 'sticky', top: 42, zIndex: 10, background: 'var(--bg-card)' }}>
       {toggleLang && toggleTheme && (
-        <div style={{ display: 'flex', gap: 0 }}>
-          <Button onClick={toggleLang} style={{
-            flex: 1, fontWeight: 800, borderRadius: 0, boxShadow: 'none',
-            borderBottom: '2px solid var(--border-color)',
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '10px 16px', borderBottom: '2px solid var(--border-color)' }}>
+          <button className="neo-btn" onClick={toggleLang} style={{
+            padding: '8px 12px', fontWeight: 800, fontSize: 13,
+            background: 'var(--bg-card)', cursor: 'pointer',
           }}>
             {lang === 'vi' ? '🇬🇧 English' : '🇻🇳 Tiếng Việt'}
-          </Button>
-          <Button onClick={toggleTheme} style={{
-            flex: 1, fontWeight: 800, borderRadius: 0, boxShadow: 'none',
-            borderLeft: '2px solid var(--border-color)',
-            borderBottom: '2px solid var(--border-color)',
+          </button>
+          <button className="neo-btn" onClick={toggleTheme} style={{
+            padding: '8px 12px', fontWeight: 800, fontSize: 13,
+            background: 'var(--bg-card)', cursor: 'pointer',
           }}>
             {isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}
-          </Button>
+          </button>
         </div>
       )}
 

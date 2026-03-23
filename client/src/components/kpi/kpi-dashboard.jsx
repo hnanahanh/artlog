@@ -49,7 +49,7 @@ function DonutChart({ data, title }) {
       }}>{title}</Text>
       <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, justifyContent: 'center' }}>
         {/* Recharts pie */}
-        <div className="kpi-pie-box" style={{ width: '100%', aspectRatio: '1', maxHeight: 280, margin: '0 auto' }}>
+        <div className="kpi-pie-box" style={{ width: '100%', margin: '0 auto' }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Tooltip
@@ -62,7 +62,8 @@ function DonutChart({ data, title }) {
                 }}
               />
               <Pie data={chartData} dataKey="value" nameKey="name"
-                innerRadius="40%" outerRadius="70%" strokeWidth={2}
+                cx="50%" cy="50%"
+                innerRadius="35%" outerRadius="65%" strokeWidth={2}
                 stroke="var(--border-color)"
               >
                 {chartData.map((entry, i) => (

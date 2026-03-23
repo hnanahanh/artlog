@@ -5,12 +5,14 @@ import dayjs from 'dayjs';
 import NeoRangePicker from '../shared/neo-range-picker.jsx';
 import NeoSelect from '../shared/neo-select.jsx';
 import NeoInput from '../shared/neo-input.jsx';
+import { useI18n } from '../../i18n/i18n-config.jsx';
 
 const { Text } = Typography;
 
 const neoLabel = { fontSize: 11, fontWeight: 700, color: 'var(--text-secondary, #666)', textTransform: 'uppercase', letterSpacing: 0.5 };
 
-export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, t, gameOptions = [], projectOptions = [] }) {
+export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, gameOptions = [], projectOptions = [] }) {
+  const { t } = useI18n();
   const [form, setForm] = useState({});
   const [fbEdits, setFbEdits] = useState({});
   const [hoveredFbId, setHoveredFbId] = useState(null);
@@ -139,6 +141,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
       title={<span style={{ fontWeight: 900, fontSize: 14, letterSpacing: 0.3 }}>Edit Task</span>}
       open={open}
       onCancel={onClose}
+      closable={{ closeIcon: <span style={{ fontWeight: 900, fontSize: 14 }}>✕</span> }}
       footer={
         <Flex justify="space-between" align="center">
           {onDelete ? (
@@ -154,9 +157,9 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
       }
       width={480}
       destroyOnClose
-      classNames={{ wrapper: 'neo-modal-wrapper' }}
+      classNames={{ wrapper: 'neo-modal-wrapper', body: 'neo-modal-body-padded' }}
       styles={{
-        content: { border: '3px solid var(--border-color)', boxShadow: '6px 6px 0px var(--shadow-color)', borderRadius: 2, padding: 0 },
+        content: { border: '3px solid var(--border-color)', boxShadow: '6px 6px 0px var(--shadow-color)', borderRadius: 2, padding: 0, overflow: 'visible' },
         header: { borderBottom: '2px solid var(--border-color)', padding: '10px 16px', marginBottom: 0, background: 'var(--bg-header)' },
         body: { overflow: 'visible', padding: '20px 24px' },
         footer: { borderTop: '2px solid var(--border-color)', padding: '10px 16px', marginTop: 0 },
@@ -172,33 +175,38 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
           />
           {hasFeedbacks && task.feedbacks.map(fb => (
             <Flex
-              key={fb.id} gap={6} align="center"
+              key={fb.id} gap={4} align="center"
               style={{ marginTop: 4, marginLeft: 16 }}
               onMouseEnter={() => setHoveredFbId(fb.id)}
               onMouseLeave={() => setHoveredFbId(null)}
             >
-              <NeoInput
-                style={{ flex: 1 }}
-                value={fbEdits[fb.id]?.content ?? fb.content}
-                onChange={e => setFbEdits(prev => ({ ...prev, [fb.id]: { ...prev[fb.id], content: e.target.value } }))}
-                onBlur={() => handleFbSave(fb.id)}
-                onKeyDown={e => { if (e.key === 'Enter') handleFbSave(fb.id); }}
-              />
-              <Popconfirm title="Delete?" onConfirm={() => onDeleteFeedback?.(realTaskId, fb.id)} okText="OK" cancelText="Cancel">
-                <Button
-                  type="text" size="small" danger
-                  icon={<CloseOutlined style={{ fontSize: 12 }} />}
-                  style={{ flexShrink: 0, width: 24, height: 24, padding: 0, visibility: hoveredFbId === fb.id ? 'visible' : 'hidden' }}
+              <span style={{ color: 'var(--text-secondary)', fontSize: 12, flexShrink: 0, fontWeight: 700 }}>↳</span>
+              <div style={{ flex: 1, position: 'relative' }}>
+                <NeoInput
+                  style={{ width: '100%', paddingRight: hoveredFbId === fb.id ? 28 : 8 }}
+                  value={fbEdits[fb.id]?.content ?? fb.content}
+                  onChange={e => setFbEdits(prev => ({ ...prev, [fb.id]: { ...prev[fb.id], content: e.target.value } }))}
+                  onBlur={() => handleFbSave(fb.id)}
+                  onKeyDown={e => { if (e.key === 'Enter') handleFbSave(fb.id); }}
                 />
-              </Popconfirm>
+                {hoveredFbId === fb.id && (
+                  <Popconfirm title="Delete?" onConfirm={() => onDeleteFeedback?.(realTaskId, fb.id)} okText="OK" cancelText="Cancel">
+                    <button style={{
+                      position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)',
+                      background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger-text)',
+                      fontWeight: 900, fontSize: 12, padding: '2px 4px',
+                    }}>✕</button>
+                  </Popconfirm>
+                )}
+              </div>
             </Flex>
           ))}
         </div>
 
-        {/* Game + Project */}
+        {/* Project (game) + Type (project) */}
         <Flex gap={8}>
           <div style={{ flex: 1 }}>
-            <Text style={neoLabel}>Game</Text>
+            <Text style={neoLabel}>{t('table.game')}</Text>
             <NeoSelect
               value={form.game}
               options={gameOptions}
@@ -207,7 +215,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
             />
           </div>
           <div style={{ flex: 1 }}>
-            <Text style={neoLabel}>Project</Text>
+            <Text style={neoLabel}>{t('table.project')}</Text>
             <NeoSelect
               value={form.project}
               options={projectOptions}

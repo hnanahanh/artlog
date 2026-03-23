@@ -1,7 +1,7 @@
 /* === CSS Variables for Theme === */
 :root {
   --bg-outer: #ffffff;
-  --bg-primary: #f2eff3;
+  --bg-primary: #f7f5ed;
   --bg-secondary: #eae8e4;
   --bg-card: #ffffff;
   --bg-header: #dbd8d2;
@@ -16,7 +16,7 @@
   --danger-bg: #ff5e5e;
   --danger-text: #ffffff;
   --grid-line-color: rgba(0, 0, 0, 0.05);
-  --sidebar-bg: #918cdf;
+  --sidebar-bg: #735993;
   --feedback-color: #444aff;
   --highlight-duration: #2EB52E;
   --col-todo-header: #ffdc51;
@@ -30,7 +30,7 @@
   --col-done-card: #f0fae8;
   --nav-active-bg: #222;
   --nav-active-text: #fff;
-  --btn-add-bg: #9bf546;
+  --btn-add-bg: #ffdc16;
   --tab-active-bg: #c8c2ff;
   /* Chart slice colors */
   --chart-color-1: #c47dff;
@@ -210,8 +210,11 @@ button.neo-btn:active {
 
 /* Modal — neo-brutalism */
 :root .ant-modal .ant-modal-content,
+:root .ant-modal .ant-modal-container,
 :root :where(.css-dev-only-do-not-override-1daqxe2).ant-modal .ant-modal-content,
-:root :where(.ant-modal-css-var) .ant-modal .ant-modal-content {
+:root :where(.css-dev-only-do-not-override-1daqxe2).ant-modal .ant-modal-container,
+:root :where(.ant-modal-css-var) .ant-modal .ant-modal-content,
+:root :where(.ant-modal-css-var) .ant-modal .ant-modal-container {
   border: 3px solid var(--border-color) !important;
   box-shadow: 6px 6px 0px var(--shadow-color) !important;
   border-radius: 2px !important;
@@ -219,7 +222,37 @@ button.neo-btn:active {
   overflow: hidden;
 }
 :root .ant-modal .ant-modal-body {
+  padding: 0;
+}
+:root .ant-modal .neo-modal-body-padded {
+  padding: 20px 24px !important;
+}
+:root .ant-modal .neo-modal-body-settings {
   padding: 0 !important;
+  background: var(--bg-card) !important;
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+/* Neo close button for modals */
+:root .ant-modal .ant-modal-close {
+  width: 28px !important;
+  height: 28px !important;
+  border: 2px solid var(--border-color) !important;
+  border-radius: 2px !important;
+  box-shadow: 2px 2px 0 var(--shadow-color) !important;
+  background: var(--bg-card) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  top: 10px !important;
+  right: 12px !important;
+  color: var(--text-primary) !important;
+  transition: transform 0.1s, box-shadow 0.1s !important;
+}
+:root .ant-modal .ant-modal-close:hover {
+  transform: translate(2px, 2px) !important;
+  box-shadow: none !important;
 }
 /* Neo scrollbar inside modal body */
 .ant-modal-body::-webkit-scrollbar { width: 8px; }
@@ -283,6 +316,7 @@ button.neo-btn:active {
 .anticon svg {
   stroke: currentColor;
   stroke-width: 60;
+  paint-order: stroke fill;
 }
 
 /* Tags: bold */
@@ -377,8 +411,55 @@ body {
   font-family: 'JetBrains Mono', sans-serif !important;
 }
 
+/* === Logo shake animation === */
+@keyframes neo-shake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-8deg); }
+  40% { transform: rotate(8deg); }
+  60% { transform: rotate(-5deg); }
+  80% { transform: rotate(5deg); }
+}
+/* 2-layer text: stroke underneath, clean font on top */
+.neo-logo-letter {
+  transition: transform 0.15s;
+  position: relative;
+}
+.neo-logo-letter::before {
+  content: attr(data-letter);
+  position: absolute;
+  left: 0; top: 0;
+  -webkit-text-stroke: 3px var(--border-color);
+  color: transparent;
+  z-index: -1;
+  text-shadow: 2px 2px 0 var(--shadow-color);
+}
+.neo-logo-letter:hover { animation: neo-shake 0.4s ease; }
+.neo-logo-letter:active { animation: neo-shake 0.3s ease; }
+
+/* Action button icon centering — Tooltip span must stretch */
+.app-header-bar .action-btn { display: flex; align-items: center; justify-content: center; }
+.app-header-bar .action-btn > span {
+  display: flex !important; width: 100%; height: 100%;
+  align-items: center; justify-content: center;
+}
+/* Tooltip wrapper inside header must stretch full height */
+.app-header-bar > span { display: flex !important; height: 100%; align-items: stretch; }
+
 /* === Responsive Mobile === */
+/* Desktop-only elements — hidden on mobile */
+.desktop-only { display: flex; }
+/* Mobile-only elements — hidden on desktop */
+.mobile-only { display: none !important; }
+
+/* KPI pie chart responsive height */
+.kpi-pie-box { height: 220px; }
+
 @media (max-width: 768px) {
+  .kpi-pie-box { height: 150px; }
+  /* Hide desktop-only elements on mobile */
+  .desktop-only { display: none !important; }
+  /* Show mobile-only elements on mobile */
+  .mobile-only { display: flex !important; }
   /* Hide sidebar on mobile */
   .app-sidebar { display: none !important; }
 
@@ -391,12 +472,12 @@ body {
   }
 
   /* Fixed header on mobile, only content scrolls */
-  .app-header-bar { min-height: 48px !important; flex-shrink: 0; position: sticky; top: 0; z-index: 20; }
+  .app-header-bar { min-height: 48px !important; flex-shrink: 0; position: fixed; top: 0; left: 0; right: 0; z-index: 20; }
   .app-header-bar .nav-btn { padding: 0 12px !important; font-size: 14px !important; }
   /* Tooltip wrapper must also stretch */
   .app-header-bar > span { display: flex; }
-  /* Reduce content padding */
-  .app-content { padding: 8px !important; gap: 8px !important; }
+  /* Reduce content padding + offset for fixed header */
+  .app-content { padding: 8px !important; gap: 8px !important; padding-top: 56px !important; }
 
   /* Settings modal: full width on mobile */
   .ant-modal { max-width: calc(100vw - 16px) !important; margin: 8px auto !important; }

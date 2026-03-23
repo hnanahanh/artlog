@@ -19,12 +19,13 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
   const [expanded, setExpanded] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    if (overdueCount <= 0) return;
+    if (overdueCount <= 0 || dismissed) return;
     const timer = setTimeout(() => { setExpanded(true); setInitialized(true); }, 2000);
     return () => clearTimeout(timer);
-  }, [overdueCount]);
+  }, [overdueCount, dismissed]);
 
   if (overdueCount <= 0) return null;
 
@@ -34,7 +35,7 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
 
   return createPortal(
     <div style={{
-      position: 'fixed', bottom: 70, right: 0, zIndex: 9999,
+      position: 'fixed', bottom: 70, right: 4, zIndex: 999,
       transform: expanded ? 'translateX(0)' : 'translateX(calc(100% - 36px))',
       transition: initialized ? 'transform 0.3s ease' : 'none',
       display: 'flex', alignItems: 'stretch',
@@ -42,7 +43,7 @@ export default function OverdueNotification({ overdueCount = 0, onNavigate }) {
     }}>
       {/* Skull tab */}
       <button
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => { setExpanded(e => !e); if (expanded) setDismissed(true); }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         style={{

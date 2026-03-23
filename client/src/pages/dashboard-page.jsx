@@ -245,7 +245,7 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
         open={addOpen}
         onClose={() => setAddOpen(false)}
         placement={window.innerWidth <= 768 ? 'bottom' : 'right'}
-        width={520}
+        width={720}
         height="85vh"
         title={<span style={{ fontWeight: 900, fontFamily: "'JetBrains Mono'" }}>{t('magic.drawer_title')}</span>}
         styles={{
