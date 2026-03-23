@@ -165,8 +165,91 @@ export default function QuickMagicInput({ onTasksCreated }) {
     } finally { setLoading(false); }
   };
 
+  const [rawText, setRawText] = useState('');
+
+  /* Parse raw text into structured rows */
+  const parsedPreview = useMemo(() => {
+    const lines = rawText.split('\n').filter(l => l.trim());
+    if (!lines.length) return { project: '', type: '', items: [] };
+    let project = '', type = '', startIdx = 0;
+    const ctxMatch = lines[0].match(/^(.+?)\s*[-–]\s*(.+)$/);
+    if (ctxMatch && !lines[0].match(/\d+[dh]\s*$/i)) {
+      project = ctxMatch[1].trim(); type = ctxMatch[2].trim(); startIdx = 1;
+    }
+    const items = lines.slice(startIdx).map(line => {
+      const m = line.match(/^(.+?)\s+(\d+(?:\.\d+)?)\s*(d|h)\s*$/i);
+      if (m) return { name: m[1].trim(), est: `${m[2]}${m[3].toLowerCase()}`, valid: true };
+      return { name: line.trim(), est: '', valid: false };
+    });
+    return { project, type, items };
+  }, [rawText]);
+
+  /* Commit parsed text to table */
+  const commitRawText = useCallback(() => {
+    const { project, type, items } = parsedPreview;
+    if (!items.length) return;
+    const parsed = items.map(item => {
+      const m = item.est.match(/^(\d+(?:\.\d+)?)(d|h)$/i);
+      if (m) return { ...emptyRow(project, type, rules), name: item.name, estTime: parseFloat(m[1]), estUnit: m[2].toLowerCase() };
+      return { ...emptyRow(project, type, rules), name: item.name };
+    });
+    setTasks(prev => [...prev.filter(t => t.name.trim()), ...parsed, emptyRow(project, type, rules)]);
+    setRawText('');
+  }, [parsedPreview, rules]);
+
+  /* Build highlighted HTML for overlay */
+  const highlightedHtml = useMemo(() => {
+    if (!rawText) return '';
+    const lines = rawText.split('\n');
+    return lines.map((line, i) => {
+      if (!line.trim()) return '<br/>';
+      const ctxMatch = line.match(/^(.+?)\s*([-–])\s*(.+)$/);
+      if (i === 0 && ctxMatch && !line.match(/\d+[dh]\s*$/i)) {
+        return `<span style="color:var(--accent-color);font-weight:900">${ctxMatch[1]}</span><span style="color:var(--text-muted)"> ${ctxMatch[2]} </span><span style="color:var(--highlight-duration);font-weight:700">${ctxMatch[3]}</span>`;
+      }
+      const m = line.match(/^(.+?)\s+(\d+(?:\.\d+)?)\s*(d|h)\s*$/i);
+      if (m) return `<span style="color:var(--text-primary)">${m[1]}</span> <span style="color:var(--highlight-duration);font-weight:900">${m[2]}${m[3]}</span>`;
+      return `<span style="color:var(--text-primary)">${line}</span>`;
+    }).join('\n');
+  }, [rawText]);
+
   return (
     <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
+      {/* Magic text area with highlight overlay */}
+      <div style={{ position: 'relative', marginBottom: 8, flexShrink: 0 }}>
+        <div
+          aria-hidden style={{
+            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, padding: '8px 10px',
+            fontFamily: "'JetBrains Mono'", fontSize: 13, lineHeight: '1.5',
+            whiteSpace: 'pre-wrap', wordWrap: 'break-word', pointerEvents: 'none',
+            border: '2px solid transparent', overflow: 'hidden',
+          }}
+          dangerouslySetInnerHTML={{ __html: highlightedHtml }}
+        />
+        <textarea
+          rows={10} value={rawText}
+          onChange={e => setRawText(e.target.value)}
+          placeholder={t('magic.placeholder') || 'Project - Type\nTask A 3d\nTask B 1d'}
+          style={{
+            width: '100%', fontFamily: "'JetBrains Mono'", fontSize: 13, padding: '8px 10px',
+            border: '2px solid var(--border-color)', borderRadius: 2,
+            background: rawText ? 'transparent' : 'var(--bg-card)',
+            color: rawText ? 'transparent' : 'var(--text-primary)',
+            caretColor: 'var(--text-primary)', resize: 'vertical', boxSizing: 'border-box',
+            lineHeight: '1.5', position: 'relative', zIndex: 1,
+          }}
+          onKeyDown={e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); commitRawText(); } }}
+        />
+      </div>
+      {/* Live preview of parsed tasks */}
+      {parsedPreview.items.length > 0 && (
+        <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 6, flexShrink: 0, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {parsedPreview.project && <span style={{ fontWeight: 700, color: 'var(--accent-color)' }}>{parsedPreview.project}</span>}
+          {parsedPreview.type && <span style={{ fontWeight: 700, color: 'var(--highlight-duration)' }}>{parsedPreview.type}</span>}
+          <span>{parsedPreview.items.length} task(s)</span>
+          <span style={{ color: 'var(--text-muted)' }}>Ctrl+Enter to add</span>
+        </div>
+      )}
       <div style={{ flex: 1, overflow: 'auto' }}>
         <style>{`
           .quick-table { width: 100%; border-collapse: collapse; }
@@ -209,10 +292,11 @@ export default function QuickMagicInput({ onTasksCreated }) {
                     />
                 </td>
                 <td data-cell={`${i}-est`}>
-                  <Input size="small" variant="borderless" value={`${task.estTime}${task.estUnit}`}
-                    style={{ width: 40, textAlign: 'center' }}
+                  <Input size="small" variant="borderless" defaultValue={`${task.estTime}${task.estUnit}`}
+                    key={`${i}-est-${task.estTime}${task.estUnit}`}
+                    style={{ width: 50, textAlign: 'center' }}
                     onKeyDown={e => handleCellKeyDown(e, i, 'est')}
-                    onChange={e => {
+                    onBlur={e => {
                       const m = e.target.value.match(/^(\d+(?:\.\d+)?)\s*(d|h)?$/i);
                       if (m) { updateTask(i, 'estTime', parseFloat(m[1])); if (m[2]) updateTask(i, 'estUnit', m[2].toLowerCase()); }
                     }} />
