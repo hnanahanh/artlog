@@ -22,10 +22,10 @@ export default function KanbanBoard({ refreshKey, onRefresh }) {
 
   const [editingTask, setEditingTask] = useState(null);
 
-  // Derive unique game/project options from all tasks
+  // Derive unique project/type options from all tasks
   const allTasks = useMemo(() => Object.values(columns).flat(), [columns]);
-  const gameOptions = useMemo(() => [...new Set(allTasks.map(t => t.game).filter(Boolean))], [allTasks]);
   const projectOptions = useMemo(() => [...new Set(allTasks.map(t => t.project).filter(Boolean))], [allTasks]);
+  const typeOptions = useMemo(() => [...new Set(allTasks.map(t => t.type).filter(Boolean))], [allTasks]);
 
   return (
     <>
@@ -77,8 +77,8 @@ export default function KanbanBoard({ refreshKey, onRefresh }) {
           onDelete={handleDelete}
           onDeleteFeedback={handleDeleteFeedback}
           onUpdateFeedback={handleUpdateFeedback}
-          gameOptions={gameOptions}
           projectOptions={projectOptions}
+          typeOptions={typeOptions}
         />
       )}
     </>

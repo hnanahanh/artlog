@@ -44,7 +44,7 @@ export function getTaskById(id) {
 export function createTask(data) {
   const tasks = getTasks();
   const task = {
-    id: genId('t'), name: '', game: '', project: '',
+    id: genId('t'), name: '', project: '', type: '',
     estTime: 1, estUnit: 'd', status: 'todo', priority: 1000,
     feedbacks: [], createdAt: now(), updatedAt: now(),
     startDate: todayStr(), dueDate: todayStr(),
@@ -60,7 +60,7 @@ export function createTask(data) {
 export function createBatch(taskList) {
   const tasks = getTasks();
   const created = taskList.map(td => ({
-    id: genId('t'), name: '', game: '', project: '',
+    id: genId('t'), name: '', project: '', type: '',
     estTime: 1, estUnit: 'd', status: 'todo', priority: 1000,
     feedbacks: [], createdAt: now(),
     startDate: todayStr(), dueDate: todayStr(),
@@ -171,15 +171,15 @@ export function parseRawText(rawText, rules = {}) {
   const lines = rawText.split('\n').filter(l => l.trim());
   const parsed = [];
   const warnings = [];
-  let game = '', project = '';
+  let project = '', type = '';
 
   for (const line of lines) {
     const trimmed = line.trim();
     // Context line: contains separator, no time suffix
     if (trimmed.includes(separator) && !/\d+(?:\.\d+)?\s*(d|h)$/i.test(trimmed)) {
       const sepIdx = trimmed.indexOf(separator);
-      game = trimmed.slice(0, sepIdx).trim();
-      project = trimmed.slice(sepIdx + separator.length).trim();
+      project = trimmed.slice(0, sepIdx).trim();
+      type = trimmed.slice(sepIdx + separator.length).trim();
       continue;
     }
     // Task line
@@ -201,7 +201,7 @@ export function parseRawText(rawText, rules = {}) {
     const dueDate = dayjs().add(days, 'day').format('YYYY-MM-DD');
 
     parsed.push({
-      id: genId('t'), name, game, project, estTime, estUnit,
+      id: genId('t'), name, project, type, estTime, estUnit,
       startDate, dueDate, status: 'todo', priority: 1000,
       feedbacks: [], createdAt: now(), updatedAt: now(),
     });
@@ -247,15 +247,15 @@ export function computeKPI(from, to) {
   const overdueCount = inRange.filter(t => t.status !== 'done' && t.dueDate < today).length;
   const totalTasks = inRange.length;
 
-  const byGame = {}, byProject = {}, byGameTasks = {};
+  const byProject = {}, byType = {}, byProjectTasks = {};
   for (const t of inRange) {
-    byGame[t.game || 'Unknown'] = (byGame[t.game || 'Unknown'] || 0) + 1;
     byProject[t.project || 'Unknown'] = (byProject[t.project || 'Unknown'] || 0) + 1;
+    byType[t.type || 'Unknown'] = (byType[t.type || 'Unknown'] || 0) + 1;
   }
   for (const t of completed) {
-    const g = t.game || 'Unknown';
-    if (!byGameTasks[g]) byGameTasks[g] = [];
-    byGameTasks[g].push(t.name);
+    const g = t.project || 'Unknown';
+    if (!byProjectTasks[g]) byProjectTasks[g] = [];
+    byProjectTasks[g].push(t.name);
   }
 
   const totalEstDays = inRange.reduce((s, t) => s + (t.estUnit === 'h' ? t.estTime / 8 : t.estTime), 0);
@@ -267,8 +267,8 @@ export function computeKPI(from, to) {
       completionRate: totalTasks ? Math.round((completed.length / totalTasks) * 100) : 0,
       overdueCount, overdueRate: totalTasks ? Math.round((overdueCount / totalTasks) * 100) : 0,
       totalEstDays: Math.round(totalEstDays * 10) / 10,
-      byGame, byProject, byGameTasks,
-      completedDetails: completed.map(t => ({ name: t.name, game: t.game, project: t.project, estTime: t.estTime, estUnit: t.estUnit })),
+      byProject, byType, byProjectTasks,
+      completedDetails: completed.map(t => ({ name: t.name, project: t.project, type: t.type, estTime: t.estTime, estUnit: t.estUnit })),
     },
   };
 }

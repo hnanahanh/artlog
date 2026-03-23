@@ -26,7 +26,7 @@ function calcEstTime(startDate, dueDate, estUnit) {
 }
 
 // Calendar task bar — draggable, resizable edges, left-click edit, right-click context menu
-export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, gameOptions = [], projectOptions = [], weekStart }) {
+export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, projectOptions = [], typeOptions = [], weekStart }) {
   const [hovered, setHovered] = useState(false);
   const [editing, setEditing] = useState(false);
   const [resizing, setResizing] = useState(false);
@@ -161,9 +161,9 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
               flex: 1, minWidth: 0,
             }}>
               {task._displayName || task.name}
-              {(task.game || task.project) && (
+              {(task.project || task.type) && (
                 <span style={{ fontSize: 10, fontWeight: 400, opacity: 0.7 }}>
-                  {' · '}{[task.game, task.project].filter(Boolean).join(' / ')}
+                  {' · '}{[task.project, task.type].filter(Boolean).join(' / ')}
                 </span>
               )}
             </Text>
@@ -214,8 +214,8 @@ export default function CalendarTaskBar({ task, span, todayStr, onEdit, onDelete
             onDelete={onDelete}
             onDeleteFeedback={onDeleteFeedback}
             onUpdateFeedback={onUpdateFeedback}
-            gameOptions={gameOptions}
             projectOptions={projectOptions}
+            typeOptions={typeOptions}
           />
         )}
       </div>

@@ -20,7 +20,7 @@ const afterSeed = (fn) => seedPromise.then(fn);
 export const fetchTasks = (params) => afterSeed(() => {
   let tasks = getTasks();
   if (params?.status) tasks = tasks.filter(t => t.status === params.status);
-  if (params?.game) tasks = tasks.filter(t => t.game === params.game);
+  if (params?.project) tasks = tasks.filter(t => t.project === params.project);
   return tasks;
 });
 

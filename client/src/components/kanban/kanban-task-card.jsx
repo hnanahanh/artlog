@@ -60,17 +60,17 @@ export default function KanbanTaskCard({ task, index, onOpenEditModal }) {
                 </Text>
               )}
             </Flex>
-            {/* Row 3: Tags (game + project) */}
-            {(task.game || task.project) && (
+            {/* Row 3: Tags (project + type) */}
+            {(task.project || task.type) && (
               <Flex align="center" gap={4} wrap="wrap" style={{ marginTop: 4 }}>
-                {task.game && (
+                {task.project && (
                   <Tag style={{ fontSize: 10, lineHeight: '16px', padding: '0 4px', margin: 0, border: '1px solid var(--border-color)', background: 'var(--accent-active)', color: 'var(--text-primary)' }}>
-                    {task.game}
+                    {task.project}
                   </Tag>
                 )}
-                {task.project && (
+                {task.type && (
                   <Tag style={{ fontSize: 10, lineHeight: '16px', padding: '0 4px', margin: 0, border: '1px solid var(--border-color)', background: 'var(--col-progress-card)', color: 'var(--text-primary)' }}>
-                    {task.project}
+                    {task.type}
                   </Tag>
                 )}
               </Flex>

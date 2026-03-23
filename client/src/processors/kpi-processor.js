@@ -3,12 +3,12 @@
 // Chi chua pure functions, co the test doc lap
 
 /**
- * Chuyen doi du lieu byGame tu object → array cho Ant Design Table
+ * Chuyen doi du lieu byProject tu object → array cho Ant Design Table
  * Input: { "Pusoy": 5, "Poker": 3 }
- * Output: [{ key: "Pusoy", game: "Pusoy", count: 5 }, ...]
+ * Output: [{ key: "Pusoy", project: "Pusoy", count: 5 }, ...]
  */
-export function transformGameData(byGame) {
-  return Object.entries(byGame).map(([game, count]) => ({ key: game, game, count }));
+export function transformProjectData(byProject) {
+  return Object.entries(byProject).map(([project, count]) => ({ key: project, project, count }));
 }
 
 /**
@@ -21,15 +21,15 @@ export function transformStatusData(byStatus) {
 }
 
 /**
- * Flatten byGameTasks → array cho completed tasks table
+ * Flatten byProjectTasks → array cho completed tasks table
  * Input: { "Pusoy": ["icon", "anim"], "Poker": ["bg"] }
- * Output: [{ key: "Pusoy-0", name: "icon", game: "Pusoy" }, ...]
+ * Output: [{ key: "Pusoy-0", name: "icon", project: "Pusoy", type: "" }, ...]
  */
-export function transformGameTaskList(byGameTasks) {
+export function transformProjectTaskList(byProjectTasks) {
   const result = [];
-  Object.entries(byGameTasks || {}).forEach(([game, tasks]) => {
+  Object.entries(byProjectTasks || {}).forEach(([project, tasks]) => {
     tasks.forEach((name, i) => {
-      result.push({ key: `${game}-${i}`, name, game });
+      result.push({ key: `${project}-${i}`, name, project, type: '' });
     });
   });
   return result;

@@ -9,20 +9,20 @@ const { Text } = Typography;
 
 const DRAFT_KEY = 'magic-input-draft-v2';
 /* Column order: checkbox, name, est, project, type */
-const COL_KEYS = ['name', 'est', 'game', 'project'];
+const COL_KEYS = ['name', 'est', 'project', 'type'];
 
 function loadDraft() { try { return JSON.parse(localStorage.getItem(DRAFT_KEY)) || null; } catch { return null; } }
 function saveDraft(d) { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(d)); } catch {} }
 function clearDraft() { try { localStorage.removeItem(DRAFT_KEY); } catch {} }
 
 /* Create empty task row */
-function emptyRow(game = '', project = '', rules = {}) {
+function emptyRow(project = '', type = '', rules = {}) {
   const est = rules.defaultEstTime || 1;
   const unit = rules.defaultEstUnit || 'd';
   const start = dayjs().format('YYYY-MM-DD');
   const days = unit === 'h' ? Math.ceil(est / 8) : est;
   const due = dayjs().add(days, 'day').format('YYYY-MM-DD');
-  return { name: '', game, project, estTime: est, estUnit: unit, startDate: start, dueDate: due, status: 'todo' };
+  return { name: '', project, type, estTime: est, estUnit: unit, startDate: start, dueDate: due, status: 'todo' };
 }
 
 export default function QuickMagicInput({ onTasksCreated }) {
@@ -31,25 +31,25 @@ export default function QuickMagicInput({ onTasksCreated }) {
   const [tasks, setTasks] = useState(() => loadDraft()?.tasks || [emptyRow()]);
   const [selected, setSelected] = useState(new Set());
   const [loading, setLoading] = useState(false);
-  const [existingGames, setExistingGames] = useState([]);
   const [existingProjects, setExistingProjects] = useState([]);
+  const [existingTypes, setExistingTypes] = useState([]);
 
   useEffect(() => {
     fetchRules().then(setRules).catch(() => {});
     fetchTasks().then(all => {
-      setExistingGames([...new Set(all.map(t => t.game).filter(Boolean))]);
       setExistingProjects([...new Set(all.map(t => t.project).filter(Boolean))]);
+      setExistingTypes([...new Set(all.map(t => t.type).filter(Boolean))]);
     }).catch(() => {});
   }, []);
 
   useEffect(() => { saveDraft({ tasks }); }, [tasks]);
 
-  const gameOptions = useMemo(() =>
-    [...new Set([...existingGames, ...tasks.map(t => t.game).filter(Boolean)])].map(v => ({ value: v, label: v })),
-  [existingGames, tasks]);
   const projectOptions = useMemo(() =>
     [...new Set([...existingProjects, ...tasks.map(t => t.project).filter(Boolean)])].map(v => ({ value: v, label: v })),
   [existingProjects, tasks]);
+  const typeOptions = useMemo(() =>
+    [...new Set([...existingTypes, ...tasks.map(t => t.type).filter(Boolean)])].map(v => ({ value: v, label: v })),
+  [existingTypes, tasks]);
 
   const updateTask = useCallback((idx, field, value) => {
     setTasks(prev => {
@@ -67,7 +67,7 @@ export default function QuickMagicInput({ onTasksCreated }) {
 
   const addRow = useCallback(() => {
     const last = tasks[tasks.length - 1];
-    setTasks(prev => [...prev, emptyRow(last?.game || '', last?.project || '', rules)]);
+    setTasks(prev => [...prev, emptyRow(last?.project || '', last?.type || '', rules)]);
   }, [tasks, rules]);
 
   const removeRow = useCallback((idx) => {
@@ -192,8 +192,8 @@ export default function QuickMagicInput({ onTasksCreated }) {
               </th>
               <th>{t('table.name')}</th>
               <th style={{ width: 45 }}>{t('table.est')}</th>
-              <th style={{ width: 85 }}>{t('table.game')}</th>
               <th style={{ width: 85 }}>{t('table.project')}</th>
+              <th style={{ width: 85 }}>{t('table.type')}</th>
             </tr>
           </thead>
           <tbody>
@@ -217,16 +217,16 @@ export default function QuickMagicInput({ onTasksCreated }) {
                       if (m) { updateTask(i, 'estTime', parseFloat(m[1])); if (m[2]) updateTask(i, 'estUnit', m[2].toLowerCase()); }
                     }} />
                 </td>
-                <td data-cell={`${i}-game`}>
-                  <Select size="small" variant="borderless" value={task.game || undefined} placeholder="—"
-                    onChange={v => updateTask(i, 'game', v)} style={{ width: '100%' }}
-                    showSearch allowClear options={gameOptions} dropdownStyle={{ minWidth: 120 }}
-                    filterOption={(input, opt) => opt.label.toLowerCase().includes(input.toLowerCase())} />
-                </td>
                 <td data-cell={`${i}-project`}>
                   <Select size="small" variant="borderless" value={task.project || undefined} placeholder="—"
                     onChange={v => updateTask(i, 'project', v)} style={{ width: '100%' }}
                     showSearch allowClear options={projectOptions} dropdownStyle={{ minWidth: 120 }}
+                    filterOption={(input, opt) => opt.label.toLowerCase().includes(input.toLowerCase())} />
+                </td>
+                <td data-cell={`${i}-type`}>
+                  <Select size="small" variant="borderless" value={task.type || undefined} placeholder="—"
+                    onChange={v => updateTask(i, 'type', v)} style={{ width: '100%' }}
+                    showSearch allowClear options={typeOptions} dropdownStyle={{ minWidth: 120 }}
                     filterOption={(input, opt) => opt.label.toLowerCase().includes(input.toLowerCase())} />
                 </td>
               </tr>

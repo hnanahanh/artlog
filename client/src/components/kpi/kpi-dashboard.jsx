@@ -121,47 +121,47 @@ export default function KpiDashboard({ data, from, to }) {
   const s = data.summary;
 
   // Donut data
-  const gameChartData = Object.entries(s.byGame || {}).map(([k, v]) => ({ label: k, value: v }));
   const projectChartData = Object.entries(s.byProject || {}).map(([k, v]) => ({ label: k, value: v }));
+  const typeChartData = Object.entries(s.byType || {}).map(([k, v]) => ({ label: k, value: v }));
 
   // Table data
   const tableData = s.completedDetails
     ? s.completedDetails.map((d, i) => ({ key: i, ...d }))
-    : Object.entries(s.byGameTasks || {}).flatMap(([game, tasks]) =>
-        tasks.map((name, i) => ({ key: `${game}-${i}`, name, game, project: '', estTime: 0, estUnit: 'd' }))
+    : Object.entries(s.byProjectTasks || {}).flatMap(([project, tasks]) =>
+        tasks.map((name, i) => ({ key: `${project}-${i}`, name, project, type: '', estTime: 0, estUnit: 'd' }))
       );
 
-  // Compute rowSpan for game column — merge consecutive same-game rows
-  const gameRowSpans = tableData.map((row, i) => {
-    if (i > 0 && row.game === tableData[i - 1].game) return 0;
+  // Compute rowSpan for project column — merge consecutive same-project rows
+  const projectRowSpans = tableData.map((row, i) => {
+    if (i > 0 && row.project === tableData[i - 1].project) return 0;
     let span = 1;
-    while (i + span < tableData.length && tableData[i + span].game === row.game) span++;
+    while (i + span < tableData.length && tableData[i + span].project === row.project) span++;
     return span;
   });
 
-  // Distribute 100% evenly among games, integers summing to 100 (largest remainder method)
-  const games = [...new Set(tableData.map(r => r.game).filter(Boolean))];
-  const exact = 100 / (games.length || 1);
-  const floors = games.map(() => Math.floor(exact));
+  // Distribute 100% evenly among projects, integers summing to 100 (largest remainder method)
+  const projects = [...new Set(tableData.map(r => r.project).filter(Boolean))];
+  const exact = 100 / (projects.length || 1);
+  const floors = projects.map(() => Math.floor(exact));
   const leftover = 100 - floors.reduce((s, v) => s + v, 0);
-  games.map((_, i) => ({ i, r: exact - floors[i] }))
+  projects.map((_, i) => ({ i, r: exact - floors[i] }))
     .sort((a, b) => b.r - a.r)
     .slice(0, leftover)
     .forEach(({ i }) => floors[i]++);
-  const kpiMap = Object.fromEntries(games.map((g, i) => [g, floors[i]]));
+  const kpiMap = Object.fromEntries(projects.map((g, i) => [g, floors[i]]));
 
   const COL_BORDER = { borderRight: '2px solid var(--border-color)' };
 
   const columns = [
-    { title: t('table.game'), dataIndex: 'game', key: 'game', width: 120,
-      onCell: (_, index) => ({ rowSpan: gameRowSpans[index], style: COL_BORDER }),
+    { title: t('table.project'), dataIndex: 'project', key: 'project', width: 120,
+      onCell: (_, index) => ({ rowSpan: projectRowSpans[index], style: COL_BORDER }),
       onHeaderCell: () => ({ style: COL_BORDER }),
       render: (val) => <Text strong style={{ color: 'var(--accent-color)', fontSize: 13 }}>{val}</Text> },
-    { title: t('kpi.game_weight'), dataIndex: 'game', key: 'kpi_weight', width: 70, align: 'center',
-      onCell: (_, index) => ({ rowSpan: gameRowSpans[index], style: COL_BORDER }),
+    { title: t('kpi.game_weight'), dataIndex: 'project', key: 'kpi_weight', width: 70, align: 'center',
+      onCell: (_, index) => ({ rowSpan: projectRowSpans[index], style: COL_BORDER }),
       onHeaderCell: () => ({ style: COL_BORDER }),
       render: (val) => <Text strong style={{ color: 'var(--feedback-color)', fontSize: 13 }}>{kpiMap[val] ?? 0}%</Text> },
-    { title: t('table.project'), dataIndex: 'project', key: 'project', width: 140,
+    { title: t('table.type'), dataIndex: 'type', key: 'type', width: 140,
       onCell: () => ({ style: COL_BORDER }),
       onHeaderCell: () => ({ style: COL_BORDER }),
       render: (val) => <Text style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{val || '—'}</Text> },
@@ -201,10 +201,10 @@ export default function KpiDashboard({ data, from, to }) {
         {/* Charts row: 2 equal columns */}
         <div className="kpi-charts-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', background: 'var(--bg-secondary)' }}>
           <div style={{ borderRight: '2px solid var(--border-color)' }}>
-            <DonutChart data={gameChartData} title={t('kpi.by_game')} />
+            <DonutChart data={projectChartData} title={t('kpi.by_project')} />
           </div>
           <div>
-            <DonutChart data={projectChartData} title={t('kpi.by_project')} />
+            <DonutChart data={typeChartData} title={t('kpi.by_type')} />
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ const { Text } = Typography;
 
 const neoLabel = { fontSize: 11, fontWeight: 700, color: 'var(--text-secondary, #666)', textTransform: 'uppercase', letterSpacing: 0.5 };
 
-export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, gameOptions = [], projectOptions = [] }) {
+export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, projectOptions = [], typeOptions = [] }) {
   const { t } = useI18n();
   const [form, setForm] = useState({});
   const [fbEdits, setFbEdits] = useState({});
@@ -22,7 +22,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
       setForm({
         name: task.name, estTime: task.estTime, estUnit: task.estUnit,
         startDate: task.startDate, dueDate: task.dueDate,
-        game: task.game || '', project: task.project || '',
+        project: task.project || '', type: task.type || '',
       });
       const edits = {};
       task.feedbacks?.forEach(fb => { edits[fb.id] = { content: fb.content, createdAt: fb.createdAt }; });
@@ -203,17 +203,8 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
           ))}
         </div>
 
-        {/* Project (game) + Type (project) */}
+        {/* Project + Type */}
         <Flex gap={8}>
-          <div style={{ flex: 1 }}>
-            <Text style={neoLabel}>{t('table.game')}</Text>
-            <NeoSelect
-              value={form.game}
-              options={gameOptions}
-              placeholder="Type or select"
-              onChange={v => setForm(f => ({ ...f, game: v || '' }))}
-            />
-          </div>
           <div style={{ flex: 1 }}>
             <Text style={neoLabel}>{t('table.project')}</Text>
             <NeoSelect
@@ -221,6 +212,15 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
               options={projectOptions}
               placeholder="Type or select"
               onChange={v => setForm(f => ({ ...f, project: v || '' }))}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <Text style={neoLabel}>{t('table.type')}</Text>
+            <NeoSelect
+              value={form.type}
+              options={typeOptions}
+              placeholder="Type or select"
+              onChange={v => setForm(f => ({ ...f, type: v || '' }))}
             />
           </div>
         </Flex>

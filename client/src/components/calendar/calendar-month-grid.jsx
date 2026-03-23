@@ -7,9 +7,9 @@ const todayStr = dayjs().format('YYYY-MM-DD');
 
 export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete, onDeleteFeedback, onUpdateFeedback, onAddTask, navBar }) {
   const weeks = getWeeksInMonth(year, month);
-  // Derive unique game/project options from all tasks for the edit modal
-  const gameOptions = [...new Set(tasks.map(t => t.game).filter(Boolean))];
+  // Derive unique project/type options from all tasks for the edit modal
   const projectOptions = [...new Set(tasks.map(t => t.project).filter(Boolean))];
+  const typeOptions = [...new Set(tasks.map(t => t.type).filter(Boolean))];
   const [dragOverDate, setDragOverDate] = useState(null);
   const [hoveredDate, setHoveredDate] = useState(null);
 
@@ -152,7 +152,7 @@ export default function CalendarMonthGrid({ year, month, tasks, onEdit, onDelete
                         marginBottom: '2px',
                         padding: '0 1px'
                       }}>
-                        <CalendarTaskBar task={taskInCell} span={taskInCell.span} todayStr={todayStr} onEdit={onEdit} onDelete={onDelete} onDeleteFeedback={onDeleteFeedback} onUpdateFeedback={onUpdateFeedback} gameOptions={gameOptions} projectOptions={projectOptions} weekStart={weekStart} />
+                        <CalendarTaskBar task={taskInCell} span={taskInCell.span} todayStr={todayStr} onEdit={onEdit} onDelete={onDelete} onDeleteFeedback={onDeleteFeedback} onUpdateFeedback={onUpdateFeedback} projectOptions={projectOptions} typeOptions={typeOptions} weekStart={weekStart} />
                       </div>
                     );
                   }

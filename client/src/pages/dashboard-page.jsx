@@ -53,7 +53,7 @@ const NEO_TABS_CSS = `
 // --- Reminder Row ---
 function ReminderRow({ task, type }) {
   const isOverdue = type === 'overdue';
-  const gameProject = [task.game, task.project].filter(Boolean).join(' / ');
+  const gameProject = [task.project, task.type].filter(Boolean).join(' / ');
 
   const rowStyle = isOverdue
     ? { padding: '8px 12px', borderBottom: '2px solid var(--border-color)', background: 'var(--danger-bg)', margin: '0 -12px' }

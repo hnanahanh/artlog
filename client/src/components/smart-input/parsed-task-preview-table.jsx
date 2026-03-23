@@ -6,7 +6,7 @@ import NeoRangePicker from '../shared/neo-range-picker.jsx';
 import dayjs from 'dayjs';
 
 /* Column keys in navigation order */
-const COL_KEYS = ['name', 'game', 'project', 'est'];
+const COL_KEYS = ['name', 'project', 'type', 'est'];
 
 export default function ParsedTaskPreviewTable({
   tasks, feedbackItems, onEditTask, onDismissFeedback,
@@ -18,11 +18,11 @@ export default function ParsedTaskPreviewTable({
   const feedbackMap = new Map(feedbackItems.map(fb => [fb.index, fb]));
 
   // Extract unique project/type options from current tasks
-  const gameOptions = useMemo(() =>
-    [...new Set(tasks.map(t => t.game).filter(Boolean))].map(v => ({ value: v, label: v })),
-  [tasks]);
   const projectOptions = useMemo(() =>
     [...new Set(tasks.map(t => t.project).filter(Boolean))].map(v => ({ value: v, label: v })),
+  [tasks]);
+  const typeOptions = useMemo(() =>
+    [...new Set(tasks.map(t => t.type).filter(Boolean))].map(v => ({ value: v, label: v })),
   [tasks]);
 
   /* Arrow key navigation between cells */
@@ -86,30 +86,6 @@ export default function ParsedTaskPreviewTable({
       },
     },
     {
-      title: t('table.game'),
-      dataIndex: 'game',
-      key: 'game',
-      width: 100,
-      render: (val, _, index) => (
-        <div data-cell={`${index}-game`}>
-          <Select
-            size="small"
-            value={val || undefined}
-            onChange={v => onEditTask(index, 'game', v)}
-            onKeyDown={e => handleCellKeyDown(e, index, 'game')}
-            style={{ width: '100%' }}
-            showSearch
-            allowClear
-            placeholder="—"
-            options={gameOptions}
-            dropdownStyle={{ minWidth: 120 }}
-            filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
-            onSearch={() => {}} // enable typing in search
-          />
-        </div>
-      ),
-    },
-    {
       title: t('table.project'),
       dataIndex: 'project',
       key: 'project',
@@ -126,6 +102,30 @@ export default function ParsedTaskPreviewTable({
             allowClear
             placeholder="—"
             options={projectOptions}
+            dropdownStyle={{ minWidth: 120 }}
+            filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
+            onSearch={() => {}} // enable typing in search
+          />
+        </div>
+      ),
+    },
+    {
+      title: t('table.type'),
+      dataIndex: 'type',
+      key: 'type',
+      width: 100,
+      render: (val, _, index) => (
+        <div data-cell={`${index}-type`}>
+          <Select
+            size="small"
+            value={val || undefined}
+            onChange={v => onEditTask(index, 'type', v)}
+            onKeyDown={e => handleCellKeyDown(e, index, 'type')}
+            style={{ width: '100%' }}
+            showSearch
+            allowClear
+            placeholder="—"
+            options={typeOptions}
             dropdownStyle={{ minWidth: 120 }}
             filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
             onSearch={() => {}}

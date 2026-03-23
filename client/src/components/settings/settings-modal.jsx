@@ -20,7 +20,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
   const [rules, setRules] = useState(null);
   const [loading, setLoading] = useState(false);
   const [newKeyword, setNewKeyword] = useState('');
-  const [newRule, setNewRule] = useState({ field: 'game', contains: '', boost: -100 });
+  const [newRule, setNewRule] = useState({ field: 'project', contains: '', boost: -100 });
 
   const loadRules = () => {
     fetchRules().then(setRules).catch(() => message.error('Load rules failed'));
@@ -54,7 +54,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
   const addPriorityRule = () => {
     if (!newRule.contains.trim()) return;
     setRules(r => ({ ...r, priorityRules: [...(r.priorityRules || []), { ...newRule, contains: newRule.contains.trim() }] }));
-    setNewRule({ field: 'game', contains: '', boost: -100 });
+    setNewRule({ field: 'project', contains: '', boost: -100 });
   };
 
   const removePriorityRule = (idx) => {
@@ -198,8 +198,8 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
               <Select size="small" value={newRule.field} style={{ width: 100 }}
                 onChange={v => setNewRule(r => ({ ...r, field: v }))}
                 options={[
-                  { value: 'game', label: 'Project' },
-                  { value: 'project', label: 'Type' },
+                  { value: 'project', label: 'Project' },
+                  { value: 'type', label: 'Type' },
                   { value: 'name', label: 'Tên task' },
                 ]} />
               <Input size="small" placeholder="chứa..." value={newRule.contains} style={{ width: 120 }}
