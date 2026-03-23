@@ -245,11 +245,12 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
         open={addOpen}
         onClose={() => setAddOpen(false)}
         placement={window.innerWidth <= 768 ? 'bottom' : 'right'}
-        width={720}
-        height="85vh"
-        title={<span style={{ fontWeight: 900, fontFamily: "'JetBrains Mono'" }}>{t('magic.drawer_title')}</span>}
+        width={520}
+        height="60vh"
+        title={null}
+        closable={false}
         styles={{
-          header: { border: 'none', borderBottom: '2px solid var(--border-color)', background: 'var(--bg-header)', flexShrink: 0 },
+          header: { display: 'none' },
           body: { padding: 0, background: 'var(--bg-card)', overflow: 'hidden', display: 'flex', flexDirection: 'column' },
           wrapper: { boxShadow: 'none' },
         }}

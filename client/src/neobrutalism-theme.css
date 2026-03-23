@@ -136,6 +136,10 @@
   transform: none;
 }
 
+/* Neo tabs buttons hover */
+.neo-tabs-bar button { transition: background 0.15s, transform 0.15s; }
+.neo-tabs-bar button:hover { background: var(--bg-secondary) !important; }
+
 /* Neo-box: reusable hover effect for shadow boxes */
 .neo-box {
   transition: box-shadow 0.15s, transform 0.15s;
@@ -485,7 +489,7 @@ body {
   content: attr(data-letter);
   position: absolute;
   left: 0; top: 0;
-  -webkit-text-stroke: 3px var(--border-color);
+  -webkit-text-stroke: 4px var(--border-color);
   color: transparent;
   z-index: -1;
   text-shadow: 2px 2px 0 var(--shadow-color);

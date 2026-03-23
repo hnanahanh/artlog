@@ -166,7 +166,7 @@ export default function QuickMagicInput({ onTasksCreated }) {
   };
 
   return (
-    <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ padding: '8px 12px', display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
       <div style={{ flex: 1, overflow: 'auto' }}>
         <style>{`
           .quick-table { width: 100%; border-collapse: collapse; }
@@ -254,7 +254,7 @@ export default function QuickMagicInput({ onTasksCreated }) {
           )}
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <Text type="secondary" style={{ fontSize: 11 }}>
+          <Text type="secondary" style={{ fontSize: 14, fontWeight: 700 }}>
             {tasks.filter(t => t.name.trim()).length} task(s)
           </Text>
           <button className="neo-btn" onClick={handleSave} disabled={loading}
