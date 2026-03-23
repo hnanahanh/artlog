@@ -463,12 +463,18 @@ body {
   /* Hide sidebar on mobile */
   .app-sidebar { display: none !important; }
 
-  /* Full screen on mobile — no outer padding, border, shadow */
-  .app-outer-layout { padding: 0 !important; }
+  /* Full screen on mobile — no outer padding, border, shadow, no white gap */
+  .app-outer-layout { padding: 0 !important; background-color: var(--bg-primary) !important; }
   .app-outer-wrapper {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+  }
+
+  /* Disable hover on static boxes (keep for interactive: buttons, task cards) */
+  .neo-box:hover {
+    transform: none !important;
+    box-shadow: 4px 4px 0px var(--shadow-color) !important;
   }
 
   /* Fixed header on mobile, only content scrolls */
