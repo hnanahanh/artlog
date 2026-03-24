@@ -121,6 +121,12 @@
 .ant-typography { color: var(--text-primary) !important; }
 .ant-typography.ant-typography-secondary { color: var(--text-secondary) !important; }
 .ant-typography.ant-typography-danger { color: var(--danger-text) !important; }
+.ant-checkbox-wrapper, .ant-checkbox-wrapper span, .ant-radio-wrapper { color: var(--text-primary) !important; }
+/* Force all Ant form/select/tag/slider text to follow theme */
+.ant-form-item-label > label, .ant-form-item, .ant-select-selection-item,
+.ant-select-item-option-content, .ant-tag, .ant-slider-mark-text,
+.ant-divider-inner-text, .ant-space, .ant-btn > span,
+.ant-modal-footer, .ant-drawer-body { color: var(--text-primary) !important; }
 .ant-card:hover {
   box-shadow: none !important;
 }
@@ -161,6 +167,7 @@ button.neo-btn {
   border-radius: 2px !important;
   font-weight: 700;
   background: var(--bg-header);
+  color: var(--text-primary);
   box-shadow: 3px 3px 0px var(--shadow-color);
   transition: box-shadow 0.1s, transform 0.1s;
   cursor: pointer;
@@ -388,7 +395,10 @@ body.ant-scrolling-effect .app-outer-wrapper { overflow: hidden !important; }
 [data-theme="dark"] .ant-picker {
   background-color: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
 }
+[data-theme="dark"] .ant-modal-content { border-color: var(--border-color) !important; }
+[data-theme="dark"] .ant-tag { background: var(--bg-secondary) !important; color: var(--text-secondary) !important; border-color: var(--border-color) !important; }
 [data-theme="dark"] .ant-table {
   background-color: var(--bg-card) !important;
   color: var(--text-primary) !important;
