@@ -90,7 +90,7 @@ export default function EditTaskModal({ task, open, onClose, onEdit, onDelete, o
         footer: { borderTop: '2px solid var(--border-color)', padding: '10px 16px', marginTop: 0 },
       }}
     >
-      <Space direction="vertical" size={10} style={{ width: '100%' }}>
+      <Space orientation="vertical" size={10} style={{ width: '100%' }}>
         {/* Name + Feedback names inline */}
         <div>
           <Text style={neoLabel}>Name</Text>

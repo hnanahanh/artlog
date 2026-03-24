@@ -102,7 +102,7 @@ export default function ParsedTaskPreviewTable({
             allowClear
             placeholder="—"
             options={projectOptions}
-            dropdownStyle={{ minWidth: 120 }}
+            styles={{ popup: { root: { minWidth: 120 } } }}
             filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
             onSearch={() => {}} // enable typing in search
           />
@@ -126,7 +126,7 @@ export default function ParsedTaskPreviewTable({
             allowClear
             placeholder="—"
             options={typeOptions}
-            dropdownStyle={{ minWidth: 120 }}
+            styles={{ popup: { root: { minWidth: 120 } } }}
             filterOption={(input, option) => option.label.toLowerCase().includes(input.toLowerCase())}
             onSearch={() => {}}
           />

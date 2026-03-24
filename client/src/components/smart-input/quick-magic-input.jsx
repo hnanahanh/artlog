@@ -327,13 +327,13 @@ export default function QuickMagicInput({ onTasksCreated }) {
                 <td data-cell={`${i}-project`}>
                   <Select size="small" variant="borderless" value={task.project || undefined} placeholder="—"
                     onChange={v => updateTask(i, 'project', v)} style={{ width: '100%' }}
-                    showSearch allowClear options={projectOptions} dropdownStyle={{ minWidth: 120 }}
+                    showSearch allowClear options={projectOptions} styles={{ popup: { root: { minWidth: 120 } } }}
                     filterOption={(input, opt) => opt.label.toLowerCase().includes(input.toLowerCase())} />
                 </td>
                 <td data-cell={`${i}-type`}>
                   <Select size="small" variant="borderless" value={task.type || undefined} placeholder="—"
                     onChange={v => updateTask(i, 'type', v)} style={{ width: '100%' }}
-                    showSearch allowClear options={typeOptions} dropdownStyle={{ minWidth: 120 }}
+                    showSearch allowClear options={typeOptions} styles={{ popup: { root: { minWidth: 120 } } }}
                     filterOption={(input, opt) => opt.label.toLowerCase().includes(input.toLowerCase())} />
                 </td>
               </tr>

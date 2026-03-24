@@ -245,14 +245,12 @@ export default function DashboardPage({ refreshKey, onTasksCreated }) {
         open={addOpen}
         onClose={() => setAddOpen(false)}
         placement={window.innerWidth <= 768 ? 'bottom' : 'right'}
-        width={520}
-        height="60vh"
         title={null}
         closable={false}
         styles={{
           header: { display: 'none' },
           body: { padding: 0, background: 'var(--bg-card)', overflow: 'hidden', display: 'flex', flexDirection: 'column' },
-          wrapper: { boxShadow: 'none' },
+          wrapper: { boxShadow: 'none', width: window.innerWidth <= 768 ? undefined : 520, height: window.innerWidth <= 768 ? '60vh' : undefined },
         }}
         destroyOnClose={false}
       >

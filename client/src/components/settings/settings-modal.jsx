@@ -126,7 +126,7 @@ export default function SettingsModal({ open, onClose, lang, toggleLang, isDark,
 
       {rules && (
         <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', scrollbarWidth: 'thin' }}>
-        <Space direction="vertical" size={8} style={{ width: '100%', padding: '12px 16px', boxSizing: 'border-box' }}>
+        <Space orientation="vertical" size={8} style={{ width: '100%', padding: '12px 16px', boxSizing: 'border-box' }}>
           {/* Ngày làm việc */}
           <Card title={<span style={{ fontFamily: "'JetBrains Mono'", fontWeight: 900 }}>Ngày làm việc</span>} size="small">
             <Checkbox.Group value={rules.workingDays}
